@@ -88,7 +88,7 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 		return entity.shouldBeRemoved();
 	}
 
-	
+
 	/**User specified method when a key press is triggered
 	 * @param dir The current directions of the keys pressed
 	 */
@@ -96,39 +96,54 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 
 	@Override
 	public void onKeyPress(KeyEvent ke) {
+
+		boolean pressed = false;
 		if(ke.key == upKey){
 			dirs[0] = true;
+			pressed = true;
 		} else if(ke.key == downKey){
 			dirs[1] = true;
+			pressed = true;
 		} else if(ke.key == leftKey){
 			dirs[2] = true;
+			pressed = true;
 		} else if(ke.key == rightKey){
 			dirs[3] = true;
+			pressed = true;
 		} else if(ke.key == specialKey1){
 			special1Pressed();
 		} else if(ke.key == specialKey2){
 			special2Pressed();
 		}
 
-		sendDir();
+		if(pressed)
+			sendDir();
 	}
 
 	@Override
 	public void onKeyRelease(KeyEvent ke) {
+
+		boolean pressed = false;
 		if(ke.key == upKey){
 			dirs[0] = false;
+			pressed = true;
 		} else if(ke.key == downKey){
 			dirs[1] = false;
+			pressed = true;
 		} else if(ke.key == leftKey){
 			dirs[2] = false;
+			pressed = true;
 		} else if(ke.key == rightKey){
 			dirs[3] = false;
+			pressed = true;
 		} else if(ke.key == specialKey1){
 			special1Released();
 		} else if(ke.key == specialKey2){
 			special2Released();
 		}
-		sendDir();
+		
+		if(pressed)
+			sendDir();
 	}
 
 	private void sendDir(){

@@ -27,6 +27,10 @@ public class Util {
 	public static float lazyCos(float t){
 		return 1f - t*t/2f + t*t*t*t/24f - t*t*t*t*t*t / 720f + t*t*t*t*t*t*t*t/40320f - t*t*t*t*t*t*t*t*t*t/3628800f;
 	}
+	
+	public static int sgn(float f){
+		return f < 0f ?  -1 :  1;
+	}
 
 
 	/**Calculates an efficient approximation of sine based on the Taylor series expansion of sine.

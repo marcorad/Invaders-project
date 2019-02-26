@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Random;
 
+import org.jsfml.audio.Sound;
+import org.jsfml.audio.SoundBuffer;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.RenderWindow;
@@ -76,9 +78,9 @@ public class Game implements MouseListener {
 	}
 
 	public Game(String title){
-
 		name = title;
-
+		
+		
 		//Create the window
 
 		Clock elapsed_time = new Clock();	
@@ -93,17 +95,11 @@ public class Game implements MouseListener {
 		Entity e2 = new Entity(new Vector2f(.0f,.0f));
 		Entity heart = new Entity(new Vector2f(.0f,.0f));
 		Entity text = new Entity( new Vector2f(.0f,.0f));		
-		Font font  = new Font();
-		try {
-			font.loadFromFile(Paths.get("font\\baab.otf"));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		TextComponent tc = new TextComponent(text, Color.CYAN,font);
+		
+		TextComponent tc = new TextComponent(text, Color.CYAN,GameData.FONT_CALIBRI);
 
 		text.addComponent(tc);
-		tc.setText("IT  FUCKIN WORKS!");
+		tc.setText("IT FUCKIN WORKS!");
 
 		Oscillator osc = Util.randomOscillator(.2f, 1f, .3f, .5f, .0f, OscType.SINE) ;
 		text.addComponent(				
@@ -130,9 +126,12 @@ public class Game implements MouseListener {
 			public void onDirection(Vector2f unitdir) {	
 				ComplexMovementComponent m = (ComplexMovementComponent)this.movement;		
 				m.setAccel(Vector2f.mul(unitdir, 2f));
-				if(unitdir.x == 0f && unitdir.y == 0f){
-					m.decelerate(2f);		
-				} 				
+				if(unitdir.x == 0f){
+					m.decelerateX(2f);		
+				} 	
+				if(unitdir.y == 0f){
+					m.decelerateY(2f);		
+				} 
 			}
 
 			@Override
@@ -176,15 +175,11 @@ public class Game implements MouseListener {
 				t += dt; //keep track of total time
 				e.addToRotation((15.f*dt));
 				float s = o.get(dt);
-				//e.addToScale(new Vector2f(.01f*dt,.01f*dt));
-				//e2.addToScale(new Vector2f(dt,dt));
 				heart.setScale(new Vector2f(s,s));
 				text.setScale(new Vector2f(.17f*s,.17f*s));
 				float x, y;
 				x = (float)( 0.2*(2.0*Noise.valueCoherentNoise3D(5.0*t, 0, 0.0, 0, NoiseQuality.STANDARD)-1.0));
 				y = (float)( 0.2*(2.0*Noise.valueCoherentNoise3D(0.0, 5.0*t, 0.0, 0, NoiseQuality.STANDARD)-1.0));
-				//e2.setPosition(new Vector2f(x,y));
-				//e2.increaseRotation((float) (-180.0*dt));
 
 				float frate = (1.0f / dt);
 
@@ -197,20 +192,8 @@ public class Game implements MouseListener {
 
 				entitymanager.drawEntities();
 
-				//			float scale = o.get((float)t);
-				//			System.out.println(scale);
-				//			Vector2f rsize = new Vector2f(scale,scale);
-				//			RectangleShape  rect = new RectangleShape(rsize);
-				//			rect.setOrigin(Vector2f.mul(rsize, .5f));
-				//			rect.setPosition(new Vector2f(0.0f,0.0f));
-				//			rect.setFillColor(Color.WHITE);
-				//			
-				//			
-				//			graphics.drawToRenderTexture(rect);
 				graphics.display();			
 				eventhandler.handleEvents();
-				//System.out.println(loop_time.getElapsedTime().asSeconds());
-				//System.out.println(heart.getInstantaneousVelocity());
 
 			}
 	}
@@ -238,7 +221,7 @@ public class Game implements MouseListener {
 	@Override
 	public void onMousePress(MouseButtonEvent mbe) {
 		Color c = Util.randomColor();
-		for(int i = 0; i < 50; i++){
+		for(int i = 0; i < 10; i++){
 			Vector2f v = new Vector2f(0f,-.1f);
 			float dev = .1f;
 			v = Vector2f.add(v, new Vector2f(Util.randInRange(-dev, dev),Util.randInRange(-dev, dev)));
@@ -275,6 +258,12 @@ public class Game implements MouseListener {
 	public boolean isUseless() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public static void playSound(SoundBuffer buf, float volume){
+		Sound s = new Sound(buf);
+		s.setVolume(volume);
+		s.play();
 	}
 
 }

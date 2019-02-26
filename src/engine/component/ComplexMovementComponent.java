@@ -17,7 +17,11 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	protected Vector2f accel;
 	protected float angularAccel;
 	private boolean decel = false;
-	private float decelmag = .0f;
+	private boolean decelx = false;
+	private boolean decely = false;
+	private Vector2f velbeforedecel;
+	
+	private float velybefore, velxbefore;
 	
 	
 	/**
@@ -59,13 +63,18 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 		decel = false;
 	}
 	
+
 	
-	/**Sets the acceleration such that the component will component will come to a stand still. Does not affect the angular acceleration.
-	 * @param mag The magnitude of the acceleration 
-	 */
-	public void decelerate(float mag){
+	public void decelerateX(float mag){
+		decelx = true;
+		velxbefore = velocity.x;
+		accel = new Vector2f(-Util.sgn(velxbefore) * mag , accel.y );
+	}
+	
+	public void decelerateY(float mag){
 		decel = true;
-		decelmag = mag;
+		velybefore = velocity.y;
+		accel = new Vector2f( accel.x , - Util.sgn(velybefore) * mag );
 	}
 
 
@@ -79,10 +88,26 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 
 	@Override
 	public void update(float dt, float t) {
-		if(decel){
-			accel = Vector2f.mul(Util.normalise(this.velocity),-decelmag); //decel in opposite direction
+		
+		if(decelx){
+			if(Util.sgn(velocity.x) != Util.sgn(velxbefore)){ //the moment the sign of a component changes, the deceleration has been successful
+				velocity = new Vector2f(0f, velocity.y);
+				accel =  new Vector2f(0f, accel.y);
+				decelx = false;
+			}
 		}
+		
+		if(decely){
+			if(Util.sgn(velocity.y) != Util.sgn(velybefore)){ //the moment the sign of a component changes, the deceleration has been successful
+				velocity = new Vector2f(velocity.x, 0f);
+				accel =  new Vector2f(accel.x, 0f);
+				decely = false;
+			}
+		}
+		
+
 		addToVelocity(Vector2f.mul(accel, dt));
+		
 		omega += angularAccel*dt;
 		super.update(dt, t);
 	}

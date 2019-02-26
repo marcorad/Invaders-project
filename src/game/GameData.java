@@ -1,5 +1,11 @@
 package game;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
+import org.jsfml.audio.Sound;
+import org.jsfml.audio.SoundBuffer;
+import org.jsfml.audio.SoundSource;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
@@ -9,30 +15,30 @@ import org.jsfml.system.Vector2f;
  *
  */
 public class GameData {
-	public static final Font CALIBRI_FONT;
-	
-	//load all the data
-	static{
-		//fonts
-		CALIBRI_FONT = loadFont("Calibri");
-		
-		//hitbox
-		
-		//tectures
-		
-		//sounds
-		
-		//music
-	}
+
+	//fonts
+	public static final Font FONT_CALIBRI = loadFont("Calibri");
+
+	//sounds
+	public static final SoundBuffer SOUND_LAZELIEN = loadSound("lazelien");
+	public static final SoundBuffer SOUND_PEEG = loadSound("peeg"); 
+	public static final SoundBuffer SOUND_BASS = loadSound("bass");
+
 
 	/**Load a font from the font folder.
 	 * @param name The name without the extension. Expects a .ttf file.
 	 * @return The font
 	 */
 	public static Font loadFont(String name){
-		return null;
+		Font f = new Font();
+		try {
+			f.loadFromFile(Paths.get("font\\" + name + ".ttf"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return f;
 	}
-	
+
 	/**Load hitbox data from the hitboxdata folder.
 	 * @param name The name without extension
 	 * @return An array containing points of multiple hitboxes ([points][hitbox number])
@@ -40,7 +46,7 @@ public class GameData {
 	public static Vector2f[][] loadHitboxData(String name){
 		return null;
 	}
-	
+
 	/**Load a texture from the sprites folder
 	 * @param name The name without the extension. Expects a .png file.
 	 * @return The texture
@@ -48,5 +54,16 @@ public class GameData {
 	public static Texture loadTexture(String name){
 		return null;
 	}
-	
+
+	public static SoundBuffer loadSound(String name){
+		SoundBuffer buf = new SoundBuffer();
+		try {
+			buf.loadFromFile(Paths.get("sound\\" + name + ".wav"));		
+			
+		} catch (IOException e) {					
+			e.printStackTrace();
+		}
+		return buf;
+	}
+
 }
