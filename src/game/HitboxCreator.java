@@ -68,7 +68,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		eventhandler = new EventHandler(window);
 		entitymanager = new EntityManager();
 		
-		Entity.setEnvironment(entitymanager, graphics);
+		Entity.setEnvironment(entitymanager, graphics, eventhandler);
 	}
 	
 	public Entity sprite;

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Image;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.Sprite;
@@ -20,7 +21,7 @@ import engine.input.EventHandler;
 //which means a square of size 2 will always fit around it
 //the setScale must be used to change the size
 
-public class SpriteComponent extends DisplayComponent implements UpdateableComponent {
+public class SpriteComponent extends ColorComponent implements UpdateableComponent {
 
 	private Texture tex;
 	private Image image;
@@ -44,7 +45,7 @@ public class SpriteComponent extends DisplayComponent implements UpdateableCompo
 	 * @throws IOException File issues
 	 */
 	public SpriteComponent(Entity entity, int w, float fps, String path) throws IOException, TextureCreationException {
-		super(entity);
+		super(entity, new Color(255,255,255,255));
 		tex = new Texture();
 		this.path = Paths.get(path);			
 		width = w;
@@ -61,7 +62,7 @@ public class SpriteComponent extends DisplayComponent implements UpdateableCompo
 	 * @throws IOException File issues
 	 */
 	public SpriteComponent(Entity entity, int w, int h, String path) throws IOException, TextureCreationException {
-		super(entity);
+		super(entity, new Color(255,255,255,255));
 		tex = new Texture();
 		this.path = Paths.get(path);
 		width = w;
@@ -69,6 +70,7 @@ public class SpriteComponent extends DisplayComponent implements UpdateableCompo
 		create();
 		frames = 1;
 		timebetweenframes = Float.POSITIVE_INFINITY;
+		colorUpdate();
 	}
 
 
@@ -125,6 +127,11 @@ public class SpriteComponent extends DisplayComponent implements UpdateableCompo
 			currframe %= frames;
 			sprite.setTextureRect(new IntRect(currframe*width,0,width, height));
 		}
+	}
+
+	@Override
+	protected void colorUpdate() {
+		this.sprite.setColor(color);
 	}
 
 }

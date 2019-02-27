@@ -41,9 +41,6 @@ public class ConvexPolygonComponent extends ShapeComponent {
 	protected void createShape() {
 		shape = new ConvexShape();
 		shape.setPosition(entity.getPosition());
-		onScaleUpdate();
-		onRotationUpdate();
-		onPositionUpdate();
 	}
 	
 	/**

@@ -15,8 +15,12 @@ public abstract class Component {
 
 	
 	protected boolean enable = true; //whether the component is enabled
+	/**Constructs a component and adds it to the entity
+	 * @param entity The active entity.
+	 */
 	protected Component(Entity entity) {
 		this.entity = entity;		
+		entity.addComponent(this);
 	}
 	
 	/**

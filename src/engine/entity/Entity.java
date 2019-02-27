@@ -20,6 +20,7 @@ public class Entity{
 
 	public static EntityManager entitymanager;
 	public static GraphicsHandler graphics;
+	public static EventHandler eventhandler;
 	private float health = .0001f; //health of entity entity gets removed once health reaches 0
 	private float damage = 0f; //the damage value that this entity can deal, only really used for projectiles
 
@@ -28,9 +29,10 @@ public class Entity{
 	 * @param em The entity manager
 	 * @param gh The garphics
 	 */
-	public static void setEnvironment(EntityManager em,GraphicsHandler gh){
+	public static void setEnvironment(EntityManager em,GraphicsHandler gh, EventHandler eh){
 		entitymanager = em;
 		graphics = gh;
+		eventhandler = eh;
 	}	
 
 	/**

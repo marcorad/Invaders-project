@@ -33,6 +33,9 @@ public abstract class ShapeComponent extends ColorComponent {
 		this.type = type;
 		createShape();
 		colorUpdate();
+		onScaleUpdate();
+		onRotationUpdate();
+		onPositionUpdate();
 	}
 	
 	@Override

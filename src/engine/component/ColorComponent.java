@@ -14,7 +14,7 @@ import engine.input.EventHandler;
  */
 public abstract class ColorComponent extends DisplayComponent {
 
-	protected Color color = Color.BLACK;
+	protected Color color;
 	
 	
 	/**

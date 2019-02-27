@@ -31,7 +31,7 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 	 * @param specialKey2 Special 2
 	 * @param movement The movement component to be modified according to user specification
 	 */
-	public KeyboardMoveComponent(EventHandler eventhandler, Entity entity,
+	public KeyboardMoveComponent(Entity entity,
 			Key upKey, Key downKey, Key leftKey, Key rightKey, Key specialKey1, Key specialKey2,
 			MovementComponent movement) {
 		super (entity);
@@ -42,7 +42,7 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 		this.specialKey1 = specialKey1;
 		this.specialKey2 = specialKey2;
 		this.movement = movement;		
-		eventhandler.attachKeyListener(this);
+	    Entity.eventhandler.attachKeyListener(this);
 	}
 	/**
 	 * @return Down
