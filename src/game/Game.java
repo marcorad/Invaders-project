@@ -125,12 +125,12 @@ public class Game implements MouseListener {
 			@Override
 			public void onDirection(Vector2f unitdir) {	
 				ComplexMovementComponent m = (ComplexMovementComponent)this.movement;		
-				m.setAccel(Vector2f.mul(unitdir, 2f));
+				m.setAccel(Vector2f.mul(unitdir, 10f));
 				if(unitdir.x == 0f){
-					m.decelerateX(2f);		
+					m.decelerateX(10f);		
 				} 	
 				if(unitdir.y == 0f){
-					m.decelerateY(2f);		
+					m.decelerateY(10f);		
 				} 
 			}
 

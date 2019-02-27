@@ -12,18 +12,16 @@ import util.Util;
  *
  */
 public class ComplexMovementComponent extends SimpleMovementComponent {
-	
-	
+
+
 	protected Vector2f accel;
 	protected float angularAccel;
-	private boolean decel = false;
 	private boolean decelx = false;
 	private boolean decely = false;
-	private Vector2f velbeforedecel;
-	
+
 	private float velybefore, velxbefore;
-	
-	
+
+
 	/**
 	 * @param entity The active entity
 	 * @param velocity The velocity
@@ -60,21 +58,26 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	 */
 	public void setAccel(Vector2f accel) {
 		this.accel = accel;
-		decel = false;
+		decelx = false;
+		decely = false;
 	}
-	
 
-	
+
+
 	public void decelerateX(float mag){
-		decelx = true;
-		velxbefore = velocity.x;
-		accel = new Vector2f(-Util.sgn(velxbefore) * mag , accel.y );
+		if(velocity.x != 0f){
+			decelx = true;
+			velxbefore = velocity.x;
+			accel = new Vector2f(-Util.sgn(velxbefore) * mag , accel.y );
+		}
 	}
-	
+
 	public void decelerateY(float mag){
-		decel = true;
-		velybefore = velocity.y;
-		accel = new Vector2f( accel.x , - Util.sgn(velybefore) * mag );
+		if(velocity.y != 0f){
+			decely = true;
+			velybefore = velocity.y;
+			accel = new Vector2f( accel.x , -Util.sgn(velybefore) * mag );
+		}
 	}
 
 
@@ -88,7 +91,8 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 
 	@Override
 	public void update(float dt, float t) {
-		
+		addToVelocity(Vector2f.mul(accel, dt));
+
 		if(decelx){
 			if(Util.sgn(velocity.x) != Util.sgn(velxbefore)){ //the moment the sign of a component changes, the deceleration has been successful
 				velocity = new Vector2f(0f, velocity.y);
@@ -96,7 +100,7 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 				decelx = false;
 			}
 		}
-		
+
 		if(decely){
 			if(Util.sgn(velocity.y) != Util.sgn(velybefore)){ //the moment the sign of a component changes, the deceleration has been successful
 				velocity = new Vector2f(velocity.x, 0f);
@@ -104,15 +108,13 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 				decely = false;
 			}
 		}
-		
 
-		addToVelocity(Vector2f.mul(accel, dt));
-		
+
 		omega += angularAccel*dt;
 		super.update(dt, t);
 	}
-	
-	
+
+
 
 
 }
