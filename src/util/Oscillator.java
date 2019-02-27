@@ -2,7 +2,8 @@ package util;
 
 public class Oscillator {
 	private float freq, amp, offset, phase;
-	public OscType type;
+	private OscType type;
+	private float ampclamp = Float.POSITIVE_INFINITY;
 
 	public enum OscType{
 		SINE, SQUARE, SAW, TRIANGLE
@@ -33,17 +34,18 @@ public class Oscillator {
 	 * @return the value at time t
 	 */
 	public float get(float elapsed_time){
+		float y = 0f;
 		switch(type){
 		case SAW: 
-			return (float) (amp*2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5f) + offset);
+			y = (float) (amp*2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5f) + offset);
 		case SINE: 
-			return (float) (amp*Math.sin(elapsed_time*Math.PI*2.0*freq - phase) + offset); 
+			y = (float) (amp*Math.sin(elapsed_time*Math.PI*2.0*freq - phase) + offset); 
 		case SQUARE: 
-			return (((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5)) > 0.0 ? amp + offset : -amp + offset;
+			y = (((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5)) > 0.0 ? amp + offset : -amp + offset;
 		case TRIANGLE: 
-			return (float) (2*amp*Math.abs(2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq-Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq+0.5)))-1.0*amp + offset);
+			y = (float) (2*amp*Math.abs(2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq-Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq+0.5)))-1.0*amp + offset);
 		}
-		return 0.0f;
+		return Util.clamp(y, offset-ampclamp, offset+ampclamp);
 	}
 
 
@@ -95,6 +97,18 @@ public class Oscillator {
 	public void setType(OscType type) {
 		this.type = type;
 	}
+
+
+	public float getAmpClamp() {
+		return ampclamp;
+	}
+
+
+	public void setAmpClamp(float ampclamp) {
+		this.ampclamp = ampclamp;
+	}
+	
+	
 		
 
 }

@@ -12,6 +12,7 @@ import engine.component.ConvexPolygonComponent;
 import engine.component.KeyboardMoveComponent;
 import engine.component.MouseMoveControlComponent;
 import engine.component.MovementComponent;
+import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
 import engine.component.UpdateableComponent;
 import util.Util;
@@ -26,7 +27,7 @@ public class Player extends Entity {
 	private ConvexPolygonComponent hitbox;
 	private KeyboardMoveComponent keys;
 	private MouseMoveControlComponent mouse;
-	private float accelmag = 5.5f;
+	private float accelmag = 4.5f;
 	
 	private Vector2f maxvel = new Vector2f(1f,1f);
 
@@ -39,6 +40,8 @@ public class Player extends Entity {
 	private void create(){
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
 		movement.setVelocityClamp(maxvel);
+		this.setMinPosition(new Vector2f(-.88f, -.88f));
+		this.setMaxPosition(new Vector2f(.88f, -.6f));
 		
 		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
 			@Override
@@ -99,6 +102,7 @@ public class Player extends Entity {
 			
 		};
 		
+		new ParticleTrailComponent(this, .3f, .5f, 20f, Color.GREEN);
 	
 	
 			
