@@ -32,7 +32,10 @@ public class Util {
 		return f < 0f ?  -1 :  1;
 	}
 
-
+	public static float vectorAngle(Vector2f v){
+		return toDegrees((float)Math.atan2(v.y, v.x));
+	}
+	
 	/**Calculates an efficient approximation of sine based on the Taylor series expansion of sine.
 	 * IT IS ONLY GOOD AT APPROXIMATION FROM -PI to PI
 	 * @param t angle in radians
@@ -123,6 +126,10 @@ public class Util {
 
 	public static float toRad(float d){
 		return d * (PI/180.f);
+	}
+	
+	public static float toDegrees(float rad){
+		return rad * (180f/PI);
 	}
 
 	public static float dot(Vector2f a, Vector2f b){
@@ -287,7 +294,7 @@ public class Util {
 		return true;
 	}
 
-	public Vertex[] verticesFromPoints(Vector2f pts[]){
+	public static  Vertex[] verticesFromPoints(Vector2f pts[]){
 		Vertex[] v = new Vertex[pts.length];
 		for(int i = 0; i < pts.length; i++)
 			v[i] = new Vertex(pts[i], Color.RED);

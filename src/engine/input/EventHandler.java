@@ -46,7 +46,7 @@ public class EventHandler {
 			//convert to different type of events
 			MouseButtonEvent mb = e.asMouseButtonEvent(); //mouse buttons
 			MouseWheelEvent mw = e.asMouseWheelEvent(); //mouse wheel
-			MouseEvent me = e.type == Event.Type.MOUSE_WHEEL_MOVED ? e.asMouseEvent() : null; //mouse move must be checked since MouseEvent is generic for all mouse events
+			MouseEvent me = (e.type == Event.Type.MOUSE_MOVED) ? e.asMouseEvent() : null;//mouse move must be checked since MouseEvent is generic for all mouse events
 			KeyEvent ke =  e.asKeyEvent();
 
 			//with likelihood of event as priority, do check to see if it is an applicable event. events are mutually exclusive

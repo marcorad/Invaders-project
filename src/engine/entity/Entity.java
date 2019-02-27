@@ -21,8 +21,8 @@ public class Entity{
 	public static EntityManager entitymanager;
 	public static GraphicsHandler graphics;
 	public static EventHandler eventhandler;
-	private float health = .0001f; //health of entity entity gets removed once health reaches 0
-	private float damage = 0f; //the damage value that this entity can deal, only really used for projectiles
+	protected float health = .0001f; //health of entity entity gets removed once health reaches 0
+	protected float damage = 0f; //the damage value that this entity can deal, only really used for projectiles
 
 
 	/**Sets the manager and graphics that the entity has access to. This must be done before the game is started.
@@ -49,19 +49,19 @@ public class Entity{
 		this.damage = damage;
 	}
 
-	private Vector2f position;
-	private Vector2f previous_pos;
+	protected Vector2f position;
+	protected Vector2f previous_pos;
 
 	//lists of component methods 
-	private Vector<UpdateableComponent> updatecomps= new Vector<>();
-	private Vector<DrawableComponent> drawcomps= new Vector<>();;
-	private Vector<MovementNotifier> movenotifiercomps= new Vector<>();
-	private Vector<CollisionComponent> collisioncomps= new Vector<>();
-	private Vector<NotifierComponent> notifiercomps = new Vector<>();
+	protected Vector<UpdateableComponent> updatecomps= new Vector<>();
+	protected Vector<DrawableComponent> drawcomps= new Vector<>();;
+	protected Vector<MovementNotifier> movenotifiercomps= new Vector<>();
+	protected Vector<CollisionComponent> collisioncomps= new Vector<>();
+	protected Vector<NotifierComponent> notifiercomps = new Vector<>();
 
-	private float previous_dt = 1.f;
+	protected float previous_dt = 1.f;
 
-	private Vector<Entity> collidingentities = new Vector<>();
+	protected Vector<Entity> collidingentities = new Vector<>();
 
 	private Vector2f minpositionclamp = new Vector2f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY); //the position will be clamped to these minimum coords
 	private Vector2f maxpositionclamp = new Vector2f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY); // the posistion will be clamped to these maximum coords
@@ -287,7 +287,7 @@ public class Entity{
 	/**
 	 * Update the notifier components
 	 */
-	private void updateNotifierComponents(){
+	protected void updateNotifierComponents(){
 		for(NotifierComponent nc : notifiercomps)
 			nc.Notify();
 	}
@@ -307,6 +307,8 @@ public class Entity{
 		updateNotifierComponents();
 		if(this.health <= 0f) remove();
 	}
+	
+
 
 	/**Add a component of the various types to change the entity's behaviour or appearance
 	 * @param c The component to add

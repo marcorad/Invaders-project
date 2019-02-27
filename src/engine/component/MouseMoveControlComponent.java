@@ -47,9 +47,9 @@ public abstract class MouseMoveControlComponent extends Component implements Mou
 	@Override
 	public void onMouseRelease(MouseButtonEvent mbe) {
 		if(mbe.button == Mouse.Button.LEFT){
-			onLeftMousePress(Entity.graphics.toWorldSpace(mbe.position));			
+			onLeftMouseRelease(Entity.graphics.toWorldSpace(mbe.position));			
 		} else if(mbe.button == Mouse.Button.RIGHT){
-			onRightMousePress(Entity.graphics.toWorldSpace(mbe.position));
+			onRightMouseRelease(Entity.graphics.toWorldSpace(mbe.position));
 		}	
 	}
 
