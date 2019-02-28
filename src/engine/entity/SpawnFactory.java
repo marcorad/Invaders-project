@@ -57,6 +57,6 @@ public class SpawnFactory {
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
 		cc.setHitboxDraw(true);	
 		new HealthBarComponent(enem);
-		new MovementOscComponent(enem, new Oscillator(.3f, .8f, 0f, 0f, OscType.SQUARE), new Vector2f(1f,0f));
+		new MovementOscComponent(enem, new Oscillator(.5f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f));
 	}
 }
