@@ -11,6 +11,8 @@ import org.jsfml.graphics.Vertex;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
+import engine.entity.Entity;
+
 public class Util {
 	public final static Random rand = new Random();
 
@@ -300,8 +302,19 @@ public class Util {
 			v[i] = new Vertex(pts[i], Color.RED);
 		return v;
 	}
+	
+	public static Vector2f approxParticleOffset(Vector2f unitdir, Vector2f scale){
+		return Vector2f.mul(unitdir, dot(unitdir, scale));
+	}
 
-
+	public static Color colorWithVariation(Color main, int vary){
+		return new Color(main.r + randInRange(-vary, vary), main.g + randInRange(-vary, vary), main.b + randInRange(-vary, vary), main.a + randInRange(-vary, vary));
+	}
+	
+	public static void pointEntityInDirection(Entity e, Vector2f dir){
+		e.setTheta(-90f +vectorAngle(dir));
+	}
+	
 	/**
 	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT)
 	 * @param a First convex polygon
@@ -346,11 +359,11 @@ public class Util {
 			Vector2f normal= getLazyNormal(p[edge_a], p[(edge_a+1)%p.length]); //get the normal of two vertices
 
 			//project
-			for(int pt_p = 0; pt_p < p.length; pt_p++){
-				p_proj[pt_p] = dot(p[pt_p], normal);
+			for(int pi = 0; pi < p.length; pi++){
+				p_proj[pi] = dot(p[pi], normal);
 			}
-			for(int pt_q = 0; pt_q < p.length; pt_q++){
-				q_proj[pt_q] = dot(q[pt_q], normal);
+			for(int qi = 0; qi < q.length; qi++){
+				q_proj[qi] = dot(q[qi], normal);
 			}
 
 			//check if projections intersect
@@ -365,11 +378,11 @@ public class Util {
 			Vector2f normal= getLazyNormal(q[edge_b], q[(edge_b+1)%q.length]);
 
 
-			for(int pt_p = 0; pt_p < p.length; pt_p++){
-				p_proj[pt_p] = dot(normal, p[pt_p]);
+			for(int pi = 0; pi < p.length; pi++){
+				p_proj[pi] = dot(normal, p[pi]);
 			}
-			for(int pt_q = 0; pt_q < p.length; pt_q++){
-				q_proj[pt_q] = dot(normal, q[pt_q]);
+			for(int qi = 0; qi < q.length; qi++){
+				q_proj[qi] = dot(normal, q[qi]);
 			}
 
 			if(!overlaps(getMinMax(p_proj), getMinMax(q_proj))){

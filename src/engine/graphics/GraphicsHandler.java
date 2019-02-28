@@ -45,8 +45,6 @@ public class GraphicsHandler {
 			e.printStackTrace();			
 		}
 		screenspr = new Sprite(rt.getTexture());
-			
-		
 		
 		//create the scaling 
 		Vector2f scale = new Vector2f(.5f*(float)wsize.x,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen

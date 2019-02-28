@@ -23,7 +23,6 @@ public class EventHandler {
 	 */
 	public void handleEvents(){
 		for (Event e : window.pollEvents()){
-			
 			//when window must close
 			if(e.type == Event.Type.CLOSED){
 				window.close();

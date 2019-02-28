@@ -9,6 +9,7 @@ import engine.component.CollisionComponent;
 import engine.component.ComplexMovementComponent;
 import engine.component.Component;
 import engine.component.ConvexPolygonComponent;
+import engine.component.HealthBarComponent;
 import engine.component.KeyboardMoveComponent;
 import engine.component.MouseMoveControlComponent;
 import engine.component.MovementComponent;
@@ -19,7 +20,7 @@ import util.Util;
 
 public class Player extends Entity {
 	
-	protected static Vector2f  currentmouse = Vector2f.ZERO;
+	protected static Vector2f currentmouse = Vector2f.ZERO;
 	
 	private ComplexMovementComponent movement;
 	private SpriteComponent sprite;
@@ -81,6 +82,8 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
+				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));
+				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir,entity.getScale())), Vector2f.mul(dir, 2f));				
 				System.out.println("LEFT MOUSE PRESS: " + worldpos);
 			}
 
@@ -102,9 +105,11 @@ public class Player extends Entity {
 			
 		};
 		
-		new ParticleTrailComponent(this, .3f, .5f, 20f, Color.GREEN);
+		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, Color.RED, 2, .5f);
+		trail.setColorVary(60);
+		trail.setRandomVel(.35f);
 	
-	
+		new HealthBarComponent(this);
 			
 		
 	}
@@ -116,7 +121,7 @@ public class Player extends Entity {
 		previous_dt = dt;
 		previous_pos = position;
 		
-		this.setTheta(90f+Util.vectorAngle(Vector2f.sub(position, currentmouse)));
+		Util.pointEntityInDirection(this,Vector2f.sub(currentmouse, position));
 		
 		for(UpdateableComponent uc : updatecomps){
 			if(((Component)uc).isEnabled())

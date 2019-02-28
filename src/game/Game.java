@@ -80,14 +80,12 @@ public class Game implements MouseListener {
 
 	public Game(String title){		name = title;
 		
-		
-		//Create the window
-
 		Clock elapsed_time = new Clock();	
 		Clock loop_time = new Clock();	
 		float t = 0.0f, dt; //total time using double for extra precision		
 		eventhandler.attachMouseListener(this);
-		new Player(Vector2f.ZERO);
+		new Player(new Vector2f(0f,-.8f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
 
 		
 
@@ -136,14 +134,7 @@ public class Game implements MouseListener {
 
 	@Override
 	public void onMousePress(MouseButtonEvent mbe) {
-		Color c = Util.randomColor();
-		for(int i = 0; i < 10; i++){
-			Vector2f v = new Vector2f(0f,-.1f);
-			float dev = .1f;
-			v = Vector2f.add(v, new Vector2f(Util.randInRange(-dev, dev),Util.randInRange(-dev, dev)));
-			SpawnFactory.spawnParticle(graphics.toWorldSpace(mbe.position), v,
-					Util.randInRange(-180f, 180f), Util.randInRange(.01f, .04f),c, Util.randInRange(1f,5f), Util.randInRange(3, 7));
-		}
+		
 	}
 
 

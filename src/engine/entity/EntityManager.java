@@ -37,7 +37,7 @@ public class EntityManager {
 					//the i'th entity is check against all following entities, because there is no need to recheck collisions
 					//since both colliding entities are notified of a collision
 					//this reduces the number of checks from (N-1)^2 to ((N-1) + (N-2) + ... + 1) where N is the size of the vector
-					entities.get(j-1).collide(entities.get(j));
+					entities.get(i).collide(entities.get(j));
 				}
 			}
 			

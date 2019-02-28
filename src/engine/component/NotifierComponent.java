@@ -19,7 +19,7 @@ public abstract class NotifierComponent extends Component {
 	/**
 	 * Check the condition and do the appropriate action when condition is met
 	 */
-	public void Notify(){ //spelled with capital N since the base object class cannot have its notify() method interfered with
+	public void notifyWhenConditionMet(){ //spelled with capital N since the base object class cannot have its notify() method interfered with
 		if(notifyCondition()) notifyAction();
 	}
 

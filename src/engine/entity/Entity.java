@@ -21,8 +21,10 @@ public class Entity{
 	public static EntityManager entitymanager;
 	public static GraphicsHandler graphics;
 	public static EventHandler eventhandler;
-	protected float health = .0001f; //health of entity entity gets removed once health reaches 0
+	protected float maxHealth = .0001f;
+	protected float health = .0001f; //health of entity, entity gets removed once health reaches 0
 	protected float damage = 0f; //the damage value that this entity can deal, only really used for projectiles
+	private boolean collidedThisFrame = false;
 
 
 	/**Sets the manager and graphics that the entity has access to. This must be done before the game is started.
@@ -78,7 +80,8 @@ public class Entity{
 		previous_pos = position;
 		setPosition(position);
 		entitymanager.addEntity(this);
-	}		
+	}
+
 
 	/**Constructs and entity with a scale of 1
 	 * @param position The position in the world
@@ -103,12 +106,13 @@ public class Entity{
 	public void setMinPosition(Vector2f min){
 		minpositionclamp = min;
 	}
-	
+
 	/**Damage this entity
 	 * @param damage The damage
 	 */
 	public void doDamage(float damage){
 		health -= damage;
+		System.out.println(health);
 	}
 
 	/**
@@ -116,6 +120,10 @@ public class Entity{
 	 */
 	public void remove(){
 		remove = true;
+	}
+
+	public void healFully(){
+		health = maxHealth;
 	}
 
 	/**
@@ -133,30 +141,49 @@ public class Entity{
 		Vector<CollisionComponent> other = e.getCollisionComponents();
 		for(CollisionComponent thiscc : collisioncomps){
 			for(CollisionComponent othercc : other){
-				if(thiscc.Collision(othercc)){
-					collidingentities.add(e);
-					e.addCollidingEntity(this);;
-					System.out.println(collidingentities.size()); //debug
-					return;
+				boolean thiscollides = false, othercollides = false;
+
+				//check if the other component can collide with this component
+				for(CollisionID otherid : othercc.getCollidingIDs()){
+					if(thiscc.getID() == otherid) othercollides = true;
+				}
+
+				//check if this component can collide with the other component
+				for(CollisionID thisid : thiscc.getCollidingIDs()){
+					if(othercc.getID() == thisid) thiscollides = true;
+				}
+
+				if(thiscollides || othercollides){
+					if(thiscc.Collision(othercc)){
+						collidedThisFrame = true;
+						if(thiscollides){
+							this.addCollidingEntity(e);
+						}
+						if(othercollides){
+							e.addCollidingEntity(this);
+						}
+						//System.out.println(collidingentities.size()); //debug
+						return;
+					}
 				}
 			}
 		}
 	}
-	
+
 	/**Convenience method for add to this entity's list of colliding entities
 	 * @param e The entity to add
 	 */
 	public void addCollidingEntity(Entity e){
 		collidingentities.addElement(e);
 	}
-	
+
 	/**Get the list containing the entities this entity is currently colliding with
 	 * @return The list
 	 */
 	public Vector<Entity> getCollidingEntities(){
 		return this.collidingentities;
 	}
-	
+
 	/**
 	 * @return The current health of this entity
 	 */
@@ -164,11 +191,11 @@ public class Entity{
 		return health;
 	}
 
-	/**Set the health of this entity
+	/**Set the health of this entity, which will get clamped to the max health.
 	 * @param health The health
 	 */
 	public void setHealth(float health) {
-		this.health = health;
+		this.health = Util.clamp(health, 0f, maxHealth);
 	}
 
 	/**
@@ -283,13 +310,15 @@ public class Entity{
 				dc.draw(graphics);
 		}
 	}
-	
+
 	/**
 	 * Update the notifier components
 	 */
 	protected void updateNotifierComponents(){
-		for(NotifierComponent nc : notifiercomps)
-			nc.Notify();
+		for(NotifierComponent nc : notifiercomps){
+			if(nc.isEnabled())
+				nc.notifyWhenConditionMet();
+		}
 	}
 
 	/**Update the entity, i.e. all updateable components and also notify all the notifier components. Also check the health of the entity and remove if necessary.
@@ -297,18 +326,28 @@ public class Entity{
 	 * @param t Total time elapsed of the game
 	 */
 	public void update(float dt, float t){
-		collidingentities.clear(); //clear the colliding entities since it is now a new frame
+
+		updateNotifierComponents();
+		//damage the entity according to all entities colliding with it
+		for(Entity colliding : collidingentities){
+			this.doDamage(colliding.getDamage());
+		}
+		//System.out.println(collidingentities.size());
+		collidingentities.clear(); //clear the colliding entities since it is handled
 		previous_dt = dt;
 		previous_pos = position;
 		for(UpdateableComponent uc : updatecomps){
 			if(((Component)uc).isEnabled())
 				uc.update(dt, t);
-		}
-		updateNotifierComponents();
+		}	
+
+		collidedThisFrame = false;
 		if(this.health <= 0f) remove();
 	}
-	
 
+	public boolean collidedThisFrame(){
+		return collidedThisFrame;
+	}
 
 	/**Add a component of the various types to change the entity's behaviour or appearance
 	 * @param c The component to add
@@ -361,6 +400,16 @@ public class Entity{
 	public Vector2f getInstantaneousVelocity(){
 		return Vector2f.div(Vector2f.sub(position, previous_pos), previous_dt); //v = dp/dt ~= (p1-p0)/dt
 	}
+
+	public float getMaxHealth() {
+		return maxHealth;
+	}
+
+	public void setMaxHealth(float maxHealth) {
+		this.maxHealth = maxHealth;
+	}
+
+
 
 
 }

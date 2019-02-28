@@ -43,7 +43,7 @@ public abstract class ShapeComponent extends ColorComponent {
 		switch(type){
 		case FILL:
 			shape.setFillColor(color);
-			shape.setOutlineThickness(.0f);
+			shape.setOutlineColor(Color.TRANSPARENT);
 			break;
 		case POINTS:
 			shape.setFillColor(color);
