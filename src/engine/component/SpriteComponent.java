@@ -23,9 +23,9 @@ import engine.input.EventHandler;
 
 public class SpriteComponent extends ColorComponent implements UpdateableComponent {
 
-	private Texture tex;
-	private Image image;
+	
 	private Sprite sprite;
+	private Texture tex;
 	private Path path;
 	private int width, height;
 
@@ -40,14 +40,11 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	 * @param entity the entity
 	 * @param w width of a single frame
 	 * @param fps the number of frames to be shown per second
-	 * @param path path to the file
-	 * @throws TextureCreationException Could not create the texture
-	 * @throws IOException File issues
+	 * @param tex The texture containing the image
 	 */
-	public SpriteComponent(Entity entity, int w, float fps, String path) throws IOException, TextureCreationException {
+	public SpriteComponent(Entity entity, int w, float fps, Texture tex) {
 		super(entity, new Color(255,255,255,255));
-		tex = new Texture();
-		this.path = Paths.get(path);			
+		this.tex = tex;	
 		width = w;
 		this.timebetweenframes = 1.f/fps;
 		create();		
@@ -57,27 +54,19 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	 * @param entity the entity
 	 * @param w width of a single frame
 	 * @param h height of a single frame
-	 * @param path path to the file
-	 * @throws TextureCreationException  Could not create the texture
-	 * @throws IOException File issues
+	 * @param tex The texture containing the image
 	 */
-	public SpriteComponent(Entity entity, int w, int h, String path) throws IOException, TextureCreationException {
+	public SpriteComponent(Entity entity, int w, int h, Texture tex){
 		super(entity, new Color(255,255,255,255));
 		tex = new Texture();
-		this.path = Paths.get(path);
 		width = w;
-		height = h;		
-		create();
+		height = h;
 		frames = 1;
 		timebetweenframes = Float.POSITIVE_INFINITY;
-		colorUpdate();
 	}
 
 
-	private void create() throws IOException, TextureCreationException{
-		image = new Image();			
-		image.loadFromFile(this.path);
-		tex.loadFromImage(image);
+	private void create(){
 		frames = tex.getSize().x/width;
 		height = tex.getSize().y;
 		sprite = new Sprite(tex,new IntRect(0,0,width,height));
@@ -86,6 +75,7 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 		onScaleUpdate();
 		onRotationUpdate();
 		onPositionUpdate();
+		colorUpdate();
 	}
 
 	@Override

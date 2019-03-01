@@ -45,18 +45,30 @@ public class SpawnFactory {
 				entity.setHealth(0f);
 			}			
 		};
-		trail.setScaleDamp(.04f);
+		trail.setScaleDamp(.03f);
 		trail.setRandomVel(.8f);
+		spawnGunPowder(pos, vel, 3f, Color.BLACK);
 	}
 	
 	public static void spawnTestEnemy(Vector2f pos){
 		Entity enem = new Entity(pos);
 		enem.setScale(new Vector2f(.1f,.1f));
-		enem.setMaxHealth(10f);
+		enem.setMaxHealth(4f);
 		enem.healFully();
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
 		cc.setHitboxDraw(true);	
 		new HealthBarComponent(enem);
-		new MovementOscComponent(enem, new Oscillator(.5f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f));
+		new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f));
+		
+		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 20f, Color.RED, 3, .25f);
+		trail.setScaleDamp(.08f);
+		trail.setRandomVel(.4f);
+	}
+	
+	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
+		int amount = (int)(magnitude*5f);
+		for(int i = 0; i < amount; i++){
+			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2f), Util.randInRange(.03f*magnitude, .1f*magnitude)), Util.randInRange(-300f, 300f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
+		}
 	}
 }

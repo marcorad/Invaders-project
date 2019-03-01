@@ -1,6 +1,7 @@
 package game;
 
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Vector2f;
@@ -63,21 +65,21 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		window.setVerticalSyncEnabled(false); //VSync can can impact performance
 		//Limit the framerate
 		window.setFramerateLimit(FRAMERATE);
-		
+
 		graphics = new GraphicsHandler(window);
 		eventhandler = new EventHandler(window);
 		entitymanager = new EntityManager();
-		
+
 		Entity.setEnvironment(entitymanager, graphics, eventhandler);
 	}
-	
+
 	public Entity sprite;
 	public Entity text;
 	public SpriteComponent spritecomp;
 	public ConvexPolygonComponent hitbox;
 	public ArrayList<Vector2f> pts;
 	public String name;
-	
+
 	public HitboxCreator(){
 
 		Clock elapsed_time = new Clock();	
@@ -141,20 +143,22 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		boolean error;
 		int w = 0;
 		do{
-			try {
-				name = JOptionPane.showInputDialog("Please enter the name of the sprite");
-				w = Integer.parseInt(JOptionPane.showInputDialog("Please enter the width of a frame"));
 
-				//stop the previous sprite from being drawn, a lazy solution since entities are not meant to have components removed
-				if (spritecomp != null)spritecomp.toggleEnable();
-				
-				
-				spritecomp = new SpriteComponent(sprite, w, 15f, "sprites\\" + name + ".png");
-				error = false;
-			} catch (IOException | TextureCreationException e) {
+			name = JOptionPane.showInputDialog("Please enter the name of the sprite");
+			w = Integer.parseInt(JOptionPane.showInputDialog("Please enter the width of a frame"));
+
+			//stop the previous sprite from being drawn, a lazy solution since entities are not meant to have components removed
+			if (spritecomp != null)spritecomp.toggleEnable();
+
+			Texture tex = GameData.loadTexture("name");		
+			if(tex == null) {
 				error = true;
-				System.out.println("This file does not exist");
+			} 
+			else{
+				spritecomp = new SpriteComponent(sprite, w, 15f, tex);
+				error = false;
 			}
+
 		} while (error);
 
 		sprite.addComponent(spritecomp);
@@ -174,7 +178,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 			loadSprite();			
 			break;
 		case S: saveHitboxData();
-			break;
+		break;
 		case BACKSPACE:  
 			if(pts.size() != 0) { 
 				pts.remove(pts.size()-1);
@@ -184,10 +188,12 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		}
 
 	}
-	
+
+	//saves the hitbox data, where it first saves the number of points (Vector2f) then writes the x and y components of the vector
 	public void saveHitboxData(){
 		try {
 			DataOutputStream dos = new DataOutputStream( new FileOutputStream("hbdata\\" + name + ".hbd",false));
+			dos.writeInt(pts.size());
 			for(Vector2f v : pts){
 				dos.writeFloat(v.x);
 				dos.writeFloat(v.y);
@@ -196,8 +202,8 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 	@Override

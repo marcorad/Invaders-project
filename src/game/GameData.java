@@ -1,13 +1,16 @@
 package game;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
 import org.jsfml.audio.SoundSource;
 import org.jsfml.graphics.Font;
+import org.jsfml.graphics.Image;
 import org.jsfml.graphics.Texture;
+import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Vector2f;
 
 /**A class that contains the game data, including hitbox data, fonts, sound, music and textures. 
@@ -52,7 +55,18 @@ public class GameData {
 	 * @return The texture
 	 */
 	public static Texture loadTexture(String name){
-		return null;
+		Path path = Paths.get("sprites\\" + name + ".png");
+		Texture tex = new Texture();
+		Image image = new Image();			
+		try {
+			image.loadFromFile(path);
+			tex.loadFromImage(image);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (TextureCreationException e) {
+			e.printStackTrace();
+		}	
+		return tex;
 	}
 
 	public static SoundBuffer loadSound(String name){

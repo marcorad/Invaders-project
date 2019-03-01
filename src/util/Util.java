@@ -29,7 +29,7 @@ public class Util {
 	public static float lazyCos(float t){
 		return 1f - t*t/2f + t*t*t*t/24f - t*t*t*t*t*t / 720f + t*t*t*t*t*t*t*t/40320f - t*t*t*t*t*t*t*t*t*t/3628800f;
 	}
-	
+
 	public static int sgn(float f){
 		return f < 0f ?  -1 :  1;
 	}
@@ -37,7 +37,7 @@ public class Util {
 	public static float vectorAngle(Vector2f v){
 		return toDegrees((float)Math.atan2(v.y, v.x));
 	}
-	
+
 	/**Calculates an efficient approximation of sine based on the Taylor series expansion of sine.
 	 * IT IS ONLY GOOD AT APPROXIMATION FROM -PI to PI
 	 * @param t angle in radians
@@ -46,9 +46,25 @@ public class Util {
 	public static float lazySin(float t){
 		return t - t*t*t/6f + t*t*t*t*t/120f - t*t*t*t*t*t*t/5040f + t*t*t*t*t*t*t*t*t / 362880f;
 	}
-	
+
 	public static Color randomColor(){
 		return new Color(rand.nextInt(255),rand.nextInt(255),rand.nextInt(255),255);
+	}
+
+	public static Color lerpColor(float t, Color begin, Color end){
+		float r = begin.r, g = begin.g, b = begin.b, a = begin.a;
+		return new Color((int)(r + t*(end.r - r)), (int)(g + t*(end.g - g)), (int)(b + t*(end.b - b)), (int)(a + t*(end.a - a)));
+
+	}
+	
+	public static Vector2f randomUnitVector(float angleMin, float angleMax){
+		float theta = randInRange(angleMin, angleMax);
+		return new Vector2f(lazyCos(theta), lazySin(theta));
+	}
+	
+	public static Vector2f varyVector(Vector2f v, float varyRad){
+		float angle = toRad(vectorAngle(v));
+		return randomUnitVector(angle - varyRad, angle + varyRad);
 	}
 
 	/**
@@ -88,8 +104,8 @@ public class Util {
 				getRegularPoly(10),
 		};
 
-	
-	
+
+
 	/** Generate a regular n-gon 
 	 * @param n number of points
 	 * @return the points of the n-gon
@@ -116,7 +132,7 @@ public class Util {
 	public static float randInRange(float low, float high){
 		return (high - low)*rand.nextFloat() + low;
 	}
-	
+
 	public static int randInRange(int low, int high){
 		return low + rand.nextInt(high - low);
 	}
@@ -129,7 +145,7 @@ public class Util {
 	public static float toRad(float d){
 		return d * (PI/180.f);
 	}
-	
+
 	public static float toDegrees(float rad){
 		return rad * (180f/PI);
 	}
@@ -162,7 +178,7 @@ public class Util {
 		Vector2f v = new Vector2f((pt2.y - pt1.y), -(pt2.x - pt1.x));
 		return normalise(v);
 	}
-	
+
 	/**gets the normal of an edge without scaling it to a unit vector, to save some time on a costly sqrt function
 	 * @param pt1 first point
 	 * @param pt2 second point
@@ -171,7 +187,7 @@ public class Util {
 	public static Vector2f getLazyNormal(Vector2f pt1, Vector2f pt2){
 		return new Vector2f((pt2.y - pt1.y), -(pt2.x - pt1.x));		
 	}
-	
+
 	/**converts to a unit vector
 	 * @param v the vector
 	 * @return the unit vector
@@ -302,19 +318,29 @@ public class Util {
 			v[i] = new Vertex(pts[i], Color.RED);
 		return v;
 	}
-	
-	public static Vector2f approxParticleOffset(Vector2f unitdir, Vector2f scale){
+
+	public static Vector2f approxParticleOffset(Vector2f unitdir, Entity e){
+		Vector2f scale = e.getScale();
+		scale = new Vector2f(Util.sgn(unitdir.x)*scale.x, Util.sgn(unitdir.y)*scale.y);
 		return Vector2f.mul(unitdir, dot(unitdir, scale));
+	}
+	
+
+	public static Vector2f approxParticleOffset(Vector2f unitdir, Entity e, float compensate){
+		Vector2f scale = e.getScale();
+		scale = new Vector2f(Util.sgn(unitdir.x)*scale.x, Util.sgn(unitdir.y)*scale.y);
+		Vector2f comp = Vector2f.mul(unitdir, compensate);
+		return Vector2f.add(Vector2f.mul(unitdir, dot(unitdir, scale)), comp);
 	}
 
 	public static Color colorWithVariation(Color main, int vary){
 		return new Color(main.r + randInRange(-vary, vary), main.g + randInRange(-vary, vary), main.b + randInRange(-vary, vary), main.a + randInRange(-vary, vary));
 	}
-	
+
 	public static void pointEntityInDirection(Entity e, Vector2f dir){
 		e.setTheta(-90f +vectorAngle(dir));
 	}
-	
+
 	/**
 	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT)
 	 * @param a First convex polygon

@@ -71,7 +71,7 @@ public class Player extends Entity {
 			
 		};	
 		
-		hitbox = new ConvexPolygonComponent(this, new Vector2f[]{new Vector2f(0f,1f), new Vector2f(1f,.75f), new Vector2f(1f,-1f), new Vector2f(-1f,-1f), new Vector2f(-1f,.75f)});
+		hitbox = new ConvexPolygonComponent(this, new Vector2f[]{new Vector2f(0f,.9f), new Vector2f(.8f,.65f), new Vector2f(.8f,-1f), new Vector2f(-.8f,-1f), new Vector2f(-.8f,.65f)});
 		hitbox.setColor(Color.RED);
 		
 		mouse = new MouseMoveControlComponent(this){
@@ -82,8 +82,8 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
-				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));
-				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir,entity.getScale())), Vector2f.mul(dir, 2f));				
+				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));				
+				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir, entity)), Vector2f.mul(dir, 3f));				
 				System.out.println("LEFT MOUSE PRESS: " + worldpos);
 			}
 

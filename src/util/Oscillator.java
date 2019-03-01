@@ -38,12 +38,16 @@ public class Oscillator {
 		switch(type){
 		case SAW: 
 			y = (float) (amp*2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5f) + offset);
+			break;
 		case SINE: 
 			y = (float) (amp*Math.sin(elapsed_time*Math.PI*2.0*freq - phase) + offset); 
+			break;
 		case SQUARE: 
 			y = (((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5)) > 0.0 ? amp + offset : -amp + offset;
+			break;
 		case TRIANGLE: 
 			y = (float) (2*amp*Math.abs(2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq-Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq+0.5)))-1.0*amp + offset);
+			break;
 		}
 		return Util.clamp(y, offset-ampclamp, offset+ampclamp);
 	}

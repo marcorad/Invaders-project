@@ -6,6 +6,7 @@ import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
+import util.Util;
 
 public class HealthBarComponent extends DisplayComponent {
 
@@ -16,13 +17,13 @@ public class HealthBarComponent extends DisplayComponent {
 	public HealthBarComponent(Entity entity) {
 		super(entity);
 		frame = new RectangleShape(new Vector2f(width,height));
-		frame.setOrigin(new Vector2f(width/2f, -1f - height/2));		
+		frame.setOrigin(new Vector2f(width/2f, -1.1f - height/2));		
 		frame.setFillColor(Color.TRANSPARENT);
-		frame.setOutlineColor(Color.BLACK);
+		frame.setOutlineColor(new Color(0,0,0,190));
 		frame.setOutlineThickness(.05f);
 		
 		bar = new RectangleShape(new Vector2f(width,height));
-		bar.setOrigin(new Vector2f(width/2f, -1f - height/2));		
+		bar.setOrigin(new Vector2f(width/2f, -1.1f - height/2));		
 		bar.setFillColor(Color.GREEN);
 		
 		onPositionUpdate();
@@ -31,8 +32,10 @@ public class HealthBarComponent extends DisplayComponent {
 
 	@Override
 	public void draw(GraphicsHandler graphics) {
-		Vector2f size = new Vector2f(width * (entity.getHealth()/entity.getMaxHealth()) , height);		
+		float factor = (entity.getHealth()/entity.getMaxHealth());
+		Vector2f size = new Vector2f(width *  factor, height);		
 		bar.setSize(size);
+		bar.setFillColor(Util.lerpColor(factor, new Color(255,0,0,190), new Color(0,255,0,190)));
 	    graphics.drawToRenderTexture(bar);
 		graphics.drawToRenderTexture(frame);
 	}
