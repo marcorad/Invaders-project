@@ -18,6 +18,10 @@ import engine.component.SpriteComponent;
 import engine.component.UpdateableComponent;
 import util.Util;
 
+/**A class that specifically describes a player entity, since its behaviour is complex.
+ * @author Marco
+ *
+ */
 public class Player extends Entity {
 	
 	protected static Vector2f currentmouse = Vector2f.ZERO;
@@ -32,6 +36,9 @@ public class Player extends Entity {
 	
 	private Vector2f maxvel = new Vector2f(1f,1f);
 
+	/**Construct a player at a certain position
+	 * @param position
+	 */
 	public Player(Vector2f position) {
 		super(position);	
 		create();

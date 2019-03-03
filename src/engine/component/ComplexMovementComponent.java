@@ -64,6 +64,9 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 
 
 
+	/**Decelerate in the x-direction proportional to a magnitude.
+	 * @param mag The magnitude of deceleration.
+	 */
 	public void decelerateX(float mag){
 		if(velocity.x != 0f){
 			decelx = true;
@@ -72,6 +75,9 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 		}
 	}
 
+	/**Decelerate in the y-direction proportional to a magnitude.
+	 * @param mag The magnitude of deceleration.
+	 */
 	public void decelerateY(float mag){
 		if(velocity.y != 0f){
 			decely = true;

@@ -37,6 +37,7 @@ public class ConvexPolygonComponent extends ShapeComponent {
 		if(pts != null)
 		((ConvexShape)shape).setPoints(pts);
 	}
+	
 	@Override
 	protected void createShape() {
 		shape = new ConvexShape();

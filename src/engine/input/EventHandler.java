@@ -7,11 +7,18 @@ import java.util.Vector;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.window.event.*;
 
+/**A class that handles key and mouse events at a lower level.
+ * @author Marco
+ *
+ */
 public class EventHandler {
 	private final RenderWindow window;
 	private Vector<KeyListener> kl;
 	private Vector<MouseListener> ml;
 
+	/**Construct an event handler listening to a specific window
+	 * @param w The window.
+	 */
 	public EventHandler(RenderWindow w){
 		window = w;
 		kl = new Vector<>(); 
@@ -19,7 +26,7 @@ public class EventHandler {
 	}
 
 	/**
-	 * poll the associated window's events
+	 * Poll the associated window's events and send appropriate messages
 	 */
 	public void handleEvents(){
 		for (Event e : window.pollEvents()){
@@ -79,15 +86,15 @@ public class EventHandler {
 	}
 
 	
-	/**
-	 * @param m add a listener that will react to mouse input
+	/**Add a mouse listener that will react to the handler's input
+	 * @param m The mouse listener
 	 */
 	public void attachMouseListener(MouseListener m){
 		ml.addElement(m);
 	}
 	
-	/**
-	 * @param k add a listener that will react to keyboard input
+	/**Add a key listener that will react to the handler's input
+	 * @param k The key listener
 	 */
 	public void attachKeyListener(KeyListener k){
 		kl.addElement(k);

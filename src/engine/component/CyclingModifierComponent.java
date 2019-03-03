@@ -13,6 +13,9 @@ public class CyclingModifierComponent extends ModifierComponent {
 	private final Vector<Float> times = new Vector<>();
 	int index = 0;
 
+	/**
+	 * @param entity The active entity
+	 */
 	protected CyclingModifierComponent(Entity entity) {
 		super(entity);
 	}

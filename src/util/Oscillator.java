@@ -1,23 +1,30 @@
 package util;
 
+/**An object that has specific waveforms associated with it that can be called to receive a value based on time.
+ * The oscillator is centred around zero and can be phase shited in radians and offset in the output, as well symmetrically clipped before offset.
+ * @author Marco
+ *
+ */
 public class Oscillator {
 	private float freq, amp, offset, phase;
 	private OscType type;
 	private float ampclamp = Float.POSITIVE_INFINITY;
 
+	/**The type of waveform
+	 * @author Marco
+	 *
+	 */
 	public enum OscType{
 		SINE, SQUARE, SAW, TRIANGLE
-	}
-	
-	
+	}	
 
-	//phase in seconds
-	/**	 * 
-	 * @param freq frequency of oscillation
-	 * @param amp amplitude of oscillation
-	 * @param offset offset in the output
-	 * @param phase phase in radians
-	 * @param type type of oscillator
+
+	/**
+	 * @param freq Frequency of oscillation
+	 * @param amp Amplitude of oscillation
+	 * @param offset Offset in the output
+	 * @param phase Phase in radians
+	 * @param type Type of oscillator
 	 */
 	
 	public Oscillator(float freq, float amp, float offset, float phase, OscType type) {
@@ -29,9 +36,9 @@ public class Oscillator {
 	}
 
 
-	/**
-	 * @param elapsed_time the total time elapsed (since the function is periodic
-	 * @return the value at time t
+	/**Get the value at a certain time
+	 * @param elapsed_time The total time elapsed (since the function is periodic)
+	 * @return The value at time t
 	 */
 	public float get(float elapsed_time){
 		float y = 0f;
@@ -103,11 +110,17 @@ public class Oscillator {
 	}
 
 
+	/**Get the value that the oscillator will be clamped at, both in the positive and negative region, before offset occurs. The allows for clipping of waveforms.
+	 * @return The clamp value
+	 */
 	public float getAmpClamp() {
 		return ampclamp;
 	}
 
 
+	/**Set the value that the oscillator will be clamped at, both in the positive and negative region, before offset occurs. The allows for clipping of waveforms.
+	 * @param ampclamp The clamp value
+	 */
 	public void setAmpClamp(float ampclamp) {
 		this.ampclamp = ampclamp;
 	}

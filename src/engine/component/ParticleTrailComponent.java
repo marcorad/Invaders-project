@@ -8,6 +8,10 @@ import engine.entity.SpawnFactory;
 import util.Oscillator;
 import util.Util;
 
+/**Specifies a component that will allow an entity to have a particle trail behind it based off certain parameters.
+ * @author Marco
+ *
+ */
 public class ParticleTrailComponent extends Component implements UpdateableComponent {
 
 	private float minSpeed;
@@ -20,6 +24,15 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 	private float scaleDamp = .02f;
 	
 
+	/**
+	 * @param entity The active entity
+	 * @param minSpeed The minimum speed an entity must have before the particle trail can take effect
+	 * @param speeddamp The damping factor applied to the speed of the particles
+	 * @param freq The rate at which particles are spawned
+	 * @param mainColor The main colour of the particles
+	 * @param numparticles The number of particles spawned at a time
+	 * @param lifetime The average lifetime of a particle
+	 */
 	public ParticleTrailComponent(Entity entity, float minSpeed, float speeddamp, float freq, Color mainColor, int numparticles, float lifetime) {
 		super(entity);
 		this.minSpeed = minSpeed;
@@ -62,87 +75,128 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 
 	
 
+	/**Get how the factor that determines how the speed of the particle affects the scale of the particle
+	 * @return The scale damping factor
+	 */
 	public float getScaleDamp() {
 		return scaleDamp;
 	}
 
 
-
+	/**
+	 *Set the factor that determines how the speed of the particle affects the scale of the particle
+	 */
 	public void setScaleDamp(float scaleDamp) {
 		this.scaleDamp = scaleDamp;
 	}
 
 
-
+	/**Get the factor that randomises the velocity of a particle
+	 * @return The random velocity factor
+	 */
 	public float getRandomVel() {
 		return randomVel;
 	}
 
-
-
-
+	/***Set the factor that randomises the velocity of a particle
+	 * @param randomVel The random velocity factor
+	 */
 	public void setRandomVel(float randomVel) {
 		this.randomVel = randomVel;
 	}
 
 
-
-
+	/**Get the minimum speed required before the trail takes effect
+	 * @return The minimum speed
+	 */
 	public float getMinSpeed() {
 		return minSpeed;
 	}
 
 
+	/**Set the minimum speed required before the trail takes effect
+	 * @param minSpeed The minimum speed
+	 */
 	public void setMinSpeed(float minSpeed) {
 		this.minSpeed = minSpeed;
 	}
 
 
+	/**Get the damping factor that determines the speed of the particle relative to the attached entity.
+	 * @return The speed damping factor
+	 */
 	public float getSpeedDamp() {
 		return speedDamp;
 	}
 
 
+	/**Set the damping factor that determines the speed of the particle relative to the attached entity
+	 * @param speedDamp The speed damping factor 
+	 */
 	public void setSpeedDamp(float speedDamp) {
 		this.speedDamp = speedDamp;
 	}
 
 
+	/**Get the main colour of the trail
+	 * @return The main colour
+	 */
 	public Color getMainColor() {
 		return mainColor;
 	}
 
 
+	/**Set the main color of the trail
+	 * @param mainColor The main colour
+	 */
 	public void setMainColor(Color mainColor) {
 		this.mainColor = mainColor;
 	}
 
 
+	/**Get the number of particles spawned per call
+	 * @return The number of particles
+	 */
 	public int getNumParticles() {
 		return numParticles;
 	}
 
 
+	/**	Set the number of particles spawned per call
+	 * @param numParticles The number of particles
+	 */
 	public void setNumParticles(int numParticles) {
 		this.numParticles = numParticles;
 	}
 
 
+	/**Get the average lifetime of a particle
+	 * @return The average lifetime 
+	 */
 	public float getLifetime() {
 		return lifetime;
 	}
 
 
+	/**Set the average lifetime of a particle
+	 * @param lifetime The average lifetime
+	 */
 	public void setLifetime(float lifetime) {
 		this.lifetime = lifetime;
 	}
 
 
+	/**Get the factor that determines how the colour of a particle may vary
+	 * @return The colour vary factor
+	 */
 	public int getColorVary() {
 		return colorVary;
 	}
 
 
+	/**Set the factor that determines how the colour of a particle may vary
+	 * @param colorVary The colour vary factor
+	 */
 	public void setColorVary(int colorVary) {
 		this.colorVary = colorVary;
 	}

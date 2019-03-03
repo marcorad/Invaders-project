@@ -6,7 +6,16 @@ package engine.component;
  *
  */
 public interface MovementNotifier {
+	/**
+	 * Called when the entity updates position
+	 */
 	public void onPositionUpdate();
+	/**
+	 * Called when the entity updates rotation
+	 */
 	public void onRotationUpdate();
+	/**
+	 * Called when the entity updates scale
+	 */
 	public void onScaleUpdate();
 }

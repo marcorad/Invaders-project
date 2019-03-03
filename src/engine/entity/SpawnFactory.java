@@ -10,9 +10,22 @@ import util.Oscillator;
 import util.Oscillator.OscType;
 import util.Util;
 
+/**A class that contains all the code necessary to spawn specific entities with specific behavioural components.
+ * @author Marco
+ *
+ */
 public class SpawnFactory {
 	
 
+	/**Spawn a particle that is a regular n-gon
+	 * @param pos The position in the world
+	 * @param vel The velocity
+	 * @param angularvel The rotation rate
+	 * @param scale The scale 
+	 * @param color The colour
+	 * @param lifetime The lifetime of the particle
+	 * @param n The number of points in the particle
+	 */
 	public static void spawnParticle(Vector2f pos, Vector2f vel, float angularvel, float scale, Color color, float lifetime, int n){
 		Entity p = new Entity(pos);
 		p.setScale(new Vector2f(scale, scale));		
@@ -28,6 +41,10 @@ public class SpawnFactory {
 		c.addComponent(shape);			
 	}
 	
+	/**Spawn a projectile used for testing
+	 * @param pos The world position
+	 * @param vel The velocity
+	 */
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
 		Entity p = new Entity(pos);
 		p.setDamage(1f);
@@ -50,6 +67,9 @@ public class SpawnFactory {
 		spawnGunPowder(pos, vel, 3f, Color.BLACK);
 	}
 	
+	/**Target practise and testing
+	 * @param pos The position in the world
+	 */
 	public static void spawnTestEnemy(Vector2f pos){
 		Entity enem = new Entity(pos);
 		enem.setScale(new Vector2f(.1f,.1f));
@@ -65,10 +85,16 @@ public class SpawnFactory {
 		trail.setRandomVel(.4f);
 	}
 	
+	/** Spawn a gunpowder effect used when shooting and projectile collisions
+	 * @param pos The position in the world
+	 * @param generalDir The general direction of the gunpowder
+	 * @param magnitude The magnitude of the explosion
+	 * @param color The main colour of the explosion
+	 */
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*5f);
 		for(int i = 0; i < amount; i++){
-			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2f), Util.randInRange(.03f*magnitude, .1f*magnitude)), Util.randInRange(-300f, 300f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
+			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.5f), Util.randInRange(.02f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
 		}
 	}
 }

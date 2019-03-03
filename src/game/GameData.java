@@ -69,6 +69,10 @@ public class GameData {
 		return tex;
 	}
 
+	/**Load a sound with a name from the sound folder
+	 * @param name The name without the extension. Expects a .wav file.
+	 * @return The object buffering the sound data
+	 */
 	public static SoundBuffer loadSound(String name){
 		SoundBuffer buf = new SoundBuffer();
 		try {

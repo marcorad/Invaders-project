@@ -8,22 +8,37 @@ import java.util.concurrent.Executors;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
 
+/**Manages the entities in the game
+ * @author Marco
+ *
+ */
 public class EntityManager {
 
 
 	private final Vector<Entity> entities;
 	private final Vector<Entity> add = new Vector<>(); //to avoid modifying entities while iterating
+	/**
+	 * 
+	 * Construct an entity manager. No parameters needed.
+	 */
 	public EntityManager() {
 		super();
 		entities = new Vector<>();
 	}
 
+	/**
+	 * Draw all the entities in the list.
+	 */
 	public void drawEntities(){
 		for(Entity e : entities){
 			e.draw();
 		}
 	}
 
+	/**Update all the entities in the list
+	 * @param dt The time elapsed since the previous frame
+	 * @param t The total time elapsed in the game
+	 */
 	public void update(float dt, float t){
 		
 		for(Entity e : add){
@@ -60,7 +75,6 @@ public class EntityManager {
 	public void addEntity(Entity e){		
 			add.addElement(e);		
 	}
-
 
 
 }

@@ -8,12 +8,19 @@ import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
 import util.Util;
 
+/**A health bar that appears above the entity, indicating the amount of health it has.
+ * @author Marco
+ *
+ */
 public class HealthBarComponent extends DisplayComponent {
 
 	private float width = 1.9f, height = 0.2f;
 	private RectangleShape frame;
 	private RectangleShape bar;
 	
+	/**
+	 * @param entity The active entity
+	 */
 	public HealthBarComponent(Entity entity) {
 		super(entity);
 		frame = new RectangleShape(new Vector2f(width,height));

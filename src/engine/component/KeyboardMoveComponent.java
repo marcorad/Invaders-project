@@ -180,12 +180,24 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 		this.upKey = upKey;
 	}
 
+	/**
+	 * Called when the special 1 key is pressed
+	 */
 	public abstract void special1Pressed();
-
+	
+	/**
+	 * Called when the special 1 key is released
+	 */
 	public abstract void special1Released();
 
+	/**
+	 * Called when the special 2 key is pressed
+	 */
 	public abstract void special2Pressed();
 
+	/**
+	 * Called when the special 2 key is released
+	 */
 	public abstract void special2Released(); 	
 
 }

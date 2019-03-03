@@ -30,18 +30,13 @@ public class GraphicsHandler {
 	private Vector<Drawable> windowdraws; //stored objects that need to be drawn on the window which is the topmost layer without a camera transform
 	
 	public GraphicsHandler(RenderWindow window){
-		this.window = window;
-		
-		
-		windowdraws = new Vector<>();
-		
-		
+		this.window = window;		
+		windowdraws = new Vector<>();		
 		rt = new RenderTexture();
 		Vector2i wsize = window.getSize();
 		try {
 			rt.create(wsize.x, wsize.y);
 		} catch (TextureCreationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();			
 		}
 		screenspr = new Sprite(rt.getTexture());
@@ -75,10 +70,10 @@ public class GraphicsHandler {
 	}
 	
 	
-	/**draws to the window which is drawn on top of the render texture
-	 * this does NOT use the camera transformation when drawing
-	 * space is normalised: 0,0 in the centre of the screen and +- 1 at edges
-	 * the positive y axis upwards and positive x is right
+	/**Draws to the window which is drawn on top of the render texture.
+	 * This does NOT use the camera transformation when drawing.
+	 * Space is normalised: (0,0) in the centre of the screen and +- 1 at edges
+	 * The positive y axis upwards and positive x is right.
 	 * @param d object to draw
 	 */
 	
@@ -106,7 +101,7 @@ public class GraphicsHandler {
 	
 	
 	/**
-	 * clears the screen
+	 * Clears the screen
 	 */
 	public void clear(){
 		//not necessary to clear the window since a whole sprite is drawn over it first
@@ -121,7 +116,7 @@ public class GraphicsHandler {
 	
 	
 	/**
-	 * displays the screen contents
+	 * Displays the screen contents
 	 */
 	public void display(){
 		rt.display();
