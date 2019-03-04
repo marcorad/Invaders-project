@@ -21,13 +21,12 @@ public class Util {
 	 */
 	public static final float PI = 3.14159265359f;
 
-	/**Calculates an efficient and very good approximation of cosine based on the Taylor series expansion of cosine.
+	/**Convenience method to save you from casting.
 	 * @param t Angle in radians
-	 * @return A very good approximation of the cosine function
+	 * @return The cosine of t
 	 */
-	public static float lazyCos(float t){
-		t %= (PI+0.000001f); //can only approximate well in the range -PI to PI
-		return 1f - t*t/2f + t*t*t*t/24f - t*t*t*t*t*t / 720f + t*t*t*t*t*t*t*t/40320f - t*t*t*t*t*t*t*t*t*t/3628800f;
+	public static float cosf(float t){
+		return (float) Math.cos(t);
 	}
 
 	/**Gets the sign of a number as either +1 or -1
@@ -46,13 +45,12 @@ public class Util {
 		return toDegrees((float)Math.atan2(v.y, v.x));
 	}
 
-	/**Calculates an efficient approximation of sine based on the Taylor series expansion of sine.
+	/**Convenience method to save you from casting.
 	 * @param t Angle in radians
-	 * @return A very good approximation of the sine function
+	 * @return The sine of t
 	 */
-	public static float lazySin(float t){
-		t %= (PI+0.000001f); //can only approximate well in the range -PI to PI
-		return t - t*t*t/6f + t*t*t*t*t/120f - t*t*t*t*t*t*t/5040f + t*t*t*t*t*t*t*t*t / 362880f;
+	public static float sinf(float t){
+		return (float) Math.sin(t);
 	}
 
 	/**Get a random colour
@@ -81,7 +79,7 @@ public class Util {
 	 */
 	public static Vector2f randomUnitVector(float angleMin, float angleMax){
 		float theta = randInRange(angleMin, angleMax);
-		return new Vector2f(lazyCos(theta), lazySin(theta));
+		return new Vector2f(cosf(theta), sinf(theta));
 	}
 	
 	/**Randomly vary a vector with a certain maximum angle
@@ -139,7 +137,7 @@ public class Util {
 		Vector2f pts[] = new Vector2f[n];
 		float angle = -PI; //start at negative pi to make the lazy cos and sin more accurate
 		for(int i = 0; i < n; i++){
-			pts[i] = new Vector2f(lazyCos(angle), lazySin(angle));
+			pts[i] = new Vector2f(cosf(angle), sinf(angle));
 			angle += 2*PI/n;
 		}
 		return pts;

@@ -86,9 +86,8 @@ public class Game implements MouseListener {
 		eventhandler.attachMouseListener(this);
 		new Player(new Vector2f(0f,-.8f));
 		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
-
 		
-
+				
 			//Main loop
 			while(window.isOpen()) {
 				loop_time.restart();

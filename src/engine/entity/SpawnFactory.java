@@ -47,23 +47,24 @@ public class SpawnFactory {
 	 */
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
 		Entity p = new Entity(pos);
-		p.setDamage(1f);
+		p.setDamage(.5f);
 		p.setScale(new Vector2f(.05f,.05f));
 		Util.pointEntityInDirection(p, vel);
 		Vector2f[] pts = new Vector2f[]{new Vector2f(0f,1f),new Vector2f(.5f,-1f),new Vector2f(-.5f,-1f)};
 		new CollisionComponent(p, pts, CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
-		new ConvexPolygonComponent(p, pts , Color.BLACK, DisplayType.FILL);
+		new ConvexPolygonComponent(p, pts , Color.CYAN, DisplayType.FILL);
 		new SimpleMovementComponent(p, vel, 0);
-		new SelfDestructComponent(p, 3f);
-		ParticleTrailComponent trail = new ParticleTrailComponent(p, 1f, .1f, 30f, Color.BLACK, 2, .25f);
-		new OnCollisionComponent(p){
-			@Override
-			public void notifyAction() {
-				entity.setHealth(0f);
-			}			
-		};
+		new SelfDestructComponent(p, 2f);
+		ParticleTrailComponent trail = new ParticleTrailComponent(p, 1f, .1f, 40f, Color.CYAN, 2, .3f);
+//		new OnCollisionComponent(p){
+//			@Override
+//			public void notifyAction() {
+//				entity.setHealth(0f);
+//			}			
+//		};
 		trail.setScaleDamp(.03f);
-		trail.setRandomVel(.8f);
+		trail.setRandomVel(.5f);
+		trail.setSpeedDamp(.1f);
 		spawnGunPowder(pos, vel, 3f, Color.BLACK);
 	}
 	
@@ -94,7 +95,7 @@ public class SpawnFactory {
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*5f);
 		for(int i = 0; i < amount; i++){
-			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.5f), Util.randInRange(.02f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
+			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.7f), Util.randInRange(.02f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
 		}
 	}
 }
