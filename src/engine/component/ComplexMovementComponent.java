@@ -93,6 +93,10 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	public void setAngularAccel(float alpha) {
 		this.angularAccel = alpha;
 	}
+	
+	public void addToAccel(Vector2f a){
+		accel = Vector2f.add(accel, a);
+	}
 
 
 	@Override

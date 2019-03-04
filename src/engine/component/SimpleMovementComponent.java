@@ -42,6 +42,22 @@ public class SimpleMovementComponent extends MovementComponent {
 	public void addToVelocity(Vector2f dv){
 		setVelocity(Vector2f.add(velocity, dv));
 	}
+	
+	private Vector2f mom_vel= Vector2f.ZERO;
+	private float mom_vel_elapsed_t,mom_vel_t;
+	private boolean mom_vel_active = false;
+	
+	
+	public void addMomentaryVelocity(Vector2f mvel, float t){
+		addToVelocity(Vector2f.mul(mom_vel, -1f));
+		mom_vel = new Vector2f(
+				Util.clamp(mvel.x, -velocityclamp.x, velocityclamp.x), Util.clamp(mvel.y, -velocityclamp.y, velocityclamp.y)
+				);
+		mom_vel_t = t;
+		mom_vel_elapsed_t = 0f;
+		mom_vel_active = true;
+		addToVelocity(mom_vel);
+	}
 
 	/**
 	 * @return Angular velocity
@@ -82,6 +98,16 @@ public class SimpleMovementComponent extends MovementComponent {
 	
 	@Override
 	public void update(float dt, float t) {
+		
+		if(mom_vel_active){
+			mom_vel_elapsed_t += dt;
+			if(mom_vel_elapsed_t>= mom_vel_t){
+				addToVelocity(Vector2f.mul(mom_vel, -1f));
+				mom_vel_active = false;
+				mom_vel = Vector2f.ZERO;
+			}
+		}
+		
 		entity.addToPosition(Vector2f.mul(velocity, dt));	
 		entity.addToRotation(omega * dt);
 	}

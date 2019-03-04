@@ -116,9 +116,10 @@ public class Entity{
 	}
 
 	/**
-	 * Set this entity to be removed from the entity list
+	 * Set the entity's health to zero, causing it to be removed
 	 */
-	public void remove(){
+	public void kill(){
+		health = 0f;
 		remove = true;
 	}
 
@@ -342,7 +343,7 @@ public class Entity{
 		}	
 
 		collidedThisFrame = false;
-		if(this.health <= 0f) remove();
+		if(this.health <= 0f) remove = true;
 	}
 
 	public boolean collidedThisFrame(){

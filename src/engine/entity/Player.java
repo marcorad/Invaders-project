@@ -89,9 +89,11 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
-				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));				
-				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir, entity)), Vector2f.mul(dir, 3f));				
-				System.out.println("LEFT MOUSE PRESS: " + worldpos);
+//				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));				
+//				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir, entity)), Vector2f.mul(dir, 3f));				
+//				System.out.println("LEFT MOUSE PRESS: " + worldpos);
+				SpawnFactory.spawnBuckShot((Player)entity, 4f, 5f, .1f, 6);
+				movement.addMomentaryVelocity(Vector2f.mul(Util.facing(entity), -0.8f), .1f);
 			}
 
 			@Override
@@ -135,6 +137,6 @@ public class Player extends Entity {
 				uc.update(dt, t);
 		}
 		updateNotifierComponents();
-		if(this.health <= 0f) remove();
+		if(this.health <= 0f) kill();
 	}
 }

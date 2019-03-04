@@ -49,7 +49,6 @@ public abstract class ShapeComponent extends ColorComponent {
 			shape.setFillColor(color);
 			break;
 		case WIREFRAME:
-			shape.setOutlineThickness(.05f);
 			shape.setOutlineColor(color);
 			shape.setFillColor(Color.TRANSPARENT);
 			break;
@@ -107,6 +106,7 @@ public abstract class ShapeComponent extends ColorComponent {
 
 	@Override
 	public void onScaleUpdate() {
+		shape.setOutlineThickness(0.01f/Util.mag(entity.getScale()));
 		shape.setScale(entity.getScale());		
 	}
 

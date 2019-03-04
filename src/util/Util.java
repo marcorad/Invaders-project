@@ -44,6 +44,10 @@ public class Util {
 	public static float vectorAngle(Vector2f v){
 		return toDegrees((float)Math.atan2(v.y, v.x));
 	}
+	
+	public static Vector2f facing(Entity e){
+		return unitVectorWithRotation(e.getTheta()+90f);
+	}
 
 	/**Convenience method to save you from casting.
 	 * @param t Angle in radians
@@ -149,7 +153,7 @@ public class Util {
 	 * @return A unit vector with the specified rotation
 	 */
 	public static Vector2f unitVectorWithRotation(float theta){
-		return new Vector2f((float)Math.cos(theta),(float)Math.sin(theta));
+		return new Vector2f(cosf(toRad(theta)),sinf(toRad(theta)));
 	}
 
 	/**Get a random float in the range [low, high)

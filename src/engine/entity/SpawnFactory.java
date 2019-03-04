@@ -98,4 +98,24 @@ public class SpawnFactory {
 			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.7f), Util.randInRange(.02f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
 		}
 	}
+	
+	public static void spawnBuckShot(Player p, float vel, float degreespread, float damage, int amount){
+		for(int i = 0; i < amount; i++){
+		Vector2f unitdir = Util.facing(p);
+		Entity shot = new Entity(Vector2f.add(Util.approxParticleOffset(unitdir, p), p.position));
+		shot.setDamage(damage);
+		new SimpleMovementComponent(shot, Vector2f.mul(Util.varyVector(unitdir,  Util.toRad(degreespread)), vel), damage);
+		CollisionComponent cc = new CollisionComponent(shot, Util.REGULAR_POLYGONS[0], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
+		new OnCollisionComponent(shot){
+
+			@Override
+			public void notifyAction() {
+				entity.kill();			
+			}
+			
+		};
+		cc.setHitboxDraw(true);
+		shot.setScale(new Vector2f(.015f,.015f));
+		}		
+	}
 }
