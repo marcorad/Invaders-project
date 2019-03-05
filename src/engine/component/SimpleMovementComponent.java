@@ -15,7 +15,7 @@ public class SimpleMovementComponent extends MovementComponent {
   
 	protected Vector2f velocity; 
 	protected float omega; //rotational speed
-	protected Vector2f velocityclamp = new Vector2f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY); // the magnitude of velocity components is clamped to this vector
+	protected float speedclamp = Float.POSITIVE_INFINITY; // the magnitude of velocity components is clamped to this vector
 	
 	/**
 	 * @param entity The active entity
@@ -43,21 +43,23 @@ public class SimpleMovementComponent extends MovementComponent {
 		setVelocity(Vector2f.add(velocity, dv));
 	}
 	
-	private Vector2f mom_vel= Vector2f.ZERO;
-	private float mom_vel_elapsed_t,mom_vel_t;
-	private boolean mom_vel_active = false;
+	private Vector2f knockback_vel= Vector2f.ZERO;
+	private float knockback_elapsed_t,knockback_t;
+	private boolean knockback_active = false;
 	
 	
-	public void addMomentaryVelocity(Vector2f mvel, float t){
-		addToVelocity(Vector2f.mul(mom_vel, -1f));
-		mom_vel = new Vector2f(
-				Util.clamp(mvel.x, -velocityclamp.x, velocityclamp.x), Util.clamp(mvel.y, -velocityclamp.y, velocityclamp.y)
-				);
-		mom_vel_t = t;
-		mom_vel_elapsed_t = 0f;
-		mom_vel_active = true;
-		addToVelocity(mom_vel);
+	/**Apply knockback by momentarily adding to the velocity for a specific time period. Note that this is independent of the speed clamping.
+	 * @param kb The knockback velocity
+	 * @param t The time to apply the velocity
+	 */
+	public void applyKnockback(Vector2f kb, float t){
+		knockback_vel = kb;
+		knockback_t = t;
+		knockback_elapsed_t = 0f;
+		knockback_active = true;
 	}
+	
+	
 
 	/**
 	 * @return Angular velocity
@@ -84,27 +86,32 @@ public class SimpleMovementComponent extends MovementComponent {
 	 * @param velocity Velocity
 	 */
 	public void setVelocity(Vector2f velocity) {
-		this.velocity = new Vector2f(
-				Util.clamp(velocity.x, -velocityclamp.x, velocityclamp.x), Util.clamp(velocity.y, -velocityclamp.y, velocityclamp.y)
-				);
+		this.velocity = velocity;
+		clampVel();
 	}
 	
 	/**Clamps the magnitude of velocity components to these max values. USE ONLY POSITIVE VALUES.
 	 * @param clamp The clamp consisting of x and y components
 	 */
-	public void setVelocityClamp(Vector2f clamp){
-		velocityclamp = clamp;
+	public void setSpeedClamp(float clamp){
+		speedclamp = clamp;
+	}
+	
+	private void clampVel(){
+		if(Util.magSquared(velocity) > speedclamp*speedclamp){
+			velocity = Util.getVectorFromPolar(speedclamp, Util.vectorAngle(velocity));
+		}
 	}
 	
 	@Override
 	public void update(float dt, float t) {
 		
-		if(mom_vel_active){
-			mom_vel_elapsed_t += dt;
-			if(mom_vel_elapsed_t>= mom_vel_t){
-				addToVelocity(Vector2f.mul(mom_vel, -1f));
-				mom_vel_active = false;
-				mom_vel = Vector2f.ZERO;
+		if(knockback_active){
+			knockback_elapsed_t += dt;
+			if(knockback_elapsed_t>= knockback_t){
+				knockback_active = false;
+			} else {
+				entity.addToPosition(Vector2f.mul(knockback_vel, dt));
 			}
 		}
 		

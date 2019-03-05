@@ -45,6 +45,10 @@ public class Util {
 		return toDegrees((float)Math.atan2(v.y, v.x));
 	}
 	
+	/**Get the unit vector pointing in the direction the entity is facing
+	 * @param e The entity
+	 * @return The vector pointing in the facing direction
+	 */
 	public static Vector2f facing(Entity e){
 		return unitVectorWithRotation(e.getTheta()+90f);
 	}
@@ -229,7 +233,7 @@ public class Util {
 	 * @return The vector in Cartesian coordinates
 	 */
 	public static Vector2f getVectorFromPolar(float r, float theta){
-		return Vector2f.mul(new Vector2f((float)Math.cos(toRad(theta)) , (float)Math.sin(toRad(theta))),r);
+		return Vector2f.mul(unitVectorWithRotation(theta),r);
 	}
 
 	/**Convert a vector to a unit vector
@@ -260,10 +264,28 @@ public class Util {
 	}
 
 
-	public static Vector2f rotateVector(Vector2f target, Vector2f origin, float angle){
-		Vector2f v = Vector2f.sub(target, origin);
-		return new Vector2f(v.x *(float) Math.cos(toRad(angle)) - v.y* (float)Math.sin(toRad(angle)),
-				v.y *(float) Math.cos(toRad(angle)) + v.x*(float) Math.sin(toRad(angle)) );
+	/**Rotate a vector about a certain point
+	 * @param target The vector to rotate
+	 * @param origin The origin of rotation
+	 * @param degrees The angle in degrees
+	 * @return The rotated vector
+	 */
+	public static Vector2f rotateVector(Vector2f target, Vector2f origin, float degrees){
+		Transform t = Transform.IDENTITY;
+		t = Transform.rotate(t, degrees, origin);
+		return t.transformPoint(target);
+	}
+	
+	
+	/**Rotate a vector about the origin
+	 * @param target The vector to rotate
+	 * @param degrees The angle in degrees
+	 * @return The rotated vector
+	 */
+	public static Vector2f rotateVector(Vector2f target, float degrees){
+		Transform t = Transform.IDENTITY;
+		t = Transform.rotate(t, degrees);
+		return t.transformPoint(target);
 	}
 
 	/**Scales a vector about a point.
@@ -292,6 +314,8 @@ public class Util {
 		}
 		return pts;
 	}
+	
+	
 	public static Vector2f[] getTransformedPoints(Shape s){
 		Vector2f pts[] = new Vector2f[s.getPointCount()];
 		Transform t = s.getTransform();

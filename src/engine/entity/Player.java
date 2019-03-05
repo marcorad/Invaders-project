@@ -34,7 +34,7 @@ public class Player extends Entity {
 	private MouseMoveControlComponent mouse;
 	private float accelmag = 4.5f;
 	
-	private Vector2f maxvel = new Vector2f(1f,1f);
+	private float maxvel = 1f;
 
 	/**Construct a player at a certain position
 	 * @param position
@@ -47,7 +47,7 @@ public class Player extends Entity {
 	
 	private void create(){
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
-		movement.setVelocityClamp(maxvel);
+		movement.setSpeedClamp(maxvel);
 		this.setMinPosition(new Vector2f(-.88f, -.88f));
 		this.setMaxPosition(new Vector2f(.88f, -.6f));
 		
@@ -89,11 +89,8 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
-//				Vector2f dir = Util.normalise(Vector2f.sub( currentmouse, position));				
-//				SpawnFactory.spawnTestProjectile(Vector2f.add(entity.getPosition(),Util.approxParticleOffset(dir, entity)), Vector2f.mul(dir, 3f));				
-//				System.out.println("LEFT MOUSE PRESS: " + worldpos);
 				SpawnFactory.spawnBuckShot((Player)entity, 4f, 5f, .1f, 6);
-				movement.addMomentaryVelocity(Vector2f.mul(Util.facing(entity), -0.8f), .1f);
+				movement.applyKnockback(Vector2f.mul(Util.facing(entity), -1.1f), .08f);
 			}
 
 			@Override
