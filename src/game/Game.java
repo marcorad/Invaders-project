@@ -86,6 +86,12 @@ public class Game implements MouseListener {
 		eventhandler.attachMouseListener(this);
 		new Player(new Vector2f(0f,-.8f));
 		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
+		SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
+		graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
 		
 				
 			//Main loop

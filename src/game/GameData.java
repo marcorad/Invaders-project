@@ -26,7 +26,12 @@ public class GameData {
 	public static final SoundBuffer SOUND_LAZELIEN = loadSound("lazelien");
 	public static final SoundBuffer SOUND_PEEG = loadSound("peeg"); 
 	public static final SoundBuffer SOUND_BASS = loadSound("bass");
-
+	
+	//images
+	public static final Texture TEX_GAME_BACKGROUND = loadTexture("gamebg");
+	public static final Texture TEX_PLAYER = loadTexture("player");
+	public static final Texture TEX_BUCKSHOT = loadTexture("buckshot");
+	public static final Texture TEX_EXAMPLE_ENEMY = loadTexture("example enemy");
 
 	/**Load a font from the font folder.
 	 * @param name The name without the extension. Expects a .ttf file.

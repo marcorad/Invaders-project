@@ -15,7 +15,10 @@ public class Oscillator {
 	 *
 	 */
 	public enum OscType{
-		SINE, SQUARE, SAW, TRIANGLE
+		SINE, //0 at t=0
+		SQUARE, //-1 at t=0
+		SAW, //-1 at t=0
+		TRIANGLE //-1 at t=0
 	}	
 
 

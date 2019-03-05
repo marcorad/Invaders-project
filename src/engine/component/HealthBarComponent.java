@@ -42,7 +42,7 @@ public class HealthBarComponent extends DisplayComponent {
 		float factor = (entity.getHealth()/entity.getMaxHealth());
 		Vector2f size = new Vector2f(width *  factor, height);		
 		bar.setSize(size);
-		bar.setFillColor(Util.lerpColor(factor, new Color(255,0,0,190), new Color(0,255,0,190)));
+		bar.setFillColor(Util.lerpColor(factor, new Color(255,0,0,210), new Color(0,255,0,210)));
 	    graphics.drawToRenderTexture(bar);
 		graphics.drawToRenderTexture(frame);
 	}

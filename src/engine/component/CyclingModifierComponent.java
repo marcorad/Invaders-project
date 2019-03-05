@@ -9,45 +9,47 @@ import engine.entity.Entity;
  *
  */
 public class CyclingModifierComponent extends ModifierComponent {
-	private final Vector<Vector<Component>> comps = new Vector<>();
+	private final Vector<Component[]> comps = new Vector<>();
 	private final Vector<Float> times = new Vector<>();
 	int index = 0;
 
 	/**
 	 * @param entity The active entity
 	 */
-	protected CyclingModifierComponent(Entity entity) {
+	public CyclingModifierComponent(Entity entity) {
 		super(entity);
 	}
 
 	@Override
 	protected void modify() {
 		float t = times.get(index);
-		if(this.elapsedtime >= t){
-			elapsedtime -= t;			
-			//deactivate current list
-			if(comps.get(index) != null)
-				for(Component c : comps.get(index)){
-					c.setEnabled(false);
-				}			
-			//increment index
-			index = (index+1)%comps.size();
-			//activate next list
-			if(comps.get(index) != null)
-				for(Component c : comps.get(index)){
-					c.setEnabled(true);
-				}
+		if(t >= 0f){
+			if(this.elapsedtime >= t){
+				elapsedtime -= t;			
+				//deactivate current list
+				if(comps.get(index) != null)
+					for(Component c : comps.get(index)){
+						c.setEnabled(false);
+					}			
+				//increment index
+				index = (index+1)%comps.size();
+				//activate next list
+				if(comps.get(index) != null)
+					for(Component c : comps.get(index)){
+						c.setEnabled(true);
+					}
+			}
 		}
 	}
-	
+
 	/**Adds a list of components to the cycle, with their time on. It disables components automatically, unless they are the first components in the cycle. Then it is up to the user to specify.
-	 * Adding a null list will just add a time delay.
+	 * Adding a null array will just add a time delay.
 	 * Using a negative time will disable the cycling and only allow for that list of components to be enabled permanently.
-	 * A negative time and null list disables all the components permanently and stops the cycling once it reaches that stage. This allows for a sequence of non-repeatable events.
-	 * @param c The components
+	 * A negative time and null array disables all the components permanently and stops the cycling once it reaches that stage. This allows for a sequence of non-repeatable events.
 	 * @param t The time on
+	 * @param cl The Components 
 	 */
-	protected void addToCycle(Vector<Component> cl, float t){
+	public void addToCycle(float t, Component... cl){
 		if(comps.size() != 0 && cl != null)
 			for(Component c : cl) c.setEnabled(false);
 		comps.add(cl);

@@ -12,6 +12,7 @@ import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTexture;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.Sprite;
+import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.graphics.Transform;
 import org.jsfml.graphics.Vertex;
@@ -28,6 +29,7 @@ public class GraphicsHandler {
 	private Sprite screenspr; //adding a sprite to draw to before the screen allows for the use of shaders on the sprite
 	public Transform camera, normalisedspace;
 	private Vector<Drawable> windowdraws; //stored objects that need to be drawn on the window which is the topmost layer without a camera transform
+	private Vector2f worldscale;
 	
 	public GraphicsHandler(RenderWindow window){
 		this.window = window;		
@@ -42,9 +44,9 @@ public class GraphicsHandler {
 		screenspr = new Sprite(rt.getTexture());
 		
 		//create the scaling 
-		Vector2f scale = new Vector2f(.5f*(float)wsize.x,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen
+		worldscale = new Vector2f(.5f*(float)wsize.x,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen
 		
-		normalisedspace = Transform.scale(Transform.translate(Transform.IDENTITY, wsize.x/2.0f, wsize.y/2.0f), scale);
+		normalisedspace = Transform.scale(Transform.translate(Transform.IDENTITY, wsize.x/2.0f, wsize.y/2.0f), worldscale);
 		
 		camera = new Transform(normalisedspace);
 		
@@ -99,6 +101,14 @@ public class GraphicsHandler {
 		return camera.getInverse().transformPoint(Util.fromIntToFloatVector(v));
 	}
 	
+	private Sprite BG;
+	public void setBackground(Texture t){
+		BG = new Sprite(t);
+		Vector2f size = Util.fromIntToFloatVector(t.getSize());
+		BG.setOrigin(Vector2f.mul(size, 0.5f));
+		BG.setScale(new Vector2f(2.f/size.x,-2.f/size.y));
+	}
+	
 	
 	/**
 	 * Clears the screen
@@ -107,11 +117,12 @@ public class GraphicsHandler {
 		//not necessary to clear the window since a whole sprite is drawn over it first
 		//clear rt		
 		//rt.clear() does not seem to work, so manually draw a rect
-		Vector2f s =new Vector2f(2.0f, 2.0f);
-		RectangleShape  rect = new RectangleShape(s);
-		rect.setOrigin(Vector2f.mul(s, 0.5f));
-		rect.setFillColor(Color.WHITE);
-		drawToRenderTexture(rect);
+//		Vector2f s =new Vector2f(2.0f, 2.0f);
+//		RectangleShape  rect = new RectangleShape(s);
+//		rect.setOrigin(Vector2f.mul(s, 0.5f));
+//		rect.setFillColor(Color.WHITE);
+		
+		drawToRenderTexture(BG);
 	}
 	
 	

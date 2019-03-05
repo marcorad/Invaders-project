@@ -108,6 +108,8 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 
 		name = "test";
 		loadSprite();
+		
+		graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
 
 
 		//Main loop
@@ -150,7 +152,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 			//stop the previous sprite from being drawn, a lazy solution since entities are not meant to have components removed
 			if (spritecomp != null)spritecomp.toggleEnable();
 
-			Texture tex = GameData.loadTexture("name");		
+			Texture tex = GameData.loadTexture(name);		
 			if(tex == null) {
 				error = true;
 			} 
@@ -229,9 +231,9 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		Vector2f v = Util.fromIntToFloatVector(mbe.position);
 		Vector2f ws = graphics.toWorldSpace(v);
 		Vector2f es = sprite.toEntitySpace(ws);
-		//		System.out.println("Screen space: " + v);		
-		//		System.out.println("World space: " + ws);	
-		//		System.out.println("Sprite space: " + es);	
+		System.out.println("Screen space: " + v);		
+		System.out.println("World space: " + ws);	
+		System.out.println("Sprite space: " + es);	
 
 		pts.add(es);
 		updatePoints();

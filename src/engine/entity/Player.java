@@ -16,6 +16,7 @@ import engine.component.MovementComponent;
 import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
 import engine.component.UpdateableComponent;
+import game.GameData;
 import util.Util;
 
 /**A class that specifically describes a player entity, since its behaviour is complex.
@@ -48,8 +49,8 @@ public class Player extends Entity {
 	private void create(){
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
 		movement.setSpeedClamp(maxvel);
-		this.setMinPosition(new Vector2f(-.88f, -.88f));
-		this.setMaxPosition(new Vector2f(.88f, -.6f));
+		this.setMinPosition(new Vector2f(-.75f, -.81f));
+		this.setMaxPosition(new Vector2f(.64f, -.5f));
 		
 		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
 			@Override
@@ -78,8 +79,8 @@ public class Player extends Entity {
 			
 		};	
 		
-		hitbox = new ConvexPolygonComponent(this, new Vector2f[]{new Vector2f(0f,.9f), new Vector2f(.8f,.65f), new Vector2f(.8f,-1f), new Vector2f(-.8f,-1f), new Vector2f(-.8f,.65f)});
-		hitbox.setColor(Color.RED);
+		//hitbox = new ConvexPolygonComponent(this, new Vector2f[]{new Vector2f(0f,.9f), new Vector2f(.8f,.65f), new Vector2f(.8f,-1f), new Vector2f(-.8f,-1f), new Vector2f(-.8f,.65f)});
+		//hitbox.setColor(Color.RED);
 		
 		mouse = new MouseMoveControlComponent(this){
 			@Override
@@ -89,7 +90,7 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
-				SpawnFactory.spawnBuckShot((Player)entity, 4f, 5f, .1f, 6);
+				SpawnFactory.spawnBuckShot((Player)entity, 4f, 8f, .1f, 6);
 				movement.applyKnockback(Vector2f.mul(Util.facing(entity), -1.1f), .08f);
 			}
 
@@ -112,6 +113,8 @@ public class Player extends Entity {
 		};
 		
 		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, Color.RED, 2, .5f);
+		sprite = new SpriteComponent(this, 128, 0f, GameData.TEX_PLAYER);
+		
 		trail.setColorVary(255);
 		trail.setRandomVel(.35f);
 	

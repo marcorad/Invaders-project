@@ -1,11 +1,14 @@
 package engine.entity;
 
+import java.util.Vector;
+
 import org.jsfml.graphics.Color;
 import org.jsfml.system.Vector2f;
 
 import engine.component.*;
 import engine.graphics.GraphicsHandler;
 import game.Game;
+import game.GameData;
 import util.Oscillator;
 import util.Oscillator.OscType;
 import util.Util;
@@ -77,9 +80,15 @@ public class SpawnFactory {
 		enem.setMaxHealth(4f);
 		enem.healFully();
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
-		cc.setHitboxDraw(true);	
+		//cc.setHitboxDraw(true);
 		new HealthBarComponent(enem);
-		new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f));
+		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
+		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f)));
+		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(0f, -.5f), 0f));
+		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(0f, .5f), 720f));
+		cycle.addToCycle(-1f);
+		
+		new SpriteComponent(enem, 128, 0f, GameData.TEX_EXAMPLE_ENEMY);
 		
 		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 20f, Color.RED, 3, .25f);
 		trail.setScaleDamp(.08f);
@@ -114,8 +123,12 @@ public class SpawnFactory {
 			}
 			
 		};
-		cc.setHitboxDraw(true);
+		//cc.setHitboxDraw(true);
+		new SpriteComponent(shot, 64, 0f, GameData.TEX_BUCKSHOT);
+		new OffscreenKillComponent(shot);
 		shot.setScale(new Vector2f(.015f,.015f));
 		}		
 	}
+	
+	
 }
