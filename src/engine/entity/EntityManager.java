@@ -66,7 +66,7 @@ public class EntityManager {
 			}
 		
 
-		System.out.println(entities.size()); //debug purposes
+		//System.out.println(entities.size()); //debug purposes
 	}
 
 	/** Adds an entity to the manager before the next frame. Be careful when doing this, since an entity adds itself to the manager.

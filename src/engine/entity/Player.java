@@ -16,6 +16,8 @@ import engine.component.MovementComponent;
 import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
 import engine.component.UpdateableComponent;
+import engine.entity.Weapon.WeaponID;
+import engine.gui.Bar;
 import game.GameData;
 import util.Util;
 
@@ -25,8 +27,63 @@ import util.Util;
  */
 public class Player extends Entity {
 	
+	private Bar reloadbar;
+
+	public final Weapon SHOTGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
+		@Override
+		public void spawnProjectiles() {
+			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+		}
+	};
+
+	public final Weapon RAILGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
+		@Override
+		public void spawnProjectiles() {
+			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+		}
+	};
+
+	public final Weapon MACHINEGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
+		@Override
+		public void spawnProjectiles() {
+			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+		}
+	};
+
+	public final Weapon ROCKET = new Weapon(.1f, 1f, WeaponID.SHOTGUN, this){
+		@Override
+		public void spawnProjectiles() {
+			Vector2f[] locs = getSpawnLocations(player, this.numShots, 30f);
+			for(int i = 0; i < numShots; i++)
+				SpawnFactory.spawnTestProjectile(locs[i], Vector2f.mul(Util.facing(player), 3f));
+		}
+	};
+
+	private static Vector2f[] getSpawnLocations(Player p, int n, float degreeSeperate){
+		Vector2f[] locs = new Vector2f[n];
+		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);
+		float angle;
+	    
+		if(n%2 == 1) {
+			int k = (n-1)/2;
+			angle = -k*degreeSeperate;
+		} else {
+			int k = (n)/2;
+			angle = -k*degreeSeperate+degreeSeperate/2f;
+		}
+		
+
+		for(int i = 0; i < n; i++){
+			locs[i] = Util.rotateVector(maindir, angle);
+			locs[i] = Vector2f.add(p.getPosition(), locs[i]);
+			angle+=degreeSeperate;
+		}
+
+		return locs;
+	}
+
 	protected static Vector2f currentmouse = Vector2f.ZERO;
-	
+
 	private ComplexMovementComponent movement;
 	private SpriteComponent sprite;
 	private CollisionComponent collision;
@@ -34,24 +91,33 @@ public class Player extends Entity {
 	private KeyboardMoveComponent keys;
 	private MouseMoveControlComponent mouse;
 	private float accelmag = 4.5f;
-	
+	private boolean mousePressed = false;
+
 	private float maxvel = 1f;
+
+	private Weapon currentWeapon = SHOTGUN;
 
 	/**Construct a player at a certain position
 	 * @param position
 	 */
-	public Player(Vector2f position) {
-		super(position);	
+	public Player(Vector2f position) {	
+		super(position);
 		create();
-		this.setScale(new Vector2f(.1f,.1f));
+		this.setScale(new Vector2f(.05f,.05f));		
 	}
-	
+
 	private void create(){
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
 		movement.setSpeedClamp(maxvel);
 		this.setMinPosition(new Vector2f(-.75f, -.81f));
-		this.setMaxPosition(new Vector2f(.64f, -.5f));
+		this.setMaxPosition(new Vector2f(.64f, -.5f));	
+		currentWeapon.addShot();
+		currentWeapon.addShot();
+		currentWeapon.addShot();
 		
+		reloadbar = new Bar(.5f, .2f, new Color(0, 30, 200, 200), new Color(0, 30, 200, 150));
+		reloadbar.setFrameColor(Color.TRANSPARENT);
+
 		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
 			@Override
 			public void onDirection(Vector2f dir) {
@@ -76,22 +142,21 @@ public class Player extends Entity {
 
 			@Override
 			public void special2Released() {}
-			
+
 		};	
-		
+
 		//hitbox = new ConvexPolygonComponent(this, new Vector2f[]{new Vector2f(0f,.9f), new Vector2f(.8f,.65f), new Vector2f(.8f,-1f), new Vector2f(-.8f,-1f), new Vector2f(-.8f,.65f)});
 		//hitbox.setColor(Color.RED);
-		
+
 		mouse = new MouseMoveControlComponent(this){
 			@Override
 			public void onRightMousePress(Vector2f worldpos) {
-				System.out.println("RIGHT MOUSE PRESS: " + worldpos);
+
 			}
 
 			@Override
 			public void onLeftMousePress(Vector2f worldpos) {
-				SpawnFactory.spawnBuckShot((Player)entity, 4f, 8f, .1f, 6);
-				movement.applyKnockback(Vector2f.mul(Util.facing(entity), -1.1f), .08f);
+				mousePressed = true;
 			}
 
 			@Override
@@ -101,42 +166,54 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMouseRelease(Vector2f worldpos) {
-				System.out.println("LEFT MOUSE RELEASE: " + worldpos);
-				
+				mousePressed = false;
+
 			}
 
 			@Override
 			public void onMouseMove(Vector2f worldpos) {
 				currentmouse = worldpos;				
 			}
-			
+
 		};
-		
+
 		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, Color.RED, 2, .5f);
 		sprite = new SpriteComponent(this, 128, 0f, GameData.TEX_PLAYER);
-		
+
 		trail.setColorVary(255);
 		trail.setRandomVel(.35f);
-	
-		new HealthBarComponent(this);
-			
-		
 	}
 
-	//overridden to make the rotation based of the mouse position
+
 	@Override
 	public void update(float dt, float t){
-		collidingentities.clear(); //clear the colliding entities since it is now a new frame
-		previous_dt = dt;
-		previous_pos = position;
-		
 		Util.pointEntityInDirection(this,Vector2f.sub(currentmouse, position));
-		
-		for(UpdateableComponent uc : updatecomps){
-			if(((Component)uc).isEnabled())
-				uc.update(dt, t);
-		}
-		updateNotifierComponents();
-		if(this.health <= 0f) kill();
+		currentWeapon.setFiring(mousePressed);
+		currentWeapon.update(dt);		
+		super.update(dt, t);
 	}
+
+	@Override
+	public void draw() {
+		super.draw();
+		if(currentWeapon.isReloading()){
+			reloadbar.draw(currentWeapon.getTimeSinceLastReload(), currentWeapon.getReloadTime());
+		}
+	}
+
+	@Override
+	public void setScale(Vector2f scale) {
+		super.setScale(scale);
+		if(reloadbar != null)reloadbar.setScale(scale);
+	}
+
+	@Override
+	public void setPosition(Vector2f position) {
+		super.setPosition(position);
+		if(reloadbar != null)reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y)));
+	}
+	
+	
+	
+	
 }

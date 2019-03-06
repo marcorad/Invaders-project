@@ -256,7 +256,7 @@ public class Entity{
 		return theta;
 	}	
 
-	/**
+	/**Gets the scale of this entity.
 	 * @return The scale of the entity
 	 */
 	public Vector2f getScale() {

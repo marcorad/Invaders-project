@@ -31,6 +31,10 @@ public class GraphicsHandler {
 	private Vector<Drawable> windowdraws; //stored objects that need to be drawn on the window which is the topmost layer without a camera transform
 	private Vector2f worldscale;
 	
+	public Vector2f getWorldScale(){
+		return worldscale;
+	}
+	
 	public GraphicsHandler(RenderWindow window){
 		this.window = window;		
 		windowdraws = new Vector<>();		

@@ -15,6 +15,7 @@ import org.jsfml.system.Vector2f;
 import org.jsfml.window.ContextActivationException;
 import org.jsfml.window.VideoMode;
 import org.jsfml.window.Window;
+import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 import org.jsfml.window.event.MouseWheelEvent;
@@ -40,12 +41,13 @@ import engine.entity.Player;
 import engine.entity.SpawnFactory;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
+import engine.input.KeyListener;
 import engine.input.MouseListener;
 import util.Oscillator;
 import util.Oscillator.OscType;
 import util.Util;
 
-public class Game implements MouseListener {
+public class Game implements MouseListener, KeyListener {
 
 	public final static int WIDTH = 800, HEIGHT = 800;
 	public String name;
@@ -60,7 +62,8 @@ public class Game implements MouseListener {
 	static{
 		window = new RenderWindow();
 
-		window.create(new VideoMode( WIDTH , HEIGHT), "", Window.TITLEBAR | Window.CLOSE);
+		window.create(VideoMode.getDesktopMode(), "", Window.FULLSCREEN);
+		//window.create(new VideoMode(WIDTH, HEIGHT), "", Window.CLOSE);
 		try {
 			window.setActive();
 		} catch (ContextActivationException e) {
@@ -84,6 +87,7 @@ public class Game implements MouseListener {
 		Clock loop_time = new Clock();	
 		float t = 0.0f, dt; //total time using double for extra precision		
 		eventhandler.attachMouseListener(this);
+		eventhandler.attachKeyListener(this);
 		new Player(new Vector2f(0f,-.8f));
 		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
 		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
@@ -102,8 +106,7 @@ public class Game implements MouseListener {
 				
 				float frate = (1.0f / dt);
 
-				window.setTitle(name + " - " + String.valueOf(frate));		
-
+				window.setTitle(name + " - " + String.valueOf(frate));
 
 				updateGame(dt, t);
 
@@ -138,12 +141,8 @@ public class Game implements MouseListener {
 
 
 	@Override
-	public void onMousePress(MouseButtonEvent mbe) {
-		
+	public void onMousePress(MouseButtonEvent mbe) {		
 	}
-
-
-
 
 	@Override
 	public void onMouseRelease(MouseButtonEvent mbe) {}
@@ -166,6 +165,19 @@ public class Game implements MouseListener {
 		Sound s = new Sound(buf);
 		s.setVolume(volume);
 		s.play();
+	}
+
+
+	@Override
+	public void onKeyPress(KeyEvent ke) {
+		if(ke.key == Key.ESCAPE) window.close();
+	}
+
+
+	@Override
+	public void onKeyRelease(KeyEvent ke) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

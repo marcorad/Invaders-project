@@ -76,23 +76,25 @@ public class SpawnFactory {
 	 */
 	public static void spawnTestEnemy(Vector2f pos){
 		Entity enem = new Entity(pos);
-		enem.setScale(new Vector2f(.1f,.1f));
+		enem.setScale(new Vector2f(.07f,.08f));
 		enem.setMaxHealth(4f);
 		enem.healFully();
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
 		//cc.setHitboxDraw(true);
 		new HealthBarComponent(enem);
-		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
-		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(1f,0f)));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(0f, -.5f), 0f));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(0f, .5f), 720f));
-		cycle.addToCycle(-1f);
+		//CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
+		//cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
+		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
+		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
+		//cycle.addToCycle(-1f);
+		
+		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));
 		
 		new SpriteComponent(enem, 128, 0f, GameData.TEX_EXAMPLE_ENEMY);
 		
-		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 20f, Color.RED, 3, .25f);
-		trail.setScaleDamp(.08f);
-		trail.setRandomVel(.4f);
+		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 10f, Color.CYAN, 2, 1f);
+		trail.setScaleDamp(.04f);
+		trail.setRandomVel(.7f);
 	}
 	
 	/** Spawn a gunpowder effect used when shooting and projectile collisions
