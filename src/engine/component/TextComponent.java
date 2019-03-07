@@ -21,7 +21,7 @@ public class TextComponent extends ColorComponent {
 	private Text text;	
 	private Vector2f normalisedscale;
 	
-	/**
+	/**Constrcuts a text component.
 	 * @param entity The active entity
 	 * @param color The color
 	 * @param font The font
@@ -56,6 +56,7 @@ public class TextComponent extends ColorComponent {
 	public void onRotationUpdate() {
 		text.setRotation(entity.getTheta());
 	}
+
 
 	@Override
 	public void onScaleUpdate() {
