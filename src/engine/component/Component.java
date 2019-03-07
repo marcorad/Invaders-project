@@ -15,10 +15,11 @@ public abstract class Component {
 
 	
 	protected boolean enable = true; //whether the component is enabled
+	
 	/**Constructs a component and adds it to the entity
 	 * @param entity The active entity.
 	 */
-	protected Component(Entity entity) {
+	public Component(Entity entity) {
 		this.entity = entity;		
 		entity.addComponent(this);
 	}
@@ -50,6 +51,13 @@ public abstract class Component {
 	public void toggleEnable(){
 		enable = !enable;
 	}
+
+	@Override
+	public String toString() {
+		return "Component{" + this.getClass().getName() + "}";
+	}
+	
+	
 	
 	
 }

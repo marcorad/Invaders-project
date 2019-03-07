@@ -8,5 +8,6 @@ public enum CollisionID {
 	PLAYER, 
 	ENEMY,
 	PLAYER_PROJECTILE,
+	SHIELD,
 	ENEMY_PROJECTILE;
 }

@@ -32,55 +32,32 @@ public class Player extends Entity {
 	public final Weapon SHOTGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
 		}
 	};
 
 	public final Weapon RAILGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
 		}
 	};
 
 	public final Weapon MACHINEGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(player, 4f, 8f, .1f, 6*this.numShots);
+			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
 		}
 	};
 
 	public final Weapon ROCKET = new Weapon(.1f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
-			Vector2f[] locs = getSpawnLocations(player, this.numShots, 30f);
+			Vector2f[] locs = Weapon.getSpawnLocations(shooter, this.numShots, 30f);
 			for(int i = 0; i < numShots; i++)
-				SpawnFactory.spawnTestProjectile(locs[i], Vector2f.mul(Util.facing(player), 3f));
+				SpawnFactory.spawnTestProjectile(locs[i], Vector2f.mul(Util.facing(shooter), 3f));
 		}
 	};
-
-	private static Vector2f[] getSpawnLocations(Player p, int n, float degreeSeperate){
-		Vector2f[] locs = new Vector2f[n];
-		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);
-		float angle;
-	    
-		if(n%2 == 1) {
-			int k = (n-1)/2;
-			angle = -k*degreeSeperate;
-		} else {
-			int k = (n)/2;
-			angle = -k*degreeSeperate+degreeSeperate/2f;
-		}
-		
-
-		for(int i = 0; i < n; i++){
-			locs[i] = Util.rotateVector(maindir, angle);
-			locs[i] = Vector2f.add(p.getPosition(), locs[i]);
-			angle+=degreeSeperate;
-		}
-
-		return locs;
-	}
 
 	protected static Vector2f currentmouse = Vector2f.ZERO;
 

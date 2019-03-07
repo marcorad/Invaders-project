@@ -338,8 +338,10 @@ public class Entity{
 		previous_dt = dt;
 		previous_pos = position;
 		for(UpdateableComponent uc : updatecomps){
-			if(((Component)uc).isEnabled())
+			if(((Component)uc).isEnabled()){
+				//System.out.println(uc);
 				uc.update(dt, t);
+			}
 		}	
 
 		collidedThisFrame = false;

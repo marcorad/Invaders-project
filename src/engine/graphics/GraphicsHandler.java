@@ -48,7 +48,8 @@ public class GraphicsHandler {
 		screenspr = new Sprite(rt.getTexture());
 		
 		//create the scaling 
-		worldscale = new Vector2f(.5f*(float)wsize.x,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen
+		worldscale = new Vector2f(.5f*(float)wsize.y,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen
+		
 		
 		normalisedspace = Transform.scale(Transform.translate(Transform.IDENTITY, wsize.x/2.0f, wsize.y/2.0f), worldscale);
 		

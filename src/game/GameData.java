@@ -23,9 +23,13 @@ public class GameData {
 	public static final Font FONT_CALIBRI = loadFont("Calibri");
 
 	//sounds
-	public static final SoundBuffer SOUND_LAZELIEN = loadSound("lazelien");
-	public static final SoundBuffer SOUND_PEEG = loadSound("peeg"); 
-	public static final SoundBuffer SOUND_BASS = loadSound("bass");
+	public static final Sound SOUND_LAZELIEN = loadSound("lazelien");
+	public static final Sound SOUND_PEEG = loadSound("peeg"); 
+	public static final Sound SOUND_BASS = loadSound("bass");
+	
+	static{
+		SOUND_PEEG.setVolume(30f);
+	}
 	
 	//images
 	public static final Texture TEX_GAME_BACKGROUND = loadTexture("gamebg");
@@ -78,7 +82,7 @@ public class GameData {
 	 * @param name The name without the extension. Expects a .wav file.
 	 * @return The object buffering the sound data
 	 */
-	public static SoundBuffer loadSound(String name){
+	public static Sound loadSound(String name){
 		SoundBuffer buf = new SoundBuffer();
 		try {
 			buf.loadFromFile(Paths.get("sound\\" + name + ".wav"));		
@@ -86,7 +90,7 @@ public class GameData {
 		} catch (IOException e) {					
 			e.printStackTrace();
 		}
-		return buf;
+		return new Sound(buf);
 	}
 
 }

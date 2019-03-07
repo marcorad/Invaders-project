@@ -54,6 +54,7 @@ public class Game implements MouseListener, KeyListener {
 	public static final int FRAMERATE = 1000;
 	public static GraphicsHandler graphics;
 	public static EntityManager entitymanager;
+	private boolean paused = false;
 
 
 	private static EventHandler eventhandler;
@@ -73,56 +74,57 @@ public class Game implements MouseListener, KeyListener {
 		window.setVerticalSyncEnabled(true); //VSync can can impact performance
 		//Limit the framerate
 		window.setFramerateLimit(FRAMERATE);
-		
+
 		graphics = new GraphicsHandler(window);
 		eventhandler = new EventHandler(window);
 		entitymanager = new EntityManager();
-		
+
 		Entity.setEnvironment(entitymanager, graphics, eventhandler);
 	}
 
 	public Game(String title){		name = title;
-		
-		Clock elapsed_time = new Clock();	
-		Clock loop_time = new Clock();	
-		float t = 0.0f, dt; //total time using double for extra precision		
-		eventhandler.attachMouseListener(this);
-		eventhandler.attachKeyListener(this);
-		new Player(new Vector2f(0f,-.8f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
-		SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
-		graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
-		
-				
-			//Main loop
-			while(window.isOpen()) {
-				loop_time.restart();
-				dt = elapsed_time.restart().asSeconds(); //change in time
-				t += dt; //keep track of total time
-				
-				float frate = (1.0f / dt);
 
-				window.setTitle(name + " - " + String.valueOf(frate));
+	Clock elapsed_time = new Clock();	
+	Clock loop_time = new Clock();	
+	float t = 0.0f, dt; //total time using double for extra precision		
+	eventhandler.attachMouseListener(this);
+	eventhandler.attachKeyListener(this);
+	new Player(new Vector2f(0f,-.8f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
+	SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
+	graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
 
-				updateGame(dt, t);
 
-				graphics.clear();
+	//Main loop
+	while(window.isOpen()) {
+		loop_time.restart();
+		dt = elapsed_time.restart().asSeconds(); //change in time
+		t += dt; //keep track of total time
 
-				entitymanager.drawEntities();
+		float frate = (1.0f / dt);
 
-				graphics.display();			
-				eventhandler.handleEvents();
+		window.setTitle(name + " - " + String.valueOf(frate));
 
-			}
+		updateGame(dt, t);
+
+		graphics.clear();
+
+		entitymanager.drawEntities();
+
+		graphics.display();			
+		eventhandler.handleEvents();
+
+	}
 	}
 
 
 	public void updateGame(float dt, float t){
-		entitymanager.update(dt, t);
+		if(!paused)
+			entitymanager.update(dt, t);
 	}
 
 	public static float incCol(float color, float dt, float mag){
@@ -160,7 +162,7 @@ public class Game implements MouseListener, KeyListener {
 	public boolean isUseless() {
 		return false;
 	}
-	
+
 	public static void playSound(SoundBuffer buf, float volume){
 		Sound s = new Sound(buf);
 		s.setVolume(volume);
@@ -170,14 +172,15 @@ public class Game implements MouseListener, KeyListener {
 
 	@Override
 	public void onKeyPress(KeyEvent ke) {
-		if(ke.key == Key.ESCAPE) window.close();
+		if(ke.key == Key.ESCAPE) window.close(); 
+		else if(ke.key == Key.P) paused = !paused;
 	}
 
 
 	@Override
 	public void onKeyRelease(KeyEvent ke) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

@@ -6,6 +6,7 @@ import org.jsfml.graphics.Color;
 import org.jsfml.system.Vector2f;
 
 import engine.component.*;
+import engine.entity.Weapon.WeaponID;
 import engine.graphics.GraphicsHandler;
 import game.Game;
 import game.GameData;
@@ -18,6 +19,30 @@ import util.Util;
  *
  */
 public class SpawnFactory {
+	
+	public static Weapon createDefaultEnemyWeapon(Entity enem, float damage){
+		Weapon w = new Weapon(1f, 1f, WeaponID.ENEMY_WEAPON, enem){
+			@Override
+			public void spawnProjectiles() {
+				spawnBasicEnemyBullet(this.shooter, this.damage);
+			}};			
+			return w;
+	}
+	
+	
+	public static void spawnBasicEnemyBullet(Entity enem, float damage){
+		Entity bullet = new Entity(enem.getPosition());
+		bullet.setScale(new Vector2f(.05f, .05f));
+		new SimpleMovementComponent(bullet, new Vector2f(0f, -1f), damage);
+		new KillOnCollisionComponent(bullet);
+		attachMandatoryProjectileComponents(bullet, Util.REGULAR_POLYGONS[0], CollisionID.ENEMY_PROJECTILE, CollisionID.PLAYER, CollisionID.SHIELD);
+	}
+	
+	public static void attachMandatoryProjectileComponents(Entity projectile, Vector2f[] hitbox, CollisionID thisid, CollisionID... ids){
+		new OffscreenKillComponent(projectile);
+		CollisionComponent cc = new CollisionComponent(projectile, hitbox, thisid, ids);
+		cc.setHitboxDraw(true);
+	}
 	
 
 	/**Spawn a particle that is a regular n-gon
@@ -59,12 +84,12 @@ public class SpawnFactory {
 		new SimpleMovementComponent(p, vel, 0);
 		new SelfDestructComponent(p, 2f);
 		ParticleTrailComponent trail = new ParticleTrailComponent(p, 1f, .1f, 40f, Color.CYAN, 2, .3f);
-//		new OnCollisionComponent(p){
-//			@Override
-//			public void notifyAction() {
-//				entity.setHealth(0f);
-//			}			
-//		};
+		new OnCollisionComponent(p){
+			@Override
+			public void notifyAction() {
+				entity.kill();
+			}			
+		};
 		trail.setScaleDamp(.03f);
 		trail.setRandomVel(.5f);
 		trail.setSpeedDamp(.1f);
@@ -80,21 +105,19 @@ public class SpawnFactory {
 		enem.setMaxHealth(4f);
 		enem.healFully();
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
-		//cc.setHitboxDraw(true);
 		new HealthBarComponent(enem);
-		//CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
-		//cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
-		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
-		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
-		//cycle.addToCycle(-1f);
-		
-		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));
-		
-		new SpriteComponent(enem, 128, 0f, GameData.TEX_EXAMPLE_ENEMY);
-		
+		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
+		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
+		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
+		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
+		cycle.addToCycle(-1f);		
+		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
+		new SpriteComponent(enem, 128, 0f, GameData.TEX_EXAMPLE_ENEMY);		
 		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 10f, Color.CYAN, 2, 1f);
 		trail.setScaleDamp(.04f);
 		trail.setRandomVel(.7f);
+		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
+		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
 	}
 	
 	/** Spawn a gunpowder effect used when shooting and projectile collisions
@@ -110,10 +133,10 @@ public class SpawnFactory {
 		}
 	}
 	
-	public static void spawnBuckShot(Player p, float vel, float degreespread, float damage, int amount){
+	public static void spawnBuckShot(Entity shooter, float vel, float degreespread, float damage, int amount){
 		for(int i = 0; i < amount; i++){
-		Vector2f unitdir = Util.facing(p);
-		Entity shot = new Entity(Vector2f.add(Util.approxParticleOffset(unitdir, p), p.position));
+		Vector2f unitdir = Util.facing(shooter);
+		Entity shot = new Entity(Vector2f.add(Util.approxParticleOffset(unitdir, shooter), shooter.position));
 		shot.setDamage(damage);
 		new SimpleMovementComponent(shot, Vector2f.mul(Util.varyVector(unitdir,  Util.toRad(degreespread)), vel), damage);
 		CollisionComponent cc = new CollisionComponent(shot, Util.REGULAR_POLYGONS[0], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);

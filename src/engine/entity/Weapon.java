@@ -1,5 +1,7 @@
 package engine.entity;
 
+import org.jsfml.system.Vector2f;
+
 import util.Util;
 
 /**A class that soecifies the behaviour of a weapon
@@ -15,7 +17,7 @@ public abstract class Weapon {
 	 *
 	 */
 	public enum WeaponID{
-		SHOTGUN, RAILGUN, MACHINEGUN, ROCKET;
+		SHOTGUN, RAILGUN, MACHINEGUN, ROCKET, ENEMY_WEAPON;
 	}
 
 	public final WeaponID ID;
@@ -23,19 +25,19 @@ public abstract class Weapon {
 	protected int numShots = 1;
 	public static final float MINIMUM_RELOAD_TIME = .2f;
 	private boolean firing = false;
-	protected Player player;
+	protected Entity shooter;
 
 	/**
 	 * @param damage The damage per projectile
 	 * @param reload The time between shots while this weapon is firing
 	 * @param ID This weapon's ID
 	 */
-	public Weapon(float damage, float reload, WeaponID ID, Player p){
+	public Weapon(float damage, float reload, WeaponID ID, Entity p){
 		this.damage = damage;
 		reloadtime = reload;
 		timeSinceReload = reload;
 		this.ID = ID;
-		this.player = p;
+		this.shooter = p;
 	}
 
 	/**
@@ -90,6 +92,29 @@ public abstract class Weapon {
 	
 	public boolean isReloading(){
 		return (timeSinceReload < reloadtime);
+	}
+
+	public static Vector2f[] getSpawnLocations(Entity p, int n, float degreeSeperate){
+		Vector2f[] locs = new Vector2f[n];
+		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);
+		float angle;
+	    
+		if(n%2 == 1) {
+			int k = (n-1)/2;
+			angle = -k*degreeSeperate;
+		} else {
+			int k = (n)/2;
+			angle = -k*degreeSeperate+degreeSeperate/2f;
+		}
+		
+	
+		for(int i = 0; i < n; i++){
+			locs[i] = Util.rotateVector(maindir, angle);
+			locs[i] = Vector2f.add(p.getPosition(), locs[i]);
+			angle+=degreeSeperate;
+		}
+	
+		return locs;
 	}
 
 
