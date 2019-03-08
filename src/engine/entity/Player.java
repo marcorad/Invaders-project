@@ -32,7 +32,9 @@ public class Player extends Entity {
 	public final Weapon SHOTGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
+			Player p = (Player)shooter;
+			p.applyKnockBack(1.5f, .07f);
+			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);			
 		}
 	};
 
@@ -53,6 +55,7 @@ public class Player extends Entity {
 	public final Weapon ROCKET = new Weapon(.1f, 1f, WeaponID.SHOTGUN, this){
 		@Override
 		public void spawnProjectiles() {
+			
 			Vector2f[] locs = Weapon.getSpawnLocations(shooter, this.numShots, 30f);
 			for(int i = 0; i < numShots; i++)
 				SpawnFactory.spawnTestProjectile(locs[i], Vector2f.mul(Util.facing(shooter), 3f));
@@ -92,7 +95,7 @@ public class Player extends Entity {
 		currentWeapon.addShot();
 		currentWeapon.addShot();
 		
-		reloadbar = new Bar(.5f, .2f, new Color(0, 30, 200, 200), new Color(0, 30, 200, 150));
+		reloadbar = new Bar(1f, .3f, new Color(0, 30, 200, 200), new Color(0, 30, 200, 150));
 		reloadbar.setFrameColor(Color.TRANSPARENT);
 
 		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
@@ -155,7 +158,7 @@ public class Player extends Entity {
 		};
 
 		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, Color.RED, 2, .5f);
-		sprite = new SpriteComponent(this, 128, 0f, GameData.TEX_PLAYER);
+		sprite = new SpriteComponent(this, 64, 12f, GameData.TEX_PLAYER);
 
 		trail.setColorVary(255);
 		trail.setRandomVel(.35f);
@@ -188,6 +191,10 @@ public class Player extends Entity {
 	public void setPosition(Vector2f position) {
 		super.setPosition(position);
 		if(reloadbar != null)reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y)));
+	}
+	
+	public void applyKnockBack(float speed, float time){
+		movement.applyKnockback(Vector2f.mul(Util.facing(this),-speed), time);
 	}
 	
 	

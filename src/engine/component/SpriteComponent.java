@@ -16,6 +16,7 @@ import org.jsfml.system.Vector2f;
 import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
+import util.Util;
 
 //NOTE THAT a sprite component always has it's coordinates normalised to +-1
 //which means a square of size 2 will always fit around it
@@ -122,6 +123,10 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	@Override
 	protected void colorUpdate() {
 		this.sprite.setColor(color);
+	}
+	
+	public boolean pointInside(Vector2f pt){
+		return sprite.getGlobalBounds().contains(pt);
 	}
 
 }

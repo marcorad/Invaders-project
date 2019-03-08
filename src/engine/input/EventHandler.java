@@ -5,7 +5,10 @@ import java.util.Vector;
 
 
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.system.Vector2f;
 import org.jsfml.window.event.*;
+
+import engine.entity.Entity;
 
 /**A class that handles key and mouse events at a lower level.
  * @author Marco
@@ -15,6 +18,7 @@ public class EventHandler {
 	private final RenderWindow window;
 	private Vector<KeyListener> kl;
 	private Vector<MouseListener> ml;
+	private static Vector2f CURRENT_MOUSE_WORLD_POS = Vector2f.ZERO;
 
 	/**Construct an event handler listening to a specific window
 	 * @param w The window.
@@ -57,12 +61,13 @@ public class EventHandler {
 
 			//with likelihood of event as priority, do check to see if it is an applicable event. events are mutually exclusive
 			if(me != null){
+				CURRENT_MOUSE_WORLD_POS = Entity.graphics.toWorldSpace(me.position);
 				for(MouseListener m : ml){
 					m.onMouseMoved(me);
 				}
 
 			} else if(ke != null){			 
-				 
+				
 				 for(KeyListener k : kl){
 					if (ke.type == Event.Type.KEY_PRESSED)
 					k.onKeyPress(ke);
@@ -98,6 +103,10 @@ public class EventHandler {
 	 */
 	public void attachKeyListener(KeyListener k){
 		kl.addElement(k);
+	}
+	
+	public static Vector2f getCurrentMouseWorldPosition(){
+		return CURRENT_MOUSE_WORLD_POS;
 	}
 
 }

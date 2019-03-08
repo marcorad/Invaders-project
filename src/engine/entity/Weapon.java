@@ -1,5 +1,7 @@
 package engine.entity;
 
+import org.jsfml.audio.Sound;
+import org.jsfml.audio.SoundSource.Status;
 import org.jsfml.system.Vector2f;
 
 import util.Util;
@@ -10,6 +12,7 @@ import util.Util;
  */
 public abstract class Weapon {
 
+	private Sound sound;
 
 
 	/**Identifies a weapon type
@@ -39,6 +42,12 @@ public abstract class Weapon {
 		this.ID = ID;
 		this.shooter = p;
 	}
+	
+	public void setSound(Sound s){
+		this.sound = s;
+	}
+	
+	
 
 	/**
 	 * Increase the number of shots the weapon fires by 1
@@ -70,6 +79,11 @@ public abstract class Weapon {
 			if(timeSinceReload >= reloadtime){
 				timeSinceReload -= reloadtime;
 				spawnProjectiles();
+				if(sound != null){
+					if(sound.getStatus() != Status.PLAYING){
+						sound.play();
+					}
+				}
 			}
 		} else{
 			timeSinceReload = Util.clamp(timeSinceReload, 0f, reloadtime);

@@ -36,6 +36,14 @@ public class GameData {
 	public static final Texture TEX_PLAYER = loadTexture("player");
 	public static final Texture TEX_BUCKSHOT = loadTexture("buckshot");
 	public static final Texture TEX_EXAMPLE_ENEMY = loadTexture("example enemy");
+	public static final Texture TEX_TEST_BUTTON = loadTexture("testbutton");
+	
+	static{
+		TEX_EXAMPLE_ENEMY.setSmooth(true);
+		//TEX_TEST_BUTTON.setSmooth(true);
+		TEX_PLAYER.setSmooth(true);
+		//TEX_GAME_BACKGROUND.setSmooth(true);
+	}
 
 	/**Load a font from the font folder.
 	 * @param name The name without the extension. Expects a .ttf file.

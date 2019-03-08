@@ -112,11 +112,12 @@ public class SpawnFactory {
 		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
 		cycle.addToCycle(-1f);		
 		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
-		new SpriteComponent(enem, 128, 0f, GameData.TEX_EXAMPLE_ENEMY);		
+		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_EXAMPLE_ENEMY);	
+		sprc.setColor(Color.MAGENTA);
 		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 10f, Color.CYAN, 2, 1f);
 		trail.setScaleDamp(.04f);
 		trail.setRandomVel(.7f);
-		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
+		//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
 		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
 	}
 	
@@ -129,24 +130,25 @@ public class SpawnFactory {
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*5f);
 		for(int i = 0; i < amount; i++){
-			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.7f), Util.randInRange(.02f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.3f, .7f), 3);
+			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.7f), Util.randInRange(.06f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.1f, .4f), 3);
 		}
 	}
 	
 	public static void spawnBuckShot(Entity shooter, float vel, float degreespread, float damage, int amount){
-		for(int i = 0; i < amount; i++){
 		Vector2f unitdir = Util.facing(shooter);
-		Entity shot = new Entity(Vector2f.add(Util.approxParticleOffset(unitdir, shooter), shooter.position));
+		Vector2f pos = Vector2f.add(Util.approxParticleOffset(unitdir, shooter), shooter.position);
+		spawnGunPowder(pos, unitdir, 6f, Color.BLACK);
+		
+		for(int i = 0; i < amount; i++){		
+		Entity shot = new Entity(pos);
 		shot.setDamage(damage);
 		new SimpleMovementComponent(shot, Vector2f.mul(Util.varyVector(unitdir,  Util.toRad(degreespread)), vel), damage);
 		CollisionComponent cc = new CollisionComponent(shot, Util.REGULAR_POLYGONS[0], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
 		new OnCollisionComponent(shot){
-
 			@Override
 			public void notifyAction() {
 				entity.kill();			
-			}
-			
+			}			
 		};
 		//cc.setHitboxDraw(true);
 		new SpriteComponent(shot, 64, 0f, GameData.TEX_BUCKSHOT);

@@ -40,6 +40,7 @@ import engine.entity.EntityManager;
 import engine.entity.Player;
 import engine.entity.SpawnFactory;
 import engine.graphics.GraphicsHandler;
+import engine.gui.Button;
 import engine.input.EventHandler;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
@@ -63,8 +64,8 @@ public class Game implements MouseListener, KeyListener {
 	static{
 		window = new RenderWindow();
 
-		window.create(VideoMode.getDesktopMode(), "", Window.FULLSCREEN);
-		//window.create(new VideoMode(WIDTH, HEIGHT), "", Window.CLOSE);
+		//window.create(VideoMode.getDesktopMode(), "", Window.FULLSCREEN);
+		window.create(new VideoMode(WIDTH, HEIGHT), "", Window.CLOSE);
 		try {
 			window.setActive();
 		} catch (ContextActivationException e) {
@@ -90,35 +91,53 @@ public class Game implements MouseListener, KeyListener {
 	eventhandler.attachMouseListener(this);
 	eventhandler.attachKeyListener(this);
 	new Player(new Vector2f(0f,-.8f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
-	SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
-	graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
+	Button b1 = new Button(new Vector2f(.8f,.8f), GameData.TEX_TEST_BUTTON, 128, 10f){
+		@Override
+		public void buttonAction() {
+			System.out.println("Button 1 pressed");
+		}};
+
+		b1.setHoverColor(new Color(0,255,255,255));
+		b1.setScale(new Vector2f(.2f,.2f));
+
+		Button b2 = new Button(new Vector2f(.8f,.4f), GameData.TEX_TEST_BUTTON, 128, 10f){
+			@Override
+			public void buttonAction() {
+				System.out.println("Button 2 pressed");
+			}};
+
+			b2.setHoverColor(new Color(0,255,255,255));
+			b2.setScale(new Vector2f(.2f,.2f));
+
+			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
+			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
+			SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
+			SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
+			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
+			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
+			graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
 
 
-	//Main loop
-	while(window.isOpen()) {
-		loop_time.restart();
-		dt = elapsed_time.restart().asSeconds(); //change in time
-		t += dt; //keep track of total time
+			//Main loop
+			while(window.isOpen()) {
+				loop_time.restart();
+				dt = elapsed_time.restart().asSeconds(); //change in time
+				t += dt; //keep track of total time
 
-		float frate = (1.0f / dt);
+				float frate = (1.0f / dt);
 
-		window.setTitle(name + " - " + String.valueOf(frate));
+				window.setTitle(name + " - " + String.valueOf(frate));
 
-		updateGame(dt, t);
+				updateGame(dt, t);
 
-		graphics.clear();
+				graphics.clear();
 
-		entitymanager.drawEntities();
+				entitymanager.drawEntities();
 
-		graphics.display();			
-		eventhandler.handleEvents();
+				graphics.display();			
+				eventhandler.handleEvents();
 
-	}
+			}
 	}
 
 
