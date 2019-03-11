@@ -157,10 +157,10 @@ public class Player extends Entity {
 
 		};
 
-		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, Color.RED, 2, .5f);
+		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, new Color(255, 50, 50, 255), 2, .5f);
 		sprite = new SpriteComponent(this, 64, 12f, GameData.TEX_PLAYER);
 
-		trail.setColorVary(255);
+		trail.setColorVary(50);
 		trail.setRandomVel(.35f);
 	}
 

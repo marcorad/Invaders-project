@@ -32,7 +32,7 @@ public class SpawnFactory {
 	
 	public static void spawnBasicEnemyBullet(Entity enem, float damage){
 		Entity bullet = new Entity(enem.getPosition());
-		bullet.setScale(new Vector2f(.05f, .05f));
+		bullet.setScale(new Vector2f(.02f, .02f));
 		new SimpleMovementComponent(bullet, new Vector2f(0f, -1f), damage);
 		new KillOnCollisionComponent(bullet);
 		attachMandatoryProjectileComponents(bullet, Util.REGULAR_POLYGONS[0], CollisionID.ENEMY_PROJECTILE, CollisionID.PLAYER, CollisionID.SHIELD);
@@ -101,23 +101,28 @@ public class SpawnFactory {
 	 */
 	public static void spawnTestEnemy(Vector2f pos){
 		Entity enem = new Entity(pos);
-		enem.setScale(new Vector2f(.07f,.08f));
+		enem.setScale(new Vector2f(.1f,.1f));
 		enem.setMaxHealth(4f);
 		enem.healFully();
 		CollisionComponent cc = new CollisionComponent(enem, Util.REGULAR_POLYGONS[7], CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
 		new HealthBarComponent(enem);
 		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
-		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
-		cycle.addToCycle(-1f);		
+		//new SimpleMovementComponent(enem, new Vector2f(0f, -.1f), 0f);
+		//cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
+		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
+		//cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
+		//cycle.addToCycle(-1f);		
+		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, 360f));
+		cycle.addToCycle(.5f);
+		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, -360f));
+		cycle.addToCycle(.5f);
 		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
-		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_EXAMPLE_ENEMY);	
+		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_BENNY_THE_FEESH);	
 		sprc.setColor(Color.MAGENTA);
-		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .18f, .1f, 10f, Color.CYAN, 2, 1f);
-		trail.setScaleDamp(.04f);
+		ParticleTrailComponent trail = new ParticleTrailComponent(enem, .01f, .1f, 10f, Color.CYAN, 2, 1f);
+		trail.setScaleDamp(.12f);
 		trail.setRandomVel(.7f);
-		//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
+		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
 		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
 	}
 	
@@ -130,7 +135,7 @@ public class SpawnFactory {
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*5f);
 		for(int i = 0; i < amount; i++){
-			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/2.7f), Util.randInRange(.06f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.1f, .4f), 3);
+			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/3f), Util.randInRange(.06f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.1f, .4f), 3);
 		}
 	}
 	

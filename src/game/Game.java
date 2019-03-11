@@ -91,7 +91,7 @@ public class Game implements MouseListener, KeyListener {
 	eventhandler.attachMouseListener(this);
 	eventhandler.attachKeyListener(this);
 	new Player(new Vector2f(0f,-.8f));
-	Button b1 = new Button(new Vector2f(.8f,.8f), GameData.TEX_TEST_BUTTON, 128, 10f){
+	Button b1 = new Button(new Vector2f(.8f,.8f), GameData.TEX_TEST_BUTTON, 128, 150f){
 		@Override
 		public void buttonAction() {
 			System.out.println("Button 1 pressed");
@@ -100,7 +100,7 @@ public class Game implements MouseListener, KeyListener {
 		b1.setHoverColor(new Color(0,255,255,255));
 		b1.setScale(new Vector2f(.2f,.2f));
 
-		Button b2 = new Button(new Vector2f(.8f,.4f), GameData.TEX_TEST_BUTTON, 128, 10f){
+		Button b2 = new Button(new Vector2f(.8f,.4f), GameData.TEX_TEST_BUTTON, 128, 1f){
 			@Override
 			public void buttonAction() {
 				System.out.println("Button 2 pressed");
@@ -127,7 +127,6 @@ public class Game implements MouseListener, KeyListener {
 				float frate = (1.0f / dt);
 
 				window.setTitle(name + " - " + String.valueOf(frate));
-
 				updateGame(dt, t);
 
 				graphics.clear();
