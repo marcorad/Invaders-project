@@ -5,6 +5,7 @@ import org.jsfml.graphics.ConvexShape;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
+import engine.entity.EntityManager;
 import engine.graphics.GraphicsHandler;
 import util.Util;
 
@@ -33,7 +34,7 @@ public class CollisionComponent extends Component{
 			collidingIDs = new CollisionID[]{};
 		} else
 			collidingIDs = collidingids;
-		setHitboxDraw(false);
+		setHitboxDraw(EntityManager.DRAW_HITBOXES);
 	}	
 
 
@@ -56,7 +57,8 @@ public class CollisionComponent extends Component{
 	public void setHitboxDraw(boolean b){
 		hitbox.setColor( b ? Color.RED : Color.TRANSPARENT);
 	}
-
+	
+	
 	public CollisionID getID() {
 		return ID;
 	}
@@ -72,6 +74,10 @@ public class CollisionComponent extends Component{
 	public void setCollidingIDs(CollisionID[] collidingIDs) {
 		this.collidingIDs = collidingIDs;
 	}
+	
+	
+	
+	
 
 
 

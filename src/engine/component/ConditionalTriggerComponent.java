@@ -14,9 +14,11 @@ public abstract class  ConditionalTriggerComponent extends NotifierComponent imp
 		comp.setEnabled(false);
 		this.t = t;
 	}
+	
+	public abstract void reset();
 
 	private boolean triggered = false;
-	private Component comp;
+	protected Component comp;
 	private float t, elapsed_t;
 
 	@Override
@@ -39,8 +41,9 @@ public abstract class  ConditionalTriggerComponent extends NotifierComponent imp
 	public void update(float dt, float t) {
 		elapsed_t += dt;
 		if(elapsed_t >= this.t){
+			reset();
 			comp.setEnabled(false);
-			triggered = false;
+			triggered = false;			
 		}
 	}
 

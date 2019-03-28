@@ -12,6 +12,7 @@ public class Bar {
 	private RectangleShape frame;
 	private RectangleShape bar;
 	private Color full, empty;
+	boolean GUI = false;
 	
 	
 	public Bar(float width, float height, Color empty, Color full) {
@@ -27,6 +28,20 @@ public class Bar {
 		bar.setOrigin(Vector2f.mul(dimensions, .5f));
 	}
 	
+	
+	public Bar(float width, float height, Color empty, Color full, float outline) {
+		this.empty = empty;
+		this.full = full;
+		this.dimensions = new Vector2f(width, height);
+		frame = new RectangleShape(dimensions);
+		frame.setOrigin(Vector2f.mul(dimensions, .5f));		
+		frame.setFillColor(Color.TRANSPARENT);
+		frame.setOutlineColor(new Color(0,0,0,190));
+		frame.setOutlineThickness(outline);		
+		bar = new RectangleShape(dimensions);
+		bar.setOrigin(Vector2f.mul(dimensions, .5f));
+	}
+	
 	public void setPosition(Vector2f pos){
 		frame.setPosition(pos);
 		bar.setPosition(pos);
@@ -37,13 +52,22 @@ public class Bar {
 		bar.setScale(scale);
 	}
 	
+	public void setAsGUIElement(boolean b){
+		GUI = b;
+	}
+	
 	public void draw(float value, float maxvalue){
 		float factor = (value/maxvalue);
 		Vector2f size = new Vector2f(dimensions.x *  factor, dimensions.y);		
 		bar.setSize(size);
 		bar.setFillColor(Util.lerpColor(factor, empty, full));
+		if(!GUI){
 	    Entity.graphics.drawToRenderTexture(bar);
 		Entity.graphics.drawToRenderTexture(frame);
+		} else {
+			Entity.graphics.drawToWindow(bar);
+			Entity.graphics.drawToWindow(frame);
+		}
 	}
 	
 	public void setFrameColor(Color f){

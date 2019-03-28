@@ -4,6 +4,7 @@ import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundSource.Status;
 
 import engine.entity.Entity;
+import game.GameData;
 
 public class CollisionSoundComponent extends OnCollisionComponent {
 	private Sound sound;
@@ -15,10 +16,7 @@ public class CollisionSoundComponent extends OnCollisionComponent {
 
 	@Override
 	public void notifyAction() {
-		if(sound.getStatus() != Status.PLAYING){
-			System.out.println("PLAYING");
-			sound.play();
-		}
+		GameData.playSound(sound);
 	}
 
 }

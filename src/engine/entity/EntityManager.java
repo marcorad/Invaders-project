@@ -13,6 +13,15 @@ import engine.input.EventHandler;
  *
  */
 public class EntityManager {
+	
+	public static boolean DRAW_HITBOXES = false;
+	
+	public void toggleHitboxDraw(){
+		DRAW_HITBOXES = !DRAW_HITBOXES;
+		for(Entity e: entities){
+			e.setHitboxDraw(DRAW_HITBOXES);
+		}
+	}
 
 
 	private final Vector<Entity> entities;

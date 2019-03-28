@@ -107,8 +107,8 @@ public class Util {
 	 * @return the clamped value
 	 */
 	public static float clamp(float x, float min, float max){
-		if(x > max) return max;
-		if(x < min) return min;
+		if(x >= max) return max;
+		if(x <= min) return min;
 		return x;
 	}
 
@@ -467,7 +467,9 @@ public class Util {
 	 * @param dir The direction vector, which does not necessarily have to be a unit vector
 	 */
 	public static void pointEntityInDirection(Entity e, Vector2f dir){
-		e.setTheta(-90f +vectorAngle(dir));
+		float f = vectorAngle(dir);
+		//System.out.println(f);
+		e.setTheta(f-90f);
 	}
 
 	/**

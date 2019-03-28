@@ -26,39 +26,45 @@ import util.Util;
  *
  */
 public class Player extends Entity {
-	
+
 	private Bar reloadbar;
+
+	private Bar GUI_Health, GUI_Shield;
+
+	private float shieldrecharge = 10f;
+	private float shieldRechargeMax = 10f;
+	private float shieldRechargeRate = 4f;
+
 
 	public final Weapon SHOTGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
 		@Override
-		public void spawnProjectiles() {
+		public void spawnProjectiles(Vector2f pos) {
 			Player p = (Player)shooter;
 			p.applyKnockBack(1.5f, .07f);
 			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);			
 		}
 	};
 
-	public final Weapon RAILGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
+	public final Weapon RAILGUN = new Weapon(.4f, 1.4f, WeaponID.RAILGUN, this){
 		@Override
-		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
+		public void spawnProjectiles(Vector2f pos) {
+			SpawnFactory.spawnRailSlug(this.shooter, pos, this.damage);
 		}
+
 	};
 
-	public final Weapon MACHINEGUN = new Weapon(.5f, 1f, WeaponID.SHOTGUN, this){
+	public final Weapon MACHINEGUN = new Weapon(.8f, .2f, WeaponID.SHOTGUN, this){
 		@Override
-		public void spawnProjectiles() {
-			SpawnFactory.spawnBuckShot(shooter, 4f, 8f, .1f, 6*this.numShots);
-		}
+		public void spawnProjectiles(Vector2f pos) {
+			SpawnFactory.spawnMachineGunBullet(shooter, pos, damage);
+		}		
+
 	};
 
-	public final Weapon ROCKET = new Weapon(.1f, 1f, WeaponID.SHOTGUN, this){
+	public final Weapon ROCKET = new Weapon(1f, 1f, WeaponID.SHOTGUN, this){
 		@Override
-		public void spawnProjectiles() {
-			
-			Vector2f[] locs = Weapon.getSpawnLocations(shooter, this.numShots, 30f);
-			for(int i = 0; i < numShots; i++)
-				SpawnFactory.spawnTestProjectile(locs[i], Vector2f.mul(Util.facing(shooter), 3f));
+		public void spawnProjectiles(Vector2f pos) {			
+			SpawnFactory.spawnRocket(shooter, pos, damage);
 		}
 	};
 
@@ -75,7 +81,7 @@ public class Player extends Entity {
 
 	private float maxvel = 1f;
 
-	private Weapon currentWeapon = SHOTGUN;
+	private Weapon currentWeapon = ROCKET;
 
 	/**Construct a player at a certain position
 	 * @param position
@@ -87,16 +93,25 @@ public class Player extends Entity {
 	}
 
 	private void create(){
+
+		GUI_Health = new Bar(.75f, .06f, new Color(255,0,0,100), new Color(0,255,0,100), .01f);
+		GUI_Health.setPosition(new Vector2f(-.6f, -.866f));
+		GUI_Health.setAsGUIElement(true);
+
+		GUI_Shield = new Bar(.75f, .06f, new Color(255,255,0,100), new Color(0,255,255,100), .01f);
+		GUI_Shield.setPosition(new Vector2f(-.6f, -.95f));
+		GUI_Shield.setAsGUIElement(true);
+
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
 		movement.setSpeedClamp(maxvel);
 		this.setMinPosition(new Vector2f(-.75f, -.81f));
 		this.setMaxPosition(new Vector2f(.64f, -.5f));	
 		currentWeapon.addShot();
-		currentWeapon.addShot();
-		currentWeapon.addShot();
-		
-		reloadbar = new Bar(1f, .3f, new Color(0, 30, 200, 200), new Color(0, 30, 200, 150));
-		reloadbar.setFrameColor(Color.TRANSPARENT);
+		//currentWeapon.addShot();
+		//currentWeapon.addShot();
+
+		reloadbar = new Bar(1f, .3f, new Color(255, 30, 100, 200), new Color(0, 30, 255, 200));
+		reloadbar.setFrameColor(new Color(0, 30, 200, 200));
 
 		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
 			@Override
@@ -131,7 +146,10 @@ public class Player extends Entity {
 		mouse = new MouseMoveControlComponent(this){
 			@Override
 			public void onRightMousePress(Vector2f worldpos) {
-
+				if(shieldrecharge == shieldRechargeMax){
+					SpawnFactory.spawnShield((Player)this.entity, 10f);
+					shieldrecharge = 0;
+				}
 			}
 
 			@Override
@@ -158,15 +176,31 @@ public class Player extends Entity {
 		};
 
 		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, new Color(255, 50, 50, 255), 2, .5f);
-		sprite = new SpriteComponent(this, 64, 12f, GameData.TEX_PLAYER);
+		sprite = new SpriteComponent(this, 128, 12f, GameData.TEX_PLAYER);
 
 		trail.setColorVary(50);
 		trail.setRandomVel(.35f);
 	}
 
 
+
+
+	@Override
+	public void setTheta(float theta) {
+		//System.out.println(theta);
+		if(theta > -270f && theta < -180f){
+			theta = 90f;
+		} else if(theta > -180f && theta < -90f){
+			theta = -90f;
+		}
+		super.setTheta(theta);
+
+	}
+
 	@Override
 	public void update(float dt, float t){
+		shieldrecharge += shieldRechargeRate * dt;
+		shieldrecharge = Util.clamp(shieldrecharge, 0f, shieldRechargeMax);
 		Util.pointEntityInDirection(this,Vector2f.sub(currentmouse, position));
 		currentWeapon.setFiring(mousePressed);
 		currentWeapon.update(dt);		
@@ -179,25 +213,27 @@ public class Player extends Entity {
 		if(currentWeapon.isReloading()){
 			reloadbar.draw(currentWeapon.getTimeSinceLastReload(), currentWeapon.getReloadTime());
 		}
+		GUI_Health.draw(this.health, this.maxHealth);
+		GUI_Shield.draw(shieldrecharge, shieldRechargeMax);
 	}
 
 	@Override
 	public void setScale(Vector2f scale) {
 		super.setScale(scale);
-		if(reloadbar != null)reloadbar.setScale(scale);
+		if(reloadbar != null)reloadbar.setScale(Vector2f.mul(scale, 1.05f));
 	}
 
 	@Override
 	public void setPosition(Vector2f position) {
 		super.setPosition(position);
-		if(reloadbar != null)reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y)));
+		if(reloadbar != null)reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y + 0.02f)));
 	}
-	
+
 	public void applyKnockBack(float speed, float time){
 		movement.applyKnockback(Vector2f.mul(Util.facing(this),-speed), time);
 	}
-	
-	
-	
-	
+
+
+
+
 }

@@ -157,7 +157,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 				error = true;
 			} 
 			else{
-				spritecomp = new SpriteComponent(sprite, w, 15f, tex);
+				spritecomp = new SpriteComponent(sprite, w, 10f, tex);
 				error = false;
 			}
 

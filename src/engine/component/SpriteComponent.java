@@ -44,7 +44,7 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	 * @param tex The texture containing the image
 	 */
 	public SpriteComponent(Entity entity, int w, float fps, Texture tex) {
-		super(entity, new Color(255,255,255,255));
+		super(entity, Color.BLACK);
 		this.tex = tex;	
 		width = w;
 		this.timebetweenframes = 1.f/fps;
@@ -58,7 +58,7 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	 * @param tex The texture containing the image
 	 */
 	public SpriteComponent(Entity entity, int w, int h, Texture tex){
-		super(entity, new Color(255,255,255,255));
+		super(entity, Color.BLACK);
 		tex = new Texture();
 		width = w;
 		height = h;

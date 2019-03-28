@@ -90,7 +90,7 @@ public class Entity{
 	public Entity(Vector2f position, float rotation) {
 		previous_pos = position;
 		setPosition(position);
-		setTheta(.0f);
+		setTheta(rotation);
 		entitymanager.addEntity(this);
 	}
 
@@ -319,6 +319,12 @@ public class Entity{
 		for(NotifierComponent nc : notifiercomps){
 			if(nc.isEnabled())
 				nc.notifyWhenConditionMet();
+		}
+	}
+	
+	public void setHitboxDraw(boolean b){
+		for(CollisionComponent cc : collisioncomps){
+			cc.setHitboxDraw(b);
 		}
 	}
 

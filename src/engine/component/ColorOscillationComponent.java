@@ -18,6 +18,7 @@ import util.Oscillator.OscType;
 public class ColorOscillationComponent extends ModifierComponent {
 	private Vector<ColorComponent> comps;
 	private Oscillator r,g,b,a;
+	private Color start;
 
 	/**
 	 * @param start The color to start on
@@ -28,6 +29,7 @@ public class ColorOscillationComponent extends ModifierComponent {
 	public ColorOscillationComponent(Entity entity, Color start, Color end, float freq, OscType type){
 		super(entity);
 		comps = new Vector<>();		
+		this.start = start;
 		
 		float dr = (float) (end.r - start.r)/2.0f;
 		float dg = (float) (end.g - start.g)/2.0f;
@@ -38,11 +40,26 @@ public class ColorOscillationComponent extends ModifierComponent {
 		MinMaxPair gm = Util.getMinMax(new float[] {start.g,end.g});
 		MinMaxPair bm = Util.getMinMax(new float[] {start.b,end.b});
 		MinMaxPair am = Util.getMinMax(new float[] {start.a,end.a});
+		
+		float phase = 0f;
+		switch(type){
+		case SAW: phase = 0f;
+			break;
+		case SINE: phase = Util.PI/2f;
+			break;
+		case SQUARE: phase = 0f;
+			break;
+		case TRIANGLE: phase = 0f;
+			break;
+		default:
+			break;
+		
+		}
 
-		r = new Oscillator(freq, dr, rm.min + (rm.max - rm.min) / 2.f,  .0f, type);
-		g = new Oscillator(freq, dg, gm.min + (gm.max - gm.min) / 2.f,  .0f, type);
-		b = new Oscillator(freq, db, bm.min + (bm.max - bm.min) / 2.f,  .0f, type);
-		a = new Oscillator(freq, da, am.min + (am.max - am.min) / 2.f,  .0f, type);
+		r = new Oscillator(freq, dr, rm.min + (rm.max - rm.min) / 2.f,  phase, type);
+		g = new Oscillator(freq, dg, gm.min + (gm.max - gm.min) / 2.f,  phase, type);
+		b = new Oscillator(freq, db, bm.min + (bm.max - bm.min) / 2.f,  phase, type);
+		a = new Oscillator(freq, da, am.min + (am.max - am.min) / 2.f,  phase, type);
 	}
 
 
@@ -69,5 +86,11 @@ public class ColorOscillationComponent extends ModifierComponent {
 			}
 		}
 	
+	}
+	
+	public void setToStartColor(){
+		for(ColorComponent c : comps){
+			c.setColor(start);
+		}
 	}
 }

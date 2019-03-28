@@ -22,6 +22,7 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 	private int numParticles;
 	private float lifetime;
 	private float scaleDamp = .02f;
+	private float scaleClamp = Float.POSITIVE_INFINITY;
 	
 
 	/**
@@ -65,7 +66,7 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 				pos = Vector2f.add(pos, Util.approxParticleOffset(Util.normalise(vel), entity));
 				
 				Color c = Util.colorWithVariation(mainColor, colorVary);
-				SpawnFactory.spawnParticle(pos, vel, Util.randInRange(-360, 360), Util.randInRange(.9f*scaleDamp*Util.mag(vel), 1.1f*scaleDamp*Util.mag(vel)), c, Util.randInRange(lifetime - .1f*lifetime, lifetime+.1f*lifetime), Util.randInRange(3, 5));
+				SpawnFactory.spawnParticle(pos, vel, Util.randInRange(-360, 360), Util.clamp(Util.randInRange(.9f*scaleDamp*Util.mag(vel), 1.1f*scaleDamp*Util.mag(vel)), 0f, scaleClamp), c, Util.randInRange(lifetime - .1f*lifetime, lifetime+.1f*lifetime), Util.randInRange(3, 5));
 				}
 				
 			}
@@ -81,6 +82,26 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 	public float getScaleDamp() {
 		return scaleDamp;
 	}
+	
+	
+
+
+	/**Get the current scale clamp
+	 * @return The scale clamp
+	 */
+	public float getScaleClamp() {
+		return scaleClamp;
+	}
+
+
+
+	/**Set the absolute maximum scale of a spawned particle
+	 * @param scaleClamp The scale clamp
+	 */
+	public void setScaleClamp(float scaleClamp) {
+		this.scaleClamp = scaleClamp;
+	}
+
 
 
 	/**

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ClassDiagram>
-    <Class name="engine.component.MovementOscComponent" x="1057" y="-236">
+    <Class name="engine.component.MovementOscComponent" x="52" y="936">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -10,7 +10,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.MovementComponent"/>
     </Class>
-    <Class name="engine.component.RectangleComponent" x="343" y="974">
+    <Class name="engine.component.RectangleComponent" x="948" y="10">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -21,7 +21,7 @@
         <Extension destinationClassName="engine.component.ShapeComponent"/>
         <Communication destinationClassName="engine.component.ColorComponent"/>
     </Class>
-    <Class name="engine.component.DisplayType" x="549" y="948">
+    <Class name="engine.component.DisplayType" x="973" y="156">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -30,7 +30,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.DisplayComponent" x="689" y="182">
+    <Class name="engine.component.DisplayComponent" x="529" y="398">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -42,7 +42,7 @@
         <Extension destinationClassName="engine.component.DrawableComponent"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.OnCollisionComponent" x="1316" y="167">
+    <Class name="engine.component.OnCollisionComponent" x="1089" y="1080">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -52,7 +52,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.NotifierComponent"/>
     </Class>
-    <Class name="engine.component.ColorOscillationComponent" x="275" y="556">
+    <Class name="engine.component.ColorOscillationComponent" x="846" y="728">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -66,7 +66,7 @@
             endpointName="comps" kind="Simple"/>
         <Communication destinationClassName="engine.component.ColorComponent"/>
     </Class>
-    <Class name="engine.component.OffscreenKillComponent" x="1352" y="252">
+    <Class name="engine.component.OffscreenKillComponent" x="720" y="1234">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -76,7 +76,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.NotifierComponent"/>
     </Class>
-    <Class name="engine.component.SelfDestructComponent" x="1088" y="-61">
+    <Class name="engine.component.SelfDestructComponent" x="11" y="50">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -87,7 +87,18 @@
         <Extension destinationClassName="engine.component.UpdateableComponent"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.OnDeathComponent" x="1329" y="369">
+    <Class name="engine.component.AutoFireComponent" x="-148" y="439">
+        <AttributesDisplayFilter public-accepted="true"
+            private-accepted="true" protected-accepted="true"
+            default-accepted="true" static-accepted="false"/>
+        <MethodDisplayFilter public-accepted="true"
+            private-accepted="false" protected-accepted="false"
+            default-accepted="false" static-accepted="false"
+            accessors-accepted="false" constructors-accepted="false"/>
+        <Extension destinationClassName="engine.component.UpdateableComponent"/>
+        <Extension destinationClassName="engine.component.Component"/>
+    </Class>
+    <Class name="engine.component.OnDeathComponent" x="427" y="1272">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -97,7 +108,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.NotifierComponent"/>
     </Class>
-    <Class name="engine.component.HealthBarComponent" x="1150" y="661">
+    <Class name="engine.component.HealthBarComponent" x="1006" y="535">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -107,7 +118,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.DisplayComponent"/>
     </Class>
-    <Class name="engine.component.ComplexMovementComponent" x="1093" y="416">
+    <Class name="engine.component.ComplexMovementComponent" x="-205" y="1056">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -118,7 +129,7 @@
         <Extension destinationClassName="engine.component.SimpleMovementComponent"/>
         <Communication destinationClassName="engine.component.SimpleMovementComponent"/>
     </Class>
-    <Class name="engine.component.ParticleTrailComponent" x="-5" y="-133">
+    <Class name="engine.component.ParticleTrailComponent" x="451" y="0">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -129,7 +140,7 @@
         <Extension destinationClassName="engine.component.UpdateableComponent"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.SimpleMovementComponent" x="1274" y="-211">
+    <Class name="engine.component.SimpleMovementComponent" x="-187" y="824">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -139,7 +150,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.MovementComponent"/>
     </Class>
-    <Class name="engine.component.NotifierComponent" x="845" y="161">
+    <Class name="engine.component.NotifierComponent" x="446" y="1147">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -149,7 +160,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.ConditionalTriggerComponent" x="1344" y="4">
+    <Class name="engine.component.ConditionalTriggerComponent" x="681" y="1011">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -164,7 +175,7 @@
         <Communication destinationClassName="engine.component.NotifierComponent"/>
         <Communication destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.ConvexPolygonComponent" x="135" y="662">
+    <Class name="engine.component.ConvexPolygonComponent" x="894" y="331">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -174,7 +185,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.ShapeComponent"/>
     </Class>
-    <Class name="engine.component.CollisionComponent" x="-9" y="530">
+    <Class name="engine.component.CollisionComponent" x="489" y="226">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -184,18 +195,18 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.Component"/>
         <Association destinationClassName="engine.component.CollisionID"
-            endpointName="collidingIDs" kind="Simple"/>
-        <Association destinationClassName="engine.component.CollisionID"
-            endpointName="ID" kind="Simple">
-            <Point x="-5" y="503"/>
+            endpointName="collidingIDs" kind="Simple">
+            <Point x="751" y="217"/>
         </Association>
+        <Association destinationClassName="engine.component.CollisionID"
+            endpointName="ID" kind="Simple"/>
         <Association
             destinationClassName="engine.component.ConvexPolygonComponent"
             endpointName="hitbox" kind="Simple"/>
         <Communication destinationClassName="engine.component.ColorComponent"/>
         <Communication destinationClassName="engine.component.ShapeComponent"/>
     </Class>
-    <Class name="engine.component.TextComponent" x="462" y="758">
+    <Class name="engine.component.TextComponent" x="1052" y="917">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -205,7 +216,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.ColorComponent"/>
     </Class>
-    <Class name="engine.component.CollisionID" x="50" y="91">
+    <Class name="engine.component.CollisionID" x="781" y="61">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -214,7 +225,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.ShapeComponent" x="172" y="748">
+    <Class name="engine.component.ShapeComponent" x="1189" y="49">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -226,7 +237,7 @@
         <Association destinationClassName="engine.component.DisplayType"
             endpointName="type" kind="Simple"/>
     </Class>
-    <Class name="engine.component.DrawableComponent" x="921" y="660">
+    <Class name="engine.component.DrawableComponent" x="698" y="617">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -235,7 +246,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.SpriteComponent" x="544" y="462">
+    <Class name="engine.component.SpriteComponent" x="33" y="1117">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -246,7 +257,7 @@
         <Extension destinationClassName="engine.component.UpdateableComponent"/>
         <Extension destinationClassName="engine.component.ColorComponent"/>
     </Class>
-    <Class name="engine.component.ModifierComponent" x="313" y="218">
+    <Class name="engine.component.ModifierComponent" x="-61" y="301">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -257,7 +268,7 @@
         <Extension destinationClassName="engine.component.UpdateableComponent"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.Component" x="257" y="-94">
+    <Class name="engine.component.Component" x="286" y="229">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -266,7 +277,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.MouseMoveControlComponent" x="189" y="-333">
+    <Class name="engine.component.MouseMoveControlComponent" x="982" y="1213">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -276,7 +287,17 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.KeyboardMoveComponent" x="675" y="-310">
+    <Class name="engine.component.CollisionSoundComponent" x="1282" y="1143">
+        <AttributesDisplayFilter public-accepted="true"
+            private-accepted="true" protected-accepted="true"
+            default-accepted="true" static-accepted="false"/>
+        <MethodDisplayFilter public-accepted="true"
+            private-accepted="false" protected-accepted="false"
+            default-accepted="false" static-accepted="false"
+            accessors-accepted="false" constructors-accepted="false"/>
+        <Extension destinationClassName="engine.component.OnCollisionComponent"/>
+    </Class>
+    <Class name="engine.component.KeyboardMoveComponent" x="-123" y="549">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -289,7 +310,17 @@
             destinationClassName="engine.component.MovementComponent"
             endpointName="movement" kind="Simple"/>
     </Class>
-    <Class name="engine.component.MovementNotifier" x="646" y="339">
+    <Class name="engine.component.KillOnCollisionComponent" x="1330" y="1001">
+        <AttributesDisplayFilter public-accepted="true"
+            private-accepted="true" protected-accepted="true"
+            default-accepted="true" static-accepted="false"/>
+        <MethodDisplayFilter public-accepted="true"
+            private-accepted="false" protected-accepted="false"
+            default-accepted="false" static-accepted="false"
+            accessors-accepted="false" constructors-accepted="false"/>
+        <Extension destinationClassName="engine.component.OnCollisionComponent"/>
+    </Class>
+    <Class name="engine.component.MovementNotifier" x="731" y="340">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -298,7 +329,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.UpdateableComponent" x="386" y="111">
+    <Class name="engine.component.UpdateableComponent" x="270" y="579">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -307,7 +338,7 @@
             default-accepted="false" static-accepted="false"
             accessors-accepted="false" constructors-accepted="false"/>
     </Class>
-    <Class name="engine.component.ColorComponent" x="422" y="336">
+    <Class name="engine.component.ColorComponent" x="999" y="788">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -317,7 +348,7 @@
             accessors-accepted="false" constructors-accepted="false"/>
         <Extension destinationClassName="engine.component.DisplayComponent"/>
     </Class>
-    <Class name="engine.component.MovementComponent" x="907" y="-87">
+    <Class name="engine.component.MovementComponent" x="43" y="790">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>
@@ -328,7 +359,7 @@
         <Extension destinationClassName="engine.component.UpdateableComponent"/>
         <Extension destinationClassName="engine.component.Component"/>
     </Class>
-    <Class name="engine.component.CyclingModifierComponent" x="166" y="414">
+    <Class name="engine.component.CyclingModifierComponent" x="-172" y="137">
         <AttributesDisplayFilter public-accepted="true"
             private-accepted="true" protected-accepted="true"
             default-accepted="true" static-accepted="false"/>

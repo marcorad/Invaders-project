@@ -9,6 +9,7 @@ import org.jsfml.graphics.Vertex;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
+import engine.entity.EntityManager;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
 import util.Oscillator;
@@ -67,6 +68,8 @@ public abstract class ShapeComponent extends ColorComponent {
 		//graphics.drawToRenderTexture(verticesFromFloatRect(Util.getBoundingRect(shape)), PrimitiveType.LINE_STRIP);
 		super.drawShape(graphics, shape, type);
 	}
+	
+	
 
 	/**Debug method to get the drawable bounds of the shape
 	 * @return
@@ -106,7 +109,7 @@ public abstract class ShapeComponent extends ColorComponent {
 
 	@Override
 	public void onScaleUpdate() {
-		shape.setOutlineThickness(0.01f/Util.mag(entity.getScale()));
+		shape.setOutlineThickness(0.005f/Util.mag(entity.getScale()));
 		shape.setScale(entity.getScale());		
 	}
 

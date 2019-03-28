@@ -72,13 +72,22 @@ public abstract class Weapon {
 			reloadtime = MINIMUM_RELOAD_TIME;
 		}
 	}
+	
+	
 
 	public void update(float dt){
 		timeSinceReload += dt;
 		if(firing){			
 			if(timeSinceReload >= reloadtime){
 				timeSinceReload -= reloadtime;
-				spawnProjectiles();
+				
+				Vector2f locs[] = getSpawnLocations(shooter, numShots, 120f/numShots);
+				
+				for(int i = 0; i < numShots; i++){				
+					spawnProjectiles(locs[i]);
+				}
+				
+				
 				if(sound != null){
 					if(sound.getStatus() != Status.PLAYING){
 						sound.play();
@@ -90,7 +99,7 @@ public abstract class Weapon {
 		}
 	}
 
-	public abstract void spawnProjectiles();
+	public abstract void spawnProjectiles(Vector2f pos);
 
 	public void setFiring(boolean fire){
 		firing = fire;
@@ -108,6 +117,9 @@ public abstract class Weapon {
 		return (timeSinceReload < reloadtime);
 	}
 
+	
+	
+	
 	public static Vector2f[] getSpawnLocations(Entity p, int n, float degreeSeperate){
 		Vector2f[] locs = new Vector2f[n];
 		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);

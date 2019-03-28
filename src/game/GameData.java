@@ -1,5 +1,8 @@
 package game;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -7,11 +10,13 @@ import java.nio.file.Paths;
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
 import org.jsfml.audio.SoundSource;
+import org.jsfml.audio.SoundSource.Status;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.Image;
 import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
@@ -22,7 +27,8 @@ import util.Util;
  *
  */
 public class GameData {
-
+	
+	
 	//fonts
 	public static final Font FONT_CALIBRI = loadFont("Calibri");
 
@@ -40,8 +46,24 @@ public class GameData {
 	public static final Texture TEX_PLAYER = loadTexture("player");
 	public static final Texture TEX_BUCKSHOT = loadTexture("buckshot");
 	public static final Texture TEX_EXAMPLE_ENEMY = loadTexture("example enemy");
-	public static final Texture TEX_TEST_BUTTON = loadBlurryAnimation("testbutton", 128, 12);
+	public static final Texture TEX_TEST_BUTTON = loadTexture("testbutton");
 	public static final Texture TEX_BENNY_THE_FEESH = loadTexture("benny the feesh");
+	
+	
+	public static final Texture TEX_RAIL_SLUG = loadTexture("Projectile Rail Slug");
+	public static final Vector2f[] HB_RAIL_SLUG = loadHitboxData("Projectile Rail Slug");
+	
+	public static final Texture TEX_ROCKET = loadTexture("Projectile Rocket");
+	public static final Vector2f[] HB_ROCKET = loadHitboxData("Projectile Rocket");
+	
+	public static final Texture TEX_BULLET = loadTexture("Projectile Bullet");
+	public static final Vector2f[] HB_BULLET = loadHitboxData("Projectile Bullet");
+	
+	public static final Texture TEX_SHIELD = loadTexture("Shield");
+	public static final Vector2f[] HB_SHIELD = loadHitboxData("Shield");
+	
+	public static final Vector2f[] HB_BENNY = loadHitboxData("benny the feesh");
+	
 
 	static{
 		TEX_EXAMPLE_ENEMY.setSmooth(true);
@@ -65,13 +87,8 @@ public class GameData {
 		return f;
 	}
 
-	/**Load hitbox data from the hitboxdata folder.
-	 * @param name The name without extension
-	 * @return An array containing points of multiple hitboxes ([points][hitbox number])
-	 */
-	public static Vector2f[][] loadHitboxData(String name){
-		return null;
-	}
+
+
 
 	/**Load a texture from the sprites folder
 	 * @param name The name without the extension. Expects a .png file.
@@ -149,6 +166,37 @@ public class GameData {
 
 
 		return tex;
+	}
+	
+	/**Load hitbox data from the hitboxdata folder.
+	 * @param name The name without extension
+	 * @return An array containing points of multiple hitboxes ([points][hitbox number])
+	 */
+	public static Vector2f[] loadHitboxData(String name){
+		DataInputStream dis;
+		try {
+			dis = new DataInputStream(new FileInputStream("hbdata\\"+name+".hbd"));
+			int size = dis.readInt();
+			Vector2f[] hb = new Vector2f[size];
+			for(int i = 0; i < size; i++){
+				hb[i] = new Vector2f(dis.readFloat(), dis.readFloat());
+			}
+			dis.close();
+			return hb;
+		} catch (FileNotFoundException e) {			
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static void playSound(Sound s){
+		if(s.getStatus() != Status.PLAYING){
+			s.play();
+		}
+		
 	}
 
 }

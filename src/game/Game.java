@@ -38,6 +38,7 @@ import engine.component.TextComponent;
 import engine.entity.Entity;
 import engine.entity.EntityManager;
 import engine.entity.Player;
+import engine.entity.PoisonCloud;
 import engine.entity.SpawnFactory;
 import engine.graphics.GraphicsHandler;
 import engine.gui.Button;
@@ -91,23 +92,7 @@ public class Game implements MouseListener, KeyListener {
 	eventhandler.attachMouseListener(this);
 	eventhandler.attachKeyListener(this);
 	new Player(new Vector2f(0f,-.8f));
-	Button b1 = new Button(new Vector2f(.8f,.8f), GameData.TEX_TEST_BUTTON, 128, 150f){
-		@Override
-		public void buttonAction() {
-			System.out.println("Button 1 pressed");
-		}};
-
-		b1.setHoverColor(new Color(0,255,255,255));
-		b1.setScale(new Vector2f(.2f,.2f));
-
-		Button b2 = new Button(new Vector2f(.8f,.4f), GameData.TEX_TEST_BUTTON, 128, 1f){
-			@Override
-			public void buttonAction() {
-				System.out.println("Button 2 pressed");
-			}};
-
-			b2.setHoverColor(new Color(0,255,255,255));
-			b2.setScale(new Vector2f(.2f,.2f));
+	
 
 			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
 			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
@@ -116,7 +101,9 @@ public class Game implements MouseListener, KeyListener {
 			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
 			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
 			graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
-
+			new PoisonCloud(Vector2f.ZERO, .3f, .01f);
+			
+			
 
 			//Main loop
 			while(window.isOpen()) {
@@ -126,7 +113,7 @@ public class Game implements MouseListener, KeyListener {
 
 				float frate = (1.0f / dt);
 
-				window.setTitle(name + " - " + String.valueOf(frate));
+				//window.setTitle(name + " - " + String.valueOf(frate));
 				updateGame(dt, t);
 
 				graphics.clear();
@@ -144,15 +131,6 @@ public class Game implements MouseListener, KeyListener {
 		if(!paused)
 			entitymanager.update(dt, t);
 	}
-
-	public static float incCol(float color, float dt, float mag){
-		color += dt*mag;
-		if(color >= 255.0f){
-			color -= 255.0f;
-		}
-		return color;
-	}
-
 
 
 	public static void main(String[] args) {
@@ -183,7 +161,7 @@ public class Game implements MouseListener, KeyListener {
 
 	public static void playSound(SoundBuffer buf, float volume){
 		Sound s = new Sound(buf);
-		s.setVolume(volume);
+		s.setVolume(volume);		
 		s.play();
 	}
 
@@ -192,6 +170,7 @@ public class Game implements MouseListener, KeyListener {
 	public void onKeyPress(KeyEvent ke) {
 		if(ke.key == Key.ESCAPE) window.close(); 
 		else if(ke.key == Key.P) paused = !paused;
+		else if(ke.key == Key.H) entitymanager.toggleHitboxDraw();
 	}
 
 
