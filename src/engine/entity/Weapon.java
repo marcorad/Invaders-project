@@ -20,7 +20,7 @@ public abstract class Weapon {
 	 *
 	 */
 	public enum WeaponID{
-		SHOTGUN, RAILGUN, MACHINEGUN, ROCKET, ENEMY_WEAPON;
+		POISON, DARTGUN, MACHINEGUN, ROCKET, ENEMY_WEAPON;
 	}
 
 	public final WeaponID ID;
@@ -71,9 +71,17 @@ public abstract class Weapon {
 		if(reloadtime < MINIMUM_RELOAD_TIME){
 			reloadtime = MINIMUM_RELOAD_TIME;
 		}
+	}	
+
+	public float getDamage() {
+		return damage;
 	}
-	
-	
+
+	public float getReloadtime() {
+		return reloadtime;
+	}
+
+
 
 	public void update(float dt){
 		timeSinceReload += dt;

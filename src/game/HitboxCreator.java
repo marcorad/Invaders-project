@@ -81,6 +81,8 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 	public String name;
 
 	public HitboxCreator(){
+		
+		GameData.load();
 
 		Clock elapsed_time = new Clock();	
 		Clock loop_time = new Clock();	

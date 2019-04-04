@@ -121,6 +121,21 @@ public class SpawnFactory {
 		
 	}
 	
+	public static void spawnPoisonBlob(Entity player, Vector2f pos, float damage){
+		Vector2f facing = Util.facing(player);
+		Entity blob = createBasePlayerProjectile(player, pos, GameData.TEX_POISON, GameData.HB_POISON, .04f, null, damage, new Color(30,150,70,180));
+		new KillOnCollisionComponent(blob);
+		new OnCollisionComponent(blob){
+			@Override
+			public void notifyAction() {
+				System.out.println(entity.getPosition());
+				new PoisonCloud(entity.getPosition(), .2f, entity.getDamage());
+			}};
+		new SimpleMovementComponent(blob, Vector2f.mul(facing, 1.1f), Util.randInRange(-300f, 300f));
+		new ScaleOscComponent(blob, new Oscillator(Util.randInRange(1f, 2f), .01f, 0f, 0f, OscType.SINE), Util.unitVectorWithRotation(45f));
+		spawnGunPowder(blob.getPosition(), facing, 5f,new Color(30,150,70,180));
+	}
+	
 	public static void spawnExplosion(Entity src){
 		Entity expl = new Entity(src.getPosition());
 		float r = .3f;
@@ -148,7 +163,7 @@ public class SpawnFactory {
 	
 	public static void spawnRailSlug(Entity player,Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
-		Entity slug = createBasePlayerProjectile(player, pos, GameData.TEX_RAIL_SLUG, GameData.HB_RAIL_SLUG, .04f, null, damage, Color.BLACK);
+		Entity slug = createBasePlayerProjectile(player, pos, GameData.TEX_DART, GameData.HB_DART, .04f, null, damage, Color.BLACK);
 		new SimpleMovementComponent(slug, Vector2f.mul(facing, 1.5f), 0);
 		spawnGunPowder(slug.getPosition(), facing, 6f, Color.CYAN);
 	}
@@ -222,6 +237,7 @@ public class SpawnFactory {
 		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
 		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
 		new DamageFlashComponent(enem, sprc);
+		new ScaleOscComponent(enem, new Oscillator(Util.randInRange(1f, 2f), .02f, 0f, 0f, OscType.TRIANGLE), new Vector2f(1f,1f));
 	}
 
 	/** Spawn a gunpowder effect used when shooting and projectile collisions

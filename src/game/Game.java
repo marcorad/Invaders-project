@@ -51,7 +51,7 @@ import util.Util;
 
 public class Game implements MouseListener, KeyListener {
 
-	public final static int WIDTH = 800, HEIGHT = 800;
+	public final static int WIDTH = 700, HEIGHT = 700;
 	public String name;
 	public static final int FRAMERATE = 1000;
 	public static GraphicsHandler graphics;
@@ -62,7 +62,8 @@ public class Game implements MouseListener, KeyListener {
 	private static EventHandler eventhandler;
 	private static RenderWindow window;
 
-	static{
+
+	private static void init(){
 		window = new RenderWindow();
 
 		//window.create(VideoMode.getDesktopMode(), "", Window.FULLSCREEN);
@@ -84,7 +85,14 @@ public class Game implements MouseListener, KeyListener {
 		Entity.setEnvironment(entitymanager, graphics, eventhandler);
 	}
 
-	public Game(String title){		name = title;
+	public Game(String title){	
+	
+	//load the data first
+	GameData.load();
+	//only create and initialise after game data has been loaded
+	init();
+		
+	name = title;
 
 	Clock elapsed_time = new Clock();	
 	Clock loop_time = new Clock();	
@@ -101,30 +109,28 @@ public class Game implements MouseListener, KeyListener {
 			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
 			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
 			graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
-			new PoisonCloud(Vector2f.ZERO, .3f, .01f);
 			
 			
 
 			//Main loop
 			while(window.isOpen()) {
-				loop_time.restart();
 				dt = elapsed_time.restart().asSeconds(); //change in time
 				t += dt; //keep track of total time
 
 				float frate = (1.0f / dt);
 
-				//window.setTitle(name + " - " + String.valueOf(frate));
-				updateGame(dt, t);
-
 				graphics.clear();
-
+				loop_time.restart();
+				updateGame(dt, t);				
 				entitymanager.drawEntities();
-
-				graphics.display();			
 				eventhandler.handleEvents();
+				window.setTitle(name + " - " + loop_time.restart().asMicroseconds());
+				graphics.display();			
+				
 
 			}
 	}
+
 
 
 	public void updateGame(float dt, float t){

@@ -44,7 +44,7 @@ public class Util {
 	public static float vectorAngle(Vector2f v){
 		return toDegrees((float)Math.atan2(v.y, v.x));
 	}
-	
+
 	/**Get the unit vector pointing in the direction the entity is facing
 	 * @param e The entity
 	 * @return The vector pointing in the facing direction
@@ -61,7 +61,7 @@ public class Util {
 		return (float) Math.sin(t);
 	}
 
-	/**Get a random colour
+	/**Get a random colour with full opacity
 	 * @return The colour
 	 */
 	public static Color randomColor(){
@@ -79,17 +79,17 @@ public class Util {
 		return new Color((int)(r + t*(end.r - r)), (int)(g + t*(end.g - g)), (int)(b + t*(end.b - b)), (int)(a + t*(end.a - a)));
 
 	}
-	
+
 	/**Get a random unit vector between 2 angles.
 	 * @param angleMin The minimum angle in radians
 	 * @param angleMax The maximum angle in radians
-	 * @return
+	 * @return A random unit vector between the angles
 	 */
 	public static Vector2f randomUnitVector(float angleMin, float angleMax){
 		float theta = randInRange(angleMin, angleMax);
 		return new Vector2f(cosf(theta), sinf(theta));
 	}
-	
+
 	/**Randomly vary a vector with a certain maximum angle
 	 * @param v The vector
 	 * @param varyRad The varyin angle in radians
@@ -275,8 +275,8 @@ public class Util {
 		t = Transform.rotate(t, degrees, origin);
 		return t.transformPoint(target);
 	}
-	
-	
+
+
 	/**Rotate a vector about the origin
 	 * @param target The vector to rotate
 	 * @param degrees The angle in degrees
@@ -314,8 +314,12 @@ public class Util {
 		}
 		return pts;
 	}
-	
-	
+
+
+	/**Get the points of shape in world space
+	 * @param s The shape
+	 * @return The transformed points of the shape (world space)
+	 */
 	public static Vector2f[] getTransformedPoints(Shape s){
 		Vector2f pts[] = new Vector2f[s.getPointCount()];
 		Transform t = s.getTransform();
@@ -326,7 +330,7 @@ public class Util {
 	}
 
 
-	
+
 	/**Get the bounding rectangle of a shape, since getGlobalBounds() does not seem to work properly
 	 * @param s The shape
 	 * @return The bounding rectangle
@@ -439,7 +443,7 @@ public class Util {
 		scale = new Vector2f(Util.sgn(unitdir.x)*scale.x, Util.sgn(unitdir.y)*scale.y);
 		return Vector2f.mul(unitdir, dot(unitdir, scale));
 	}
-	
+
 
 	/**Approximate where a particle could be such that the particle is outside the bounding box of an entity, taking x and y scales into account, with an addition compensational offset in the direction of the offset
 	 * @param unitdir The direction in which the particle is offset
@@ -473,7 +477,23 @@ public class Util {
 	}
 
 	/**
-	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT)
+	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT).</br>
+	 * Bounding rectangles of the polygons are first checked</br></br>
+	 * 
+	 * 
+	 * <u><b>ALGORITHM</b></u></br>
+	 * For each edge of convex polygons a and b, which has a set of points p and q respectively</br>
+	 * Get the edge normal</br>
+	 * Project the vertices of a and b onto the normal (dot product)</br>
+	 * Find the max and min projection values for each shape</br>
+	 * If the projections do not overlap, then return false</br>
+	 * If algorithm completes, return true</br></br>
+	 * 
+	 * This algorithm was discovered on the page with URL:</br>
+	 * <a href="http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT">http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT</a></br>
+	 * 		 
+	 * Note that this Java implementation is original and specific for the JSFML library.</br>
+	 * 
 	 * @param a First convex polygon
 	 * @param b Second convex polygon
 	 * @return whether they are colliding
@@ -482,28 +502,10 @@ public class Util {
 	public static boolean convexPolyCollision(ConvexShape a, ConvexShape b ){		
 
 		//preliminary bounding rectangle check to improve efficiency
+		//the intersection method in JSFML FloatRect not used since the overlapping FloatRect is not required
 		if(!intersects(getBoundingRect(a),getBoundingRect(b))){
 			return false;
 		}
-
-
-
-		//System.out.println("Rect intersects");
-
-		/*
-		 * ALGORITHM
-		 * For each edge of a and b, which has a set of points p and q respectively
-		 * Get the edge normal
-		 * Project the vertices of a and b onto the normal (dot product)
-		 * Find the max and min projection values for each shape
-		 * If the projections do not overlap, then return false
-		 * If algorithm completes, return true
-		 * 
-		 * This algorithm was discovered on the page with URL:
-		 * http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT
-		 * 		 
-		 * Note that this Java implementation is original and specific for the JSFML library.
-		 */
 
 		Vector2f[] p = getTransformedPoints(a);
 		Vector2f[] q = getTransformedPoints(b);
@@ -533,7 +535,6 @@ public class Util {
 		for(int edge_b = 0; edge_b < q.length; edge_b++){
 
 			Vector2f normal= getLazyNormal(q[edge_b], q[(edge_b+1)%q.length]);
-
 
 			for(int pi = 0; pi < p.length; pi++){
 				p_proj[pi] = dot(normal, p[pi]);

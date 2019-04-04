@@ -43,7 +43,8 @@ public class Entity{
 	public float getDamage() {
 		return damage;
 	}
-
+	
+	
 	/**Set the damage associated with an entity
 	 * @param damage The damage
 	 */
@@ -112,7 +113,7 @@ public class Entity{
 	 */
 	public void doDamage(float damage){
 		health -= damage;
-		System.out.println(health);
+		//System.out.println(health);
 	}
 
 	/**

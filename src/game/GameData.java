@@ -30,48 +30,90 @@ public class GameData {
 	
 	
 	//fonts
-	public static final Font FONT_CALIBRI = loadFont("Calibri");
+	public static Font FONT_CALIBRI;
 
 	//sounds
-	public static final Sound SOUND_LAZELIEN = loadSound("lazelien");
-	public static final Sound SOUND_PEEG = loadSound("peeg"); 
-	public static final Sound SOUND_BASS = loadSound("bass");
+	public static Sound SOUND_LAZELIEN;
+	public static Sound SOUND_PEEG; 
+	public static Sound SOUND_BASS;
 
-	static{
-		SOUND_PEEG.setVolume(30f);
-	}
 
 	//images
-	public static final Texture TEX_GAME_BACKGROUND = loadTexture("gamebg");
-	public static final Texture TEX_PLAYER = loadTexture("player");
-	public static final Texture TEX_BUCKSHOT = loadTexture("buckshot");
-	public static final Texture TEX_EXAMPLE_ENEMY = loadTexture("example enemy");
-	public static final Texture TEX_TEST_BUTTON = loadTexture("testbutton");
-	public static final Texture TEX_BENNY_THE_FEESH = loadTexture("benny the feesh");
+	public static Texture TEX_GAME_BACKGROUND;
+	public static Texture TEX_PLAYER ;
+	public static Texture TEX_BUCKSHOT;
+	public static Texture TEX_EXAMPLE_ENEMY;
+	public static Texture TEX_TEST_BUTTON;
+	public static Texture TEX_BENNY_THE_FEESH;
 	
 	
-	public static final Texture TEX_RAIL_SLUG = loadTexture("Projectile Rail Slug");
-	public static final Vector2f[] HB_RAIL_SLUG = loadHitboxData("Projectile Rail Slug");
+	public static Texture TEX_DART;
+	public static Vector2f[] HB_DART;
 	
-	public static final Texture TEX_ROCKET = loadTexture("Projectile Rocket");
-	public static final Vector2f[] HB_ROCKET = loadHitboxData("Projectile Rocket");
+	public static Texture TEX_ROCKET;
+	public static Vector2f[] HB_ROCKET;
 	
-	public static final Texture TEX_BULLET = loadTexture("Projectile Bullet");
-	public static final Vector2f[] HB_BULLET = loadHitboxData("Projectile Bullet");
+	public static Texture TEX_BULLET;
+	public static Vector2f[] HB_BULLET;
 	
-	public static final Texture TEX_SHIELD = loadTexture("Shield");
-	public static final Vector2f[] HB_SHIELD = loadHitboxData("Shield");
+	public static Texture TEX_SHIELD;
+	public static Vector2f[] HB_SHIELD;
 	
-	public static final Vector2f[] HB_BENNY = loadHitboxData("benny the feesh");
+	public static Texture TEX_POISON;
+	public static Vector2f[] HB_POISON;
 	
+	public static Vector2f[] HB_BENNY;
+	
+	public static Texture TEX_POISON_ICON;
+	public static Texture TEX_MACHINEGUN_ICON;
+	public static Texture TEX_DARTGUN_ICON;
+	public static Texture TEX_ROCKET_ICON;
+	
+	/**
+	 * Loads all the data required for the game
+	 */
+	public static void load(){
+		
+		FONT_CALIBRI = loadFont("Calibri");
 
-	static{
-		TEX_EXAMPLE_ENEMY.setSmooth(true);
-		//TEX_TEST_BUTTON.setSmooth(true);
-		TEX_PLAYER.setSmooth(true);
-		//TEX_GAME_BACKGROUND.setSmooth(true);
-		TEX_BENNY_THE_FEESH.setSmooth(true);
+		
+		SOUND_LAZELIEN = loadSound("lazelien");
+		SOUND_PEEG = loadSound("peeg"); 
+		SOUND_BASS = loadSound("bass");
+		
+		TEX_GAME_BACKGROUND = loadTexture("gamebg");
+		TEX_PLAYER = loadTexture("player"); TEX_PLAYER.setSmooth(true);
+		TEX_BUCKSHOT = loadTexture("buckshot");
+		TEX_EXAMPLE_ENEMY = loadTexture("example enemy"); //TEX_EXAMPLE_ENEMY.setSmooth(true);
+		TEX_TEST_BUTTON = loadTexture("testbutton");
+		TEX_BENNY_THE_FEESH = loadTexture("benny the feesh"); //TEX_BENNY_THE_FEESH.setSmooth(true);
+		
+		
+		TEX_DART = loadTexture("Projectile Dart");
+		 HB_DART = loadHitboxData("Projectile Dart");
+		
+		TEX_ROCKET = loadTexture("Projectile Rocket");
+		HB_ROCKET = loadHitboxData("Projectile Rocket");
+		
+		TEX_BULLET = loadTexture("Projectile Bullet");
+		HB_BULLET = loadHitboxData("Projectile Bullet");
+		
+		TEX_POISON= loadTexture("Projectile Poison");
+		HB_POISON = loadHitboxData("Projectile Poison");
+		
+		TEX_SHIELD = loadTexture("Shield");
+		HB_SHIELD = loadHitboxData("Shield");
+		
+		TEX_POISON_ICON = loadTexture("Poison icon");
+		TEX_DARTGUN_ICON = loadTexture("Dart icon");
+		TEX_ROCKET_ICON = loadTexture("Rocket icon");
+		TEX_MACHINEGUN_ICON = loadTexture("Machinegun icon");
+		
+		
+		
+		HB_BENNY = loadHitboxData("benny the feesh");
 	}
+	
 
 	/**Load a font from the font folder.
 	 * @param name The name without the extension. Expects a .ttf file.
