@@ -9,7 +9,7 @@ import engine.component.SelfDestructComponent;
 import util.Util;
 
 public class PoisonCloud extends Entity {
-	
+
 	private float r;
 
 	public PoisonCloud(Vector2f position, float r, float damage) {
@@ -18,16 +18,17 @@ public class PoisonCloud extends Entity {
 		this.damage = damage;
 		create();
 	}
-	
+
 	private void create(){
 		this.setDamage(damage);
 		this.setScale(new Vector2f(r,r));
-		new CollisionComponent(this, Util.REGULAR_POLYGONS[7], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
+		if(damage >= 0f)
+			new CollisionComponent(this, Util.REGULAR_POLYGONS[7], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
 		new SelfDestructComponent(this, 2f); //only lasts 2 seconds
 	}
 
 	private static float spawnChance = .16f;
-	
+
 	@Override
 	public void update(float dt, float t) {
 		while(Util.randInRange(0f, 1f) < spawnChance){
@@ -40,7 +41,7 @@ public class PoisonCloud extends Entity {
 		}
 		super.update(dt, t);
 	}
-	
-	
+
+
 
 }

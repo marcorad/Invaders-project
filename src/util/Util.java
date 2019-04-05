@@ -36,6 +36,21 @@ public class Util {
 	public static int sgn(float f){
 		return f < 0f ?  -1 :  1;
 	}
+	
+	/**Get the index of the element that was randomly selected based off discreet probabilities p. The probabilities p must add to 1.
+	 * 
+	 * @param p The discreet probabilities
+	 * @return The index of the randomly selected element based off p. Returns -1 if the the the method failed.
+	 */
+	public int discreetProb(float p[]){
+		float s = rand.nextFloat();
+		float acc = 0;
+		for(int i = 0; i < p.length; i++){
+			acc += p[i];
+			if (s < acc) return i;
+		}
+		return -1;
+	}
 
 	/** The angle of the vector
 	 * @param v The vector

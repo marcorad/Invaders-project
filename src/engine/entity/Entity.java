@@ -2,6 +2,7 @@ package engine.entity;
 
 import java.util.Vector;
 
+import org.jsfml.graphics.Color;
 import org.jsfml.graphics.ConvexShape;
 import org.jsfml.graphics.Transform;
 import org.jsfml.system.Vector2f;
@@ -21,10 +22,13 @@ public class Entity{
 	public static EntityManager entitymanager;
 	public static GraphicsHandler graphics;
 	public static EventHandler eventhandler;
+	public static Game game;
+	
 	protected float maxHealth = .0001f;
 	protected float health = .0001f; //health of entity, entity gets removed once health reaches 0
 	protected float damage = 0f; //the damage value that this entity can deal, only really used for projectiles
 	private boolean collidedThisFrame = false;
+	private SpriteComponent sprite; //if the entity has a sprite, this will store reference to it
 
 
 	/**Sets the manager and graphics that the entity has access to. This must be done before the game is started.
@@ -81,6 +85,7 @@ public class Entity{
 		previous_pos = position;
 		setPosition(position);
 		entitymanager.addEntity(this);
+		
 	}
 
 
@@ -335,11 +340,14 @@ public class Entity{
 	 */
 	public void update(float dt, float t){
 
-		updateNotifierComponents();
+		
 		//damage the entity according to all entities colliding with it
 		for(Entity colliding : collidingentities){
 			this.doDamage(colliding.getDamage());
 		}
+		
+		updateNotifierComponents();//do after damage taken since some components might be notified on death
+		
 		//System.out.println(collidingentities.size());
 		collidingentities.clear(); //clear the colliding entities since it is handled
 		previous_dt = dt;
@@ -378,6 +386,9 @@ public class Entity{
 		if(c instanceof NotifierComponent){
 			notifiercomps.addElement((NotifierComponent)c);
 		}
+		if(c instanceof SpriteComponent){
+			sprite = (SpriteComponent)c;
+		}
 	}
 
 	/**
@@ -392,6 +403,17 @@ public class Entity{
 	 */
 	public Vector2f getPosition() {
 		return position;
+	}
+	
+	/**Return the colour of the related sprite. If it does not have a sprite, returns black.
+	 * @return The sprite colour
+	 */
+	public Color getSpriteColour(){
+		if(sprite != null){
+			return sprite.getColor();
+		} else {
+			return Color.BLACK;
+		}
 	}
 
 	/**Set the position of the entity

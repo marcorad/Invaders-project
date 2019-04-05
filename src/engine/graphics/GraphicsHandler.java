@@ -1,5 +1,7 @@
 package engine.graphics;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Vector;
 
 
@@ -11,6 +13,8 @@ import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTexture;
 import org.jsfml.graphics.RenderWindow;
+import org.jsfml.graphics.Shader;
+import org.jsfml.graphics.ShaderSourceException;
 import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
@@ -19,12 +23,14 @@ import org.jsfml.graphics.Vertex;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
+import game.Game;
 import util.Util;
 
 public class GraphicsHandler {
 	
 	private RenderWindow window;
-	private RenderStates texturerenderstate, windowrenderstate;
+	private RenderStates texturerenderstate, windowrenderstate, bgrenderstate;
+	private Shader bgshader;
 	private RenderTexture rt;
 	private Sprite screenspr; //adding a sprite to draw to before the screen allows for the use of shaders on the sprite
 	public Transform camera, normalisedspace;
@@ -55,11 +61,18 @@ public class GraphicsHandler {
 		
 		camera = new Transform(normalisedspace);
 		
+		bgshader = new Shader();
+		try {
+			bgshader.loadFromFile(Paths.get("shader//background_shader.glsl"), Shader.Type.FRAGMENT);
+		} catch (IOException | ShaderSourceException e) {
+			e.printStackTrace();
+		}
+		
 		//create a render state that draws a normalised space on the screen
 		//i.e the origin is at the centre of the screen, with +-1 at the edges
 		texturerenderstate = new RenderStates(BlendMode.ALPHA, camera, null, null);	
 		windowrenderstate = new RenderStates(BlendMode.ALPHA,normalisedspace, null, null);	
-		
+		bgrenderstate = new RenderStates(BlendMode.NONE,Transform.IDENTITY, null, bgshader);	
 	}
 	
 	/**draws to the render texture which is drawn to the window
@@ -126,8 +139,19 @@ public class GraphicsHandler {
 //		RectangleShape  rect = new RectangleShape(s);
 //		rect.setOrigin(Vector2f.mul(s, 0.5f));
 //		rect.setFillColor(Color.WHITE);
-		
-		drawToRenderTexture(BG);
+//		drawToRenderTexture(rect);
+		drawBackground();
+	}
+	
+	private void drawBackground(){
+		Vertex v[] = new Vertex[]{  
+				new Vertex(new Vector2f(0f,0f)),
+				new Vertex(new Vector2f(Game.WIDTH,0f)),
+				new Vertex(new Vector2f(Game.WIDTH,Game.HEIGHT)),
+				new Vertex(new Vector2f(0f,Game.HEIGHT))
+				};		
+		bgshader.setParameter("t", Game.getTotalElapsedTime());
+		rt.draw(v, PrimitiveType.QUADS, bgrenderstate);
 	}
 	
 	

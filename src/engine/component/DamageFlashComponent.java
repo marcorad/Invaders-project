@@ -13,13 +13,13 @@ public class DamageFlashComponent extends Component {
 	public DamageFlashComponent(Entity entity, SpriteComponent sc) {
 		super(entity);
 		
-		ColorOscillationComponent osc = new ColorOscillationComponent(entity, Color.BLACK, Color.RED, 4f/(TIME), OscType.SQUARE);
+		ColorOscillationComponent osc = new ColorOscillationComponent(entity, entity.getSpriteColour(), Color.RED, 4f/(TIME), OscType.SQUARE);
 		osc.addComponent(sc);
 		
 		new ConditionalTriggerComponent(entity, osc, TIME){
 			@Override
 			public boolean notifyCondition() {
-				return !entity.getCollidingEntities().isEmpty();
+				return entity.collidedThisFrame();
 			}
 
 			@Override

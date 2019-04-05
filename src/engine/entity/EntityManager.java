@@ -84,6 +84,16 @@ public class EntityManager {
 	public void addEntity(Entity e){		
 			add.addElement(e);		
 	}
+	
+		
+	/**
+	 * Clear all the entities from the screen on the next frame by killing them.
+	 */
+	public void clearEntities(){
+		for(Entity e: entities){ //could also be replaced by a boolean then checking on the next frame and calling entities.clear()
+			e.kill();
+		}
+	}
 
 
 }

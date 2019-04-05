@@ -21,7 +21,7 @@ public class HealthBarComponent extends DisplayComponent {
 	
 	private Bar displaybar;
 	
-	/**
+	/**Creates a health bar with a fixed scale
 	 * @param entity The active entity
 	 */
 	public HealthBarComponent(Entity entity) {
@@ -36,9 +36,10 @@ public class HealthBarComponent extends DisplayComponent {
 		bar = new RectangleShape(new Vector2f(width,height));
 		bar.setOrigin(new Vector2f(width/2f, -1.1f - height/2));		
 		bar.setFillColor(Color.GREEN);
+		displaybar.setScale(new Vector2f(.1f,.1f));
 		
 		onPositionUpdate();
-		onScaleUpdate();
+		//onScaleUpdate();
 	}
 
 	@Override
@@ -57,7 +58,7 @@ public class HealthBarComponent extends DisplayComponent {
 
 	@Override
 	public void onScaleUpdate() {
-		displaybar.setScale(entity.getScale());
+		onPositionUpdate(); //the scale has changed, so since the bar has a fixed scale, the bar's position must change which is dependent on the entity's scale
 	}
 
 }

@@ -46,8 +46,8 @@ public class SpawnFactory {
 		CollisionComponent cc = new CollisionComponent(projectile, hitbox, thisid, ids);
 		cc.setHitboxDraw(true);
 	}
-	
-	
+
+
 	/**Spawn a particle that is a regular n-gon
 	 * @param pos The position in the world
 	 * @param vel The velocity
@@ -110,17 +110,47 @@ public class SpawnFactory {
 			GameData.playSound(firesound);
 		return proj;
 	}
-	
-	
+
+	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health){
+		Entity enem = new Entity(pos);
+		enem.setScale(new Vector2f(scale,scale));
+		enem.setMaxHealth(health);;
+		enem.healFully();
+		
+		new OnDeathComponent(enem){
+			@Override
+			public void notifyAction() {
+				spawnExplosionParticles(entity, .1f, .5f, entity.getSpriteColour());				
+			}			
+		};
+		SpriteComponent sprite = new SpriteComponent(enem, 64, 15f, tex);
+		sprite.setColor(col);
+		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);		
+		new DamageFlashComponent(enem, sprite);		
+		new HealthBarComponent(enem);
+		
+		return enem;
+	}
+
+	public static void spawnWaveEnemy(Vector2f pos){
+		Entity wave = createBaseEnemy(pos, GameData.TEX_ENEMY_WAVE, new Color(5,36,130), GameData.HB_ENEMY_WAVE, null, .1f, 10f);
+		new ScaleOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.009f, 0.011f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(1f,1f));
+		new MovementOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.0013f, 0.016f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(0f,1f));
+		new AutoFireComponent(wave, createDefaultEnemyWeapon(wave, 1f));
+		
+	}
+
+
 	public static void spawnMachineGunBullet(Entity player, Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity bullet = createBasePlayerProjectile(player, pos, GameData.TEX_BULLET, GameData.HB_BULLET, .03f, null, damage, Color.BLACK);
 		new KillOnCollisionComponent(bullet);
 		new SimpleMovementComponent(bullet, Vector2f.mul(facing, 2.1f), 0);
 		spawnGunPowder(bullet.getPosition(), facing, 3f, Color.YELLOW);
-		
+		((Player)player).applyKnockBack(.2f, .1f);
+
 	}
-	
+
 	public static void spawnPoisonBlob(Entity player, Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity blob = createBasePlayerProjectile(player, pos, GameData.TEX_POISON, GameData.HB_POISON, .04f, null, damage, new Color(30,150,70,180));
@@ -131,43 +161,53 @@ public class SpawnFactory {
 				System.out.println(entity.getPosition());
 				new PoisonCloud(entity.getPosition(), .2f, entity.getDamage());
 			}};
-		new SimpleMovementComponent(blob, Vector2f.mul(facing, 1.1f), Util.randInRange(-300f, 300f));
-		new ScaleOscComponent(blob, new Oscillator(Util.randInRange(1f, 2f), .01f, 0f, 0f, OscType.SINE), Util.unitVectorWithRotation(45f));
-		spawnGunPowder(blob.getPosition(), facing, 5f,new Color(30,150,70,180));
+			new SimpleMovementComponent(blob, Vector2f.mul(facing, 1.1f), Util.randInRange(-300f, 300f));
+			new ScaleOscComponent(blob, new Oscillator(Util.randInRange(1f, 2f), .01f, 0f, 0f, OscType.SINE), Util.unitVectorWithRotation(45f));
+			spawnGunPowder(blob.getPosition(), facing, 5f,new Color(30,150,70,180));
+			((Player)player).applyKnockBack(.15f, .1f);
 	}
-	
-	public static void spawnExplosion(Entity src){
+
+	public static void spawnDamagingExplosion(Entity src){
 		Entity expl = new Entity(src.getPosition());
 		float r = .3f;
 		expl.setScale(new Vector2f(r,r));
 		expl.setDamage(src.getDamage());
-		
+
 		new CollisionComponent(expl, Util.REGULAR_POLYGONS[7], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
 		new SelfDestructComponent(expl, .0001f);
-		
+
+		spawnExplosionParticles(src, r/4f, 1f, new Color(200,200,70, 200));
+	}
+
+	public static void spawnExplosionParticles(Entity src,float spread, float speedDamp, Color color){		
 		int numparticles = Util.randInRange(30, 50);
-		
+
 		for(int i = 0; i < numparticles; i++){
-			Vector2f pos = Vector2f.add(src.position, Vector2f.mul(Util.randomUnitVector(0, 360f), Util.randInRange(0f, r/4f)));
-			Vector2f vel = Vector2f.mul(Util.randomUnitVector(0, 360f), Util.randInRange(-1f, 1f));
+			Vector2f pos = Vector2f.add(src.position, Vector2f.mul(Util.randomUnitVector(0, 360f), Util.randInRange(0f, spread)));
+			Vector2f vel = Vector2f.mul(Util.randomUnitVector(0, 360f), speedDamp*Util.randInRange(-1f, 1f));
 			float angular = Util.randInRange(-1000f, 1000f);
-			spawnParticle(pos, vel, angular, Util.randInRange(.007f, .015f), new Color(200,200,70, 200), Util.randInRange(.4f, .8f), 3);
+			spawnParticle(pos, vel, angular, Util.randInRange(.007f, .015f), color, Util.randInRange(.4f, .8f), 3);
 		}
 	}
-	
+
+
+
+
+
 	public static void spawnShield(Player p, float health){
 		Shield s = new Shield(p);
 		s.setMaxHealth(health);
 		s.healFully();
 	}
-	
-	public static void spawnRailSlug(Entity player,Vector2f pos, float damage){
+
+	public static void spawnDart(Entity player,Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity slug = createBasePlayerProjectile(player, pos, GameData.TEX_DART, GameData.HB_DART, .04f, null, damage, Color.BLACK);
 		new SimpleMovementComponent(slug, Vector2f.mul(facing, 1.5f), 0);
 		spawnGunPowder(slug.getPosition(), facing, 6f, Color.CYAN);
+		((Player)player).applyKnockBack(.3f, .1f);
 	}
-	
+
 	public static void spawnRocket(Entity player,Vector2f pos, float damage){
 		Entity rocket = createBasePlayerProjectile(player, pos, GameData.TEX_ROCKET, GameData.HB_ROCKET, .03f, null, damage, new Color(200, 100, 30, 255));
 		ComplexMovementComponent cmc = new ComplexMovementComponent(rocket, Vector2f.mul(Util.facing(player), 0f), Vector2f.mul(Util.facing(player), 1.2f), 0f, 0f);
@@ -180,11 +220,12 @@ public class SpawnFactory {
 		new OnCollisionComponent(rocket){
 			@Override
 			public void notifyAction() {
-				SpawnFactory.spawnExplosion(entity);
-			}};
+				SpawnFactory.spawnDamagingExplosion(entity);
+			}};			
+		
 	}
-	
-	
+
+
 
 
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
@@ -233,7 +274,7 @@ public class SpawnFactory {
 		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
 		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_BENNY_THE_FEESH);	
 		sprc.setColor(Color.BLACK);
-		
+
 		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
 		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
 		new DamageFlashComponent(enem, sprc);

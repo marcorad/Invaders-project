@@ -9,6 +9,7 @@ import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.event.MouseWheelEvent;
 
 import engine.component.CollisionComponent;
+import engine.component.CollisionID;
 import engine.component.ComplexMovementComponent;
 import engine.component.Component;
 import engine.component.ConvexPolygonComponent;
@@ -16,12 +17,15 @@ import engine.component.HealthBarComponent;
 import engine.component.KeyboardMoveComponent;
 import engine.component.MouseMoveControlComponent;
 import engine.component.MovementComponent;
+import engine.component.OnDeathComponent;
 import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
 import engine.component.UpdateableComponent;
 import engine.entity.Weapon.WeaponID;
 import engine.gui.Bar;
+import game.Game;
 import game.GameData;
+import state.StateMachine.State;
 import util.Util;
 
 /**A class that specifically describes a player entity, since its behaviour is complex.
@@ -38,11 +42,11 @@ public class Player extends Entity {
 	private float shieldRechargeMax = 10f;
 	private float shieldRechargeRate = 4f;
 
-	
+
 	public final Weapon DARTGUN = new Weapon(.4f, 1.4f, WeaponID.DARTGUN, this){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {
-			SpawnFactory.spawnRailSlug(this.shooter, pos, this.damage);
+			SpawnFactory.spawnDart(this.shooter, pos, this.damage);
 		}
 
 	};
@@ -78,10 +82,9 @@ public class Player extends Entity {
 	private ComplexMovementComponent movement;
 	private SpriteComponent sprite;
 	private CollisionComponent collision;
-	private ConvexPolygonComponent hitbox;
 	private KeyboardMoveComponent keys;
 	private MouseMoveControlComponent mouse;
-	private float accelmag = 4.5f;
+	private float accelmag = 5.5f;
 	private boolean mousePressed = false;
 
 	private float maxvel = 1f;
@@ -123,13 +126,13 @@ public class Player extends Entity {
 	public void UpgradeCurrentWeaponFireRate(float factor){
 		currentWeapon.decreasedReloadTime(currentWeapon.getReloadtime()*factor);
 	}
-	
-	
+
+
 	public void addWeapon(Weapon w){
 		Vector2f pos = new Vector2f(.27f+heldWeapons.size()*.2f,-0.912f);
 		heldWeapons.add(w);		
 		Texture tex = null;
-		
+
 		if(w.ID == WeaponID.POISON){
 			tex = GameData.TEX_POISON_ICON;
 		} else if(w.ID == WeaponID.MACHINEGUN){
@@ -141,8 +144,8 @@ public class Player extends Entity {
 		}		
 		weaponIcons.add(new WeaponIcon(pos, tex));		
 	}
-	
-	
+
+
 	/**
 	 * Adds an extra shot.
 	 */
@@ -151,6 +154,9 @@ public class Player extends Entity {
 	}
 
 	private void create(){
+		
+		this.setMaxHealth(10f);
+		this.healFully();
 
 		heldWeapons = new Vector<>();
 		weaponIcons = new Vector<>();
@@ -159,6 +165,9 @@ public class Player extends Entity {
 		addWeapon(POISON);
 		addWeapon(ROCKET);
 		switchWeapon(0);
+		currentWeapon.addShot();
+		currentWeapon.addShot();
+		currentWeapon.addShot();
 
 		GUI_Health = new Bar(.75f, .06f, new Color(255,0,0,100), new Color(0,255,0,100), .01f);
 		GUI_Health.setPosition(new Vector2f(-.6f, -.866f));
@@ -170,8 +179,8 @@ public class Player extends Entity {
 
 		movement = new ComplexMovementComponent(this, Vector2f.ZERO, Vector2f.ZERO, 0f, 0f);
 		movement.setSpeedClamp(maxvel);
-		this.setMinPosition(new Vector2f(-.75f, -.81f));
-		this.setMaxPosition(new Vector2f(.64f, -.5f));	
+		this.setMinPosition(new Vector2f(-.9f, -.9f));
+		this.setMaxPosition(new Vector2f(.9f, -.55f));	
 		//currentWeapon.addShot();
 		//currentWeapon.addShot();
 		//currentWeapon.addShot();
@@ -216,6 +225,7 @@ public class Player extends Entity {
 		//hitbox.setColor(Color.RED);
 
 		mouse = new MouseMoveControlComponent(this){
+
 			@Override
 			public void onRightMousePress(Vector2f worldpos) {
 				if(shieldrecharge == shieldRechargeMax){
@@ -231,11 +241,11 @@ public class Player extends Entity {
 
 			@Override
 			public void onRightMouseRelease(Vector2f worldpos) {
-				System.out.println("RIGHT MOUSE RELEASE: " + worldpos);
 			}
 
 			@Override
 			public void onLeftMouseRelease(Vector2f worldpos) {
+				System.out.println("RELEASED");
 				mousePressed = false;
 
 			}
@@ -245,6 +255,14 @@ public class Player extends Entity {
 				currentmouse = worldpos;				
 			}
 
+			@Override
+			public void onMouseWheelMoved(MouseWheelEvent mwe) {
+				if(mwe.delta > 0){
+					switchWeapon(-1);
+				} else if (mwe.delta < 0){
+					switchWeapon(1);
+				}
+			}
 		};
 
 		ParticleTrailComponent trail = new ParticleTrailComponent(this, .5f, .4f, 30f, new Color(255, 50, 50, 255), 2, .5f);
@@ -252,6 +270,14 @@ public class Player extends Entity {
 
 		trail.setColorVary(50);
 		trail.setRandomVel(.35f);
+		
+		collision = new CollisionComponent(this, GameData.HB_PLAYER, CollisionID.PLAYER, CollisionID.ENEMY_PROJECTILE, CollisionID.ENEMY);
+		
+		new OnDeathComponent(this){
+			@Override
+			public void notifyAction() {
+				Game.stateMachine.setCurrentState(State.GAME_OVER);				
+			}};
 	}
 
 

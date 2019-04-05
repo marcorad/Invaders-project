@@ -18,6 +18,10 @@ public class EventHandler {
 	private final RenderWindow window;
 	private Vector<KeyListener> kl;
 	private Vector<MouseListener> ml;
+	
+	private Vector<KeyListener> kl_add = new Vector<>();
+	private Vector<MouseListener> ml_add = new Vector<>();
+	
 	private static Vector2f CURRENT_MOUSE_WORLD_POS = Vector2f.ZERO;
 
 	/**Construct an event handler listening to a specific window
@@ -28,11 +32,26 @@ public class EventHandler {
 		kl = new Vector<>(); 
 		ml = new Vector<>();
 	}
+	
+	
 
 	/**
 	 * Poll the associated window's events and send appropriate messages
 	 */
 	public void handleEvents(){
+		
+		//add mouse listeners. The additional lists are required to avoid ComodificationExceptions
+		for(MouseListener m : ml_add){
+			ml.add(m);
+		}
+		ml_add.clear();
+		
+		for(KeyListener k : kl_add){
+			kl.add(k);
+		}
+		kl_add.clear();
+		
+		
 		for (Event e : window.pollEvents()){
 			//when window must close
 			if(e.type == Event.Type.CLOSED){
@@ -95,14 +114,14 @@ public class EventHandler {
 	 * @param m The mouse listener
 	 */
 	public void attachMouseListener(MouseListener m){
-		ml.addElement(m);
+		ml_add.addElement(m);
 	}
 	
 	/**Add a key listener that will react to the handler's input
 	 * @param k The key listener
 	 */
 	public void attachKeyListener(KeyListener k){
-		kl.addElement(k);
+		kl_add.addElement(k);
 	}
 	
 	public static Vector2f getCurrentMouseWorldPosition(){
