@@ -17,6 +17,7 @@ import engine.component.HealthBarComponent;
 import engine.component.KeyboardMoveComponent;
 import engine.component.MouseMoveControlComponent;
 import engine.component.MovementComponent;
+import engine.component.OnCollisionComponent;
 import engine.component.OnDeathComponent;
 import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
@@ -144,6 +145,13 @@ public class Player extends Entity {
 		}		
 		weaponIcons.add(new WeaponIcon(pos, tex));		
 	}
+	
+	/**Heal the player by a specific amount.
+	 * @param h The amount to heal
+	 */
+	public void heal(float h){
+		setHealth(this.health + h);
+	}
 
 
 	/**
@@ -164,10 +172,7 @@ public class Player extends Entity {
 		addWeapon(DARTGUN);
 		addWeapon(POISON);
 		addWeapon(ROCKET);
-		switchWeapon(0);
-		currentWeapon.addShot();
-		currentWeapon.addShot();
-		currentWeapon.addShot();
+		switchWeapon(0);		
 
 		GUI_Health = new Bar(.75f, .06f, new Color(255,0,0,100), new Color(0,255,0,100), .01f);
 		GUI_Health.setPosition(new Vector2f(-.6f, -.866f));
@@ -278,6 +283,12 @@ public class Player extends Entity {
 			public void notifyAction() {
 				Game.stateMachine.setCurrentState(State.GAME_OVER);				
 			}};
+			
+			new OnCollisionComponent(this){
+				@Override
+				public void notifyAction() {					
+					Game.graphics.damageTakenEffect();
+				}};
 	}
 
 
@@ -329,6 +340,13 @@ public class Player extends Entity {
 
 	public void applyKnockBack(float speed, float time){
 		movement.applyKnockback(Vector2f.mul(Util.facing(this),-speed), time);
+	}
+	
+	/**Upgrade the shield recharge rate by multiplying it by a factor.
+	 * @param factor The factor to multiply with.
+	 */
+	public void upgradeShieldRecharge(float factor){
+		shieldRechargeRate *= factor; 
 	}
 
 

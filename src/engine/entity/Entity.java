@@ -122,10 +122,17 @@ public class Entity{
 	}
 
 	/**
-	 * Set the entity's health to zero, causing it to be removed
+	 * Set the entity's health to zero, causing it to be removed, and all required death notifications to be made.
 	 */
 	public void kill(){
 		health = 0f;
+		remove = true;
+	}
+	
+	/**
+	 * Remove the entity from the list, without killing it.
+	 */
+	public void remove(){
 		remove = true;
 	}
 

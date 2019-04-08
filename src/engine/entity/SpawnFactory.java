@@ -8,10 +8,12 @@ import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 
 import engine.component.*;
+import engine.entity.PowerUp.PowerUpType;
 import engine.entity.Weapon.WeaponID;
 import engine.graphics.GraphicsHandler;
 import game.Game;
 import game.GameData;
+import state.StateMachine.State;
 import util.Oscillator;
 import util.Oscillator.OscType;
 import util.Util;
@@ -78,19 +80,20 @@ public class SpawnFactory {
 	 */
 
 
-	/**Spawns a projectile in the direction the player is facing with all required base properties.
-	 * Base properties include:
-	 * A sprite with a base colour (adding a color oscillator can change the colour)
-	 * A hitbox
-	 * Automatic off-screen removal
-	 * A sound to play when fired
-	 * A damage to deal
+	/**Spawns a projectile in the direction the player is facing with all required base properties.</br>
+	 * Base properties include: </br>
+	 * A sprite with a base colour (adding a color oscillator can change the colour)</br>
+	 * A hitbox</br>
+	 * Automatic off-screen removal</br>
+	 * A sound to play when fired</br>
+	 * A damage to deal</br></br>
 	 * 
 	 * The projectile does not have any associated motion. Motion should be handled outside this method.
 	 * The projectile does not get removed on collision. This should be handled outside this method.
 	 * 
 	 * @param player The player firing the projectile
 	 * @param tex The sprite texture
+	 * @param pos The position of the projectile
 	 * @param hb The hitbox
 	 * @param scale The scale
 	 * @param firesound The sound to be played on fire
@@ -111,6 +114,9 @@ public class SpawnFactory {
 		return proj;
 	}
 
+	
+	private final static float POWER_UP_PROBS[] = new float[]{.25f,.25f,.25f,.25f}; //heal, shot, damage, shield. Will return -1 if nothing is spawned.
+	
 	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health){
 		Entity enem = new Entity(pos);
 		enem.setScale(new Vector2f(scale,scale));
@@ -125,9 +131,43 @@ public class SpawnFactory {
 		};
 		SpriteComponent sprite = new SpriteComponent(enem, 64, 15f, tex);
 		sprite.setColor(col);
-		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);		
+		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE, CollisionID.PLAYER);		
 		new DamageFlashComponent(enem, sprite);		
 		new HealthBarComponent(enem);
+		
+		new OnDeathComponent(enem){ //spawn powerups based off chance
+
+			@Override
+			public void notifyAction() {
+				int i = Util.discreetProb(POWER_UP_PROBS);
+				switch(i){
+				case 0: new PowerUp(entity.getPosition(), PowerUpType.HEAL);
+					break;
+				case 1: new PowerUp(entity.getPosition(), PowerUpType.SHOT);
+					break;
+				case 2: new PowerUp(entity.getPosition(), PowerUpType.DAMAGE);
+					break;
+				case 3: new PowerUp(entity.getPosition(), PowerUpType.SHIELD);
+					break;
+				}
+			}};
+			
+		new OnCollisionComponent(enem){
+			@Override
+			public void notifyAction() {
+				if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) Game.stateMachine.setCurrentState(State.GAME_OVER);
+			}};
+			
+			new NotifierComponent(enem){
+				@Override
+				public boolean notifyCondition() {
+					return entity.getPosition().y < -1.03f;
+				}
+				@Override
+				public void notifyAction() {
+					Game.stateMachine.setCurrentState(State.GAME_OVER);
+				}				
+			};
 		
 		return enem;
 	}
@@ -137,6 +177,7 @@ public class SpawnFactory {
 		new ScaleOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.009f, 0.011f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(1f,1f));
 		new MovementOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.0013f, 0.016f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(0f,1f));
 		new AutoFireComponent(wave, createDefaultEnemyWeapon(wave, 1f));
+		new SimpleMovementComponent(wave, new Vector2f(0, -0.2f), 0);
 		
 	}
 
@@ -192,8 +233,6 @@ public class SpawnFactory {
 
 
 
-
-
 	public static void spawnShield(Player p, float health){
 		Shield s = new Shield(p);
 		s.setMaxHealth(health);
@@ -224,9 +263,6 @@ public class SpawnFactory {
 			}};			
 		
 	}
-
-
-
 
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
 		Entity p = new Entity(pos);

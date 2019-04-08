@@ -7,6 +7,8 @@ import engine.component.SpriteComponent;
 import engine.component.TextComponent;
 import engine.entity.Entity;
 import engine.entity.Player;
+import engine.entity.PowerUp;
+import engine.entity.PowerUp.PowerUpType;
 import engine.entity.SpawnFactory;
 import engine.gui.Button;
 import game.Game;
@@ -127,6 +129,7 @@ public class StateMachine {
 		Game.setCurrentPlayer(new Player(new Vector2f(0f, -.85f)));
 		for(float x = -.5f; x <= .5f; x+=.25f)
 			SpawnFactory.spawnWaveEnemy(new Vector2f(x, .8f));
+		new PowerUp(new Vector2f(0f,0.7f), PowerUpType.SHOT);
 
 	}
 

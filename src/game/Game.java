@@ -119,6 +119,7 @@ public class Game implements MouseListener, KeyListener {
 				long lt = loop_time.restart().asMicroseconds();				
 				//window.setTitle(name + " - " + lt);
 			}
+			graphics.update(dt, t);
 			graphics.display();	
 
 		}

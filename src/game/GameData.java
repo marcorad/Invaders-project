@@ -72,7 +72,9 @@ public class GameData {
 	public static Vector2f[] HB_POISON;
 
 	public static Vector2f[] HB_BENNY;
-
+	
+	public static Texture TEX_TEMP_POWERUP;
+	public static Vector2f[] HB_POWERUP;
 
 
 	public static Texture TEX_ENEMY_BAT;
@@ -168,6 +170,9 @@ public class GameData {
 		TEX_HIGH_SCORE_TEXT	= loadTexture("Text high score");   
 		TEX_QUIT_TEXT = loadTexture("Text quit");        
 		TEX_GAME_OVER_TEXT = loadTexture("Text game over"); 
+		
+		TEX_TEMP_POWERUP = loadTexture("Temp powerup");
+		HB_POWERUP = loadHitboxData("Temp powerup");
 
 		HB_BENNY = loadHitboxData("benny the feesh");
 	}

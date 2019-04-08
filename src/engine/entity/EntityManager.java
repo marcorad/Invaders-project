@@ -72,10 +72,9 @@ public class EntityManager {
 				Entity e = ite.next();
 				e.update(dt, t);
 				if(e.shouldBeRemoved())ite.remove();				
-			}
-		
+			}	
 
-		//System.out.println(entities.size()); //debug purposes
+		//System.out.println(entities.size());
 	}
 
 	/** Adds an entity to the manager before the next frame. Be careful when doing this, since an entity adds itself to the manager.
@@ -87,11 +86,11 @@ public class EntityManager {
 	
 		
 	/**
-	 * Clear all the entities from the screen on the next frame by killing them.
+	 * Clear all the entities from the screen on the next frame without killing them and invoking OnDeathComponents.
 	 */
 	public void clearEntities(){
-		for(Entity e: entities){ //could also be replaced by a boolean then checking on the next frame and calling entities.clear()
-			e.kill();
+		for(Entity e: entities){ 
+			e.remove();;
 		}
 	}
 

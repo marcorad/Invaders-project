@@ -42,7 +42,7 @@ public class Util {
 	 * @param p The discreet probabilities
 	 * @return The index of the randomly selected element based off p. Returns -1 if the the the method failed.
 	 */
-	public int discreetProb(float p[]){
+	public static int discreetProb(float p[]){
 		float s = rand.nextFloat();
 		float acc = 0;
 		for(int i = 0; i < p.length; i++){
