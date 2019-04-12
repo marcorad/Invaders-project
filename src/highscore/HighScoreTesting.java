@@ -19,7 +19,7 @@ public class HighScoreTesting {
 		File oldhsfilex = new File("C:/Users/test01/git/Invaders-project/highscoredata/savedhs.txt");
 		try
 		{
-			int currentscore = 0; 
+			int currentscore = 0;   
 			Scanner scantextx = new Scanner(oldhsfilex);
 			int hsoldx = 0;
 			hsoldx = scantextx.nextInt();
