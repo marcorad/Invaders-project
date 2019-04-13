@@ -17,7 +17,7 @@ public abstract class EnemySpecs {
 	
 	abstract void spawn(Vector2f pos);
 	
-	public float spawnChance(float difficulty){
+	private float spawnChance(float difficulty){
 		if (difficulty < minDiff ){
 			return Util.clamp((chanceRate*difficulty+initialChance), 0, 1);
 		} else return 0;

@@ -8,16 +8,15 @@ public class LevelGen{
 		elapsed_time += dt;
 	}
 	public static float difficulty(){
-		float diff = 10*elapsed_time;
-		//Linear increase in difficulty, 0.05f is the gradient and 1 is base difficulty.
+		float diff = 0.05f*elapsed_time;
 		return diff;
 	}
 	public static float health(float diff, EnemySpecs a) {
-		float health = 0.05f*elapsed_time + a.getStartHealth();
+		float health = 15*diff*elapsed_time + a.getStartHealth();
 		return health;
 	}
 	public static float damage(float diff, EnemySpecs b){
-		float damage = 10*elapsed_time + b.getStartDamage();
+		float damage = 2*diff*elapsed_time + b.getStartDamage();
 		return damage;
 	}
 	public static void reset(){
@@ -27,12 +26,18 @@ public class LevelGen{
 	public static void main(String[] args) {
 		float et = 0.0f;
 		Clock clk = new Clock();
+		EnemySpecs Reaper = new TestEnemy();		
 		while(et < 10){
-			float dt = 10*clk.restart().asSeconds(); /* The 10 is the scale at which the time difference is multiplied */
+			float dt = 100*clk.restart().asSeconds(); /* The 10 is the scale at which the time difference is multiplied */
 			et += dt;
-			//Testing
 			float diff = difficulty();
-			System.out.println(diff);
+//			The following tests functions: difficulty, doSpawn, health, damage.
+//			System.out.println(diff);
+//			Reaper.doSpawn(diff); 
+//			float healthCheck = health(diff, Reaper);
+//			System.out.println("Health: " + healthCheck);
+//			float damageCheck = damage(diff, Reaper);
+//			System.out.println("Damage: " + damageCheck);	
 			update(dt);
 		}
 	}
