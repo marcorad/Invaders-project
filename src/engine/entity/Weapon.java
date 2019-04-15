@@ -42,18 +42,22 @@ public abstract class Weapon {
 		this.ID = ID;
 		this.shooter = p;
 	}
-	
+
 	public void setSound(Sound s){
 		this.sound = s;
 	}
-	
-	
+
+
 
 	/**
-	 * Increase the number of shots the weapon fires by 1
+	 * Increase the number of shots the weapon fires by 1. Max of 5 shots.
+	 * This also reduces the damage done by 25%, since two shots are now fired.
 	 */
 	public void addShot(){
-		numShots++;
+		if (numShots <= 5){
+			damage *= .75f;
+			numShots++;
+		}
 	}
 
 	/**Increase the damage per projectile
@@ -88,14 +92,14 @@ public abstract class Weapon {
 		if(firing){			
 			if(timeSinceReload >= reloadtime){
 				timeSinceReload -= reloadtime;
-				
+
 				Vector2f locs[] = getSpawnLocations(shooter, numShots, 120f/numShots);
-				
+
 				for(int i = 0; i < numShots; i++){				
 					spawnProjectiles(locs[i]);
 				}
-				
-				
+
+
 				if(sound != null){
 					if(sound.getStatus() != Status.PLAYING){
 						sound.play();
@@ -112,27 +116,27 @@ public abstract class Weapon {
 	public void setFiring(boolean fire){
 		firing = fire;
 	}
-	
+
 	public float getTimeSinceLastReload(){
 		return timeSinceReload;
 	}
-	
+
 	public float getReloadTime(){
 		return reloadtime;
 	}
-	
+
 	public boolean isReloading(){
 		return (timeSinceReload < reloadtime);
 	}
 
-	
-	
-	
+
+
+
 	public static Vector2f[] getSpawnLocations(Entity p, int n, float degreeSeperate){
 		Vector2f[] locs = new Vector2f[n];
 		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);
 		float angle;
-	    
+
 		if(n%2 == 1) {
 			int k = (n-1)/2;
 			angle = -k*degreeSeperate;
@@ -140,14 +144,14 @@ public abstract class Weapon {
 			int k = (n)/2;
 			angle = -k*degreeSeperate+degreeSeperate/2f;
 		}
-		
-	
+
+
 		for(int i = 0; i < n; i++){
 			locs[i] = Util.rotateVector(maindir, angle);
 			locs[i] = Vector2f.add(p.getPosition(), locs[i]);
 			angle+=degreeSeperate;
 		}
-	
+
 		return locs;
 	}
 

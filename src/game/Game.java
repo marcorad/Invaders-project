@@ -22,20 +22,95 @@ import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
 import engine.input.KeyListener;
 import engine.input.MouseListener;
+import levelgen.LevelGen;
+import music.MusicController;
 import state.StateMachine;
+import state.StateMachine.State;
 
 public class Game implements MouseListener, KeyListener {
 
-	public final static int WIDTH = 700, HEIGHT = 700;
+	public static int WIDTH = 700, HEIGHT = 700;
 	public String name;
 	public static final int FRAMERATE = 1000;
 	public static GraphicsHandler graphics;
 	public static EntityManager entitymanager;
+	public static MusicController music;
 	private boolean paused = false;
+	private static boolean soundEnabled=true;
+	private static boolean musicEnabled=false;	
+	
+	private static int gameLength = 0;
+	private static int numEnemiesKilled = 0;
+	private static int currentPlayerScore = 0;
+	private static int numEnemies = 0;
+	
+	public static int getNumberOfEnemiesOnScreen(){
+		return numEnemies;
+	}
+	
+	public static void incNumberOfEnemiesOnScreen(){
+		numEnemies++;
+	}
+	
+	public static void incNumberOfEnemiesKilled(){
+		numEnemiesKilled++;
+		numEnemies--;
+	}
+	
+	public static void resetGameNumbers(){
+		numEnemiesKilled = 0;
+		currentPlayerScore = 0;
+		numEnemies = 0;
+	}
+	
+	public static void addToCurrentPlayerScore(int amount){
+		currentPlayerScore += amount;
+	}
+	
+	public static int getCurrentPlayerScore(){
+		return currentPlayerScore;
+	}
+	
+	public static int getNumberOfEnemiesLeft(){
+		return gameLength - numEnemiesKilled;
+	}
+	
+	
+	public static int getNumberOfEnemiesKilled(){
+		return numEnemiesKilled;
+	}
+	
+	
+	public static int getGameLength() {
+		return gameLength;
+	}
 
 
+	public static void setGameLength(int gameLength) {
+		Game.gameLength = gameLength;
+	}
+
+
+	public static boolean isSoundEnabled() {
+		return soundEnabled;
+	}
+
+	
+	public static boolean isMusicEnabled() {
+		return musicEnabled;
+	}
+	
+	public static void toggleMusicEnabled(){
+		musicEnabled = !musicEnabled;
+	}
+	
+	public static void toggleSoundEnabled(){
+		soundEnabled = !soundEnabled;
+	}
+
+	
 	public static EventHandler eventhandler;
-	private static RenderWindow window;
+	public static RenderWindow window;
 	private static Player currentPlayer;
 	public static StateMachine stateMachine;
 	
@@ -54,6 +129,8 @@ public class Game implements MouseListener, KeyListener {
 		window = new RenderWindow();
 
 		//window.create(VideoMode.getDesktopMode(), "", Window.FULLSCREEN);
+		//WIDTH = window.getSize().x;
+		//HEIGHT = window.getSize().y;
 		window.create(new VideoMode(WIDTH, HEIGHT), "", Window.CLOSE);
 		try {
 			window.setActive();
@@ -71,6 +148,8 @@ public class Game implements MouseListener, KeyListener {
 		Entity.setEnvironment(entitymanager, graphics, eventhandler);
 
 		stateMachine = new StateMachine();
+		music = new MusicController();
+		
 	}
 	
 	private static float t = 0.0f, dt; 
@@ -78,9 +157,11 @@ public class Game implements MouseListener, KeyListener {
 	public Game(String title){	
 
 		//load the data first
-		GameData.load();
-		//only create and initialise after game data has been loaded
+		GameData.load();			
 		init();
+		music.setInititialMusic(GameData.MUSIC_INTRO);	
+		music.start();
+		
 
 		name = title;
 
@@ -98,9 +179,6 @@ public class Game implements MouseListener, KeyListener {
 		//			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
 		//			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
 
-		graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
-
-
 
 		Clock elapsed_time = new Clock();
 		float wait_time = 1f; //just so that the window has some time to be created
@@ -116,10 +194,11 @@ public class Game implements MouseListener, KeyListener {
 				updateGame(dt, t);				
 				entitymanager.drawEntities();
 				eventhandler.handleEvents();
+				graphics.update(dt, t);
 				long lt = loop_time.restart().asMicroseconds();				
-				//window.setTitle(name + " - " + lt);
-			}
-			graphics.update(dt, t);
+				window.setTitle(name + " - " + lt);
+				
+			}			
 			graphics.display();	
 
 		}
@@ -132,8 +211,10 @@ public class Game implements MouseListener, KeyListener {
 
 
 	public void updateGame(float dt, float t){
-		if(!paused)
+		if(!paused){
 			entitymanager.update(dt, t);
+			if(stateMachine.getCurrentState() == State.GAME) LevelGen.update(dt);
+		}
 	}
 
 
@@ -181,12 +262,7 @@ public class Game implements MouseListener, KeyListener {
 	public boolean isUseless() {
 		return false;
 	}
-
-	public static void playSound(SoundBuffer buf, float volume){
-		Sound s = new Sound(buf);
-		s.setVolume(volume);		
-		s.play();
-	}
+	
 
 
 	@Override

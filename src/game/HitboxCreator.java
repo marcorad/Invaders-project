@@ -111,7 +111,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 		name = "test";
 		loadSprite();
 		
-		graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
+		//graphics.setBackground(GameData.TEX_GAME_BACKGROUND);
 
 
 		//Main loop

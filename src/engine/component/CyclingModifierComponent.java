@@ -23,6 +23,9 @@ public class CyclingModifierComponent extends ModifierComponent {
 	@Override
 	protected void modify() {
 		float t = times.get(index);
+		for(Component c: comps.get(index)){ //forcibly enable this component
+			c.setEnabled(true);
+		}
 		if(t >= 0f){
 			if(this.elapsedtime >= t){
 				elapsedtime -= t;			
@@ -46,6 +49,7 @@ public class CyclingModifierComponent extends ModifierComponent {
 	 * Adding a null array will just add a time delay.
 	 * Using a negative time will disable the cycling and only allow for that list of components to be enabled permanently.
 	 * A negative time and null array disables all the components permanently and stops the cycling once it reaches that stage. This allows for a sequence of non-repeatable events.
+	 * Components added to this list will be forcibly enabled when this CyclingModifierComponent gets updated.
 	 * @param t The time on
 	 * @param cl The Components 
 	 */

@@ -20,7 +20,7 @@ public class TextComponent extends ColorComponent {
 
 	private Text text;	
 	private Vector2f normalisedscale;
-	
+
 	/**
 	 * @param entity The active entity
 	 * @param color The color
@@ -36,12 +36,12 @@ public class TextComponent extends ColorComponent {
 		normalisedscale = new Vector2f(1.f/(float)Game.HEIGHT,-1.f/(float)Game.HEIGHT);
 		onScaleUpdate();
 	}
-	
+
 	@Override
 	protected void colorUpdate() {
 		text.setColor(color);;
 	}
-	
+
 	@Override
 	public void draw(GraphicsHandler graphics) {
 		graphics.drawToRenderTexture(text);
@@ -71,12 +71,14 @@ public class TextComponent extends ColorComponent {
 		r = text.getGlobalBounds();		
 	}
 
-	/**
+	/**Set the text that is displayed of this component
 	 * @param s The text
 	 */
 	public void setText(String s){
-		text.setString(s);	
-		reallignOrigin();
+		if(!s.contentEquals(this.text.getString())){
+			text.setString(s);	
+			reallignOrigin();
+		}
 	}
 
 }

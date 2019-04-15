@@ -44,7 +44,7 @@ public class Player extends Entity {
 	private float shieldRechargeRate = 4f;
 
 
-	public final Weapon DARTGUN = new Weapon(.4f, 1.4f, WeaponID.DARTGUN, this){
+	public final Weapon DARTGUN = new Weapon(.8f, .8f, WeaponID.DARTGUN, this){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {
 			SpawnFactory.spawnDart(this.shooter, pos, this.damage);
@@ -52,7 +52,7 @@ public class Player extends Entity {
 
 	};
 
-	public final Weapon MACHINEGUN = new Weapon(.8f, .2f, WeaponID.MACHINEGUN, this){
+	public final Weapon MACHINEGUN = new Weapon(1.2f, .2f, WeaponID.MACHINEGUN, this){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {
 			SpawnFactory.spawnMachineGunBullet(shooter, pos, damage);
@@ -60,7 +60,7 @@ public class Player extends Entity {
 
 	};
 
-	public final Weapon ROCKET = new Weapon(1f, 1f, WeaponID.ROCKET, this){
+	public final Weapon ROCKET = new Weapon(10f, 1.2f, WeaponID.ROCKET, this){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {			
 			SpawnFactory.spawnRocket(shooter, pos, damage);
@@ -68,7 +68,7 @@ public class Player extends Entity {
 	};
 
 
-	public final Weapon POISON = new Weapon(.01f, 1f, WeaponID.POISON, this){
+	public final Weapon POISON = new Weapon(.13f, 1f, WeaponID.POISON, this){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {			
 			SpawnFactory.spawnPoisonBlob(shooter, pos, damage);
@@ -129,23 +129,30 @@ public class Player extends Entity {
 	}
 
 
+	/**Gives the player a weapon. If the player already has the weapon, then add an extra shot to that weapon.
+	 * @param w
+	 */
 	public void addWeapon(Weapon w){
-		Vector2f pos = new Vector2f(.27f+heldWeapons.size()*.2f,-0.912f);
-		heldWeapons.add(w);		
-		Texture tex = null;
+		if(!heldWeapons.contains(w)){		
+			Vector2f pos = new Vector2f(.27f+heldWeapons.size()*.2f,-0.912f);
+			heldWeapons.add(w);		
+			Texture tex = null;
 
-		if(w.ID == WeaponID.POISON){
-			tex = GameData.TEX_POISON_ICON;
-		} else if(w.ID == WeaponID.MACHINEGUN){
-			tex = GameData.TEX_MACHINEGUN_ICON;
-		} else if(w.ID == WeaponID.ROCKET){
-			tex = GameData.TEX_ROCKET_ICON;
-		} else if(w.ID == WeaponID.DARTGUN){
-			tex = GameData.TEX_DARTGUN_ICON;
-		}		
-		weaponIcons.add(new WeaponIcon(pos, tex));		
+			if(w.ID == WeaponID.POISON){
+				tex = GameData.TEX_POISON_ICON;
+			} else if(w.ID == WeaponID.MACHINEGUN){
+				tex = GameData.TEX_MACHINEGUN_ICON;
+			} else if(w.ID == WeaponID.ROCKET){
+				tex = GameData.TEX_ROCKET_ICON;
+			} else if(w.ID == WeaponID.DARTGUN){
+				tex = GameData.TEX_DARTGUN_ICON;
+			}		
+			weaponIcons.add(new WeaponIcon(pos, tex));	
+		} else {
+			w.addShot();
+		}
 	}
-	
+
 	/**Heal the player by a specific amount.
 	 * @param h The amount to heal
 	 */
@@ -155,30 +162,27 @@ public class Player extends Entity {
 
 
 	/**
-	 * Adds an extra shot.
+	 * Adds an extra shot to the current weapon held. Max of 5 shots at once.
 	 */
-	public void UpgradeCurrentWeaponShot(){
-		currentWeapon.addShot();
+	public void UpgradeCurrentWeaponShot(){		
+			currentWeapon.addShot();
 	}
 
 	private void create(){
-		
+
 		this.setMaxHealth(10f);
 		this.healFully();
 
 		heldWeapons = new Vector<>();
 		weaponIcons = new Vector<>();
-		addWeapon(MACHINEGUN);
-		addWeapon(DARTGUN);
-		addWeapon(POISON);
-		addWeapon(ROCKET);
+		addWeapon(MACHINEGUN); //default start
 		switchWeapon(0);		
 
-		GUI_Health = new Bar(.75f, .06f, new Color(255,0,0,100), new Color(0,255,0,100), .01f);
+		GUI_Health = new Bar(.75f, .06f, new Color(255,0,0,150), new Color(0,255,0,150), .01f);
 		GUI_Health.setPosition(new Vector2f(-.6f, -.866f));
 		GUI_Health.setAsGUIElement(true);
 
-		GUI_Shield = new Bar(.75f, .06f, new Color(255,255,0,100), new Color(0,255,255,100), .01f);
+		GUI_Shield = new Bar(.75f, .06f, new Color(255,255,0,150), new Color(0,255,255,150), .01f);
 		GUI_Shield.setPosition(new Vector2f(-.6f, -.95f));
 		GUI_Shield.setAsGUIElement(true);
 
@@ -275,15 +279,15 @@ public class Player extends Entity {
 
 		trail.setColorVary(50);
 		trail.setRandomVel(.35f);
-		
+
 		collision = new CollisionComponent(this, GameData.HB_PLAYER, CollisionID.PLAYER, CollisionID.ENEMY_PROJECTILE, CollisionID.ENEMY);
-		
+
 		new OnDeathComponent(this){
 			@Override
 			public void notifyAction() {
 				Game.stateMachine.setCurrentState(State.GAME_OVER);				
 			}};
-			
+
 			new OnCollisionComponent(this){
 				@Override
 				public void notifyAction() {					
@@ -341,7 +345,7 @@ public class Player extends Entity {
 	public void applyKnockBack(float speed, float time){
 		movement.applyKnockback(Vector2f.mul(Util.facing(this),-speed), time);
 	}
-	
+
 	/**Upgrade the shield recharge rate by multiplying it by a factor.
 	 * @param factor The factor to multiply with.
 	 */

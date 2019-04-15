@@ -8,11 +8,13 @@ import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 
 import engine.component.*;
-import engine.entity.PowerUp.PowerUpType;
+import engine.entity.EnemyDrop.DropType;
 import engine.entity.Weapon.WeaponID;
 import engine.graphics.GraphicsHandler;
 import game.Game;
 import game.GameData;
+import levelgen.EnemySpecs.EnemyProperties;
+import levelgen.LevelGen;
 import state.StateMachine.State;
 import util.Oscillator;
 import util.Oscillator.OscType;
@@ -44,7 +46,7 @@ public class SpawnFactory {
 	}
 
 	public static void attachMandatoryProjectileComponents(Entity projectile,  Vector2f[] hitbox, CollisionID thisid, CollisionID... ids){
-		new OffscreenKillComponent(projectile);
+		new OffscreenRemoveComponent(projectile);
 		CollisionComponent cc = new CollisionComponent(projectile, hitbox, thisid, ids);
 		cc.setHitboxDraw(true);
 	}
@@ -107,57 +109,78 @@ public class SpawnFactory {
 		proj.setDamage(damage);
 		SpriteComponent sc = new SpriteComponent(proj, 128, 13f, tex);
 		sc.setColor(color);
-		new OffscreenKillComponent(proj);
+		new OffscreenRemoveComponent(proj);
 		new CollisionComponent(proj, hb, CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
 		if (firesound != null)
 			GameData.playSound(firesound);
 		return proj;
 	}
 
-	
-	private final static float POWER_UP_PROBS[] = new float[]{.25f,.25f,.25f,.25f}; //heal, shot, damage, shield. Will return -1 if nothing is spawned.
-	
-	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health){
+
+	private final static float POWER_UP_PROBS[] = new float[]{.05f, .03f, .06f, .06f, .02f, .02f, .02f, .02f}; //heal, shot, damage, shield, machine, rocket, poison, dart. Will return -1 if nothing is spawned.
+
+	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health, int score){
 		Entity enem = new Entity(pos);
 		enem.setScale(new Vector2f(scale,scale));
 		enem.setMaxHealth(health);;
 		enem.healFully();
-		
+
 		new OnDeathComponent(enem){
 			@Override
 			public void notifyAction() {
 				spawnExplosionParticles(entity, .1f, .5f, entity.getSpriteColour());				
 			}			
 		};
-		SpriteComponent sprite = new SpriteComponent(enem, 64, 15f, tex);
+		SpriteComponent sprite = new SpriteComponent(enem, GameData.ENEMY_WIDTH, 12.5f, tex);
 		sprite.setColor(col);
 		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE, CollisionID.PLAYER);		
 		new DamageFlashComponent(enem, sprite);		
 		new HealthBarComponent(enem);
-		
+
 		new OnDeathComponent(enem){ //spawn powerups based off chance
+
+			private int deathScore = score;
 
 			@Override
 			public void notifyAction() {
 				int i = Util.discreetProb(POWER_UP_PROBS);
 				switch(i){
-				case 0: new PowerUp(entity.getPosition(), PowerUpType.HEAL);
+				case 0: 
+					new EnemyDrop(entity.getPosition(), DropType.HEAL_UPGRADE);
 					break;
-				case 1: new PowerUp(entity.getPosition(), PowerUpType.SHOT);
+				case 1: 
+					new EnemyDrop(entity.getPosition(), DropType.SHOT_UPGRADE);
 					break;
-				case 2: new PowerUp(entity.getPosition(), PowerUpType.DAMAGE);
+				case 2: 
+					new EnemyDrop(entity.getPosition(), DropType.DAMAGE_UPGRADE);
 					break;
-				case 3: new PowerUp(entity.getPosition(), PowerUpType.SHIELD);
+				case 3: 
+					new EnemyDrop(entity.getPosition(), DropType.SHIELD_UPGRADE);
+					break;
+				case 4:
+					new EnemyDrop(entity.getPosition(), DropType.MACHINEGUN_WEAPON);
+					break;
+				case 5:
+					new EnemyDrop(entity.getPosition(), DropType.ROCKET_WEAPON);
+					break;
+				case 6:
+					new EnemyDrop(entity.getPosition(), DropType.POISON_WEAPON);
+					break;
+				case 7:
+					new EnemyDrop(entity.getPosition(), DropType.DART_WEAPON);
 					break;
 				}
+				Game.incNumberOfEnemiesKilled();
+				Game.addToCurrentPlayerScore(deathScore);
 			}};
-			
-		new OnCollisionComponent(enem){
-			@Override
-			public void notifyAction() {
-				if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) Game.stateMachine.setCurrentState(State.GAME_OVER);
-			}};
-			
+
+			new OnCollisionComponent(enem){
+				@Override
+				public void notifyAction() {
+					if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) Game.stateMachine.setCurrentState(State.GAME_OVER);
+				}
+			};
+
 			new NotifierComponent(enem){
 				@Override
 				public boolean notifyCondition() {
@@ -168,17 +191,147 @@ public class SpawnFactory {
 					Game.stateMachine.setCurrentState(State.GAME_OVER);
 				}				
 			};
-		
+
+			Game.incNumberOfEnemiesOnScreen();
+
+			return enem;
+	}
+
+	/** Calculate time required to reach a point with constant speed. Speed assumes right as positive.
+	 * @param start Start point
+	 * @param end End point
+	 * @param vel Speed of travel
+	 * @return The time to get from start to end
+	 */
+	private static float calcTravelTime(float start, float end, float vel){
+		return (end - start) / vel;
+	}
+
+	/**Spawn enemy 1. This enemy moves in a square pattern and spawns in groups of 2 to 4.
+	 * @param pos The spawn position of the enemy closest to the screen
+	 */
+	public static void spawnEnemy1(Vector2f pos){
+		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[0].getProperties();
+		int num = Util.randInRange(2, 5);		
+
+		float vel_x = 0.2f; //moving from the left
+		float spacing = -.25f; //centre to centre spacing of enemies, assumed spawned on the left
+		if(pos.x > 0) //moving from the right, spawning on the right
+		{
+			vel_x = -vel_x;
+			spacing = -spacing;
+		}
+		float t1,t2,t3; //times for movement t1 is first line-up, t2 line-up of regular movement, t3 down time
+
+		t1 = calcTravelTime(pos.x, Util.sgn(-spacing) * .85f, vel_x);	
+		t2 =  Util.abs((2*.85f - (num-1)*Util.abs(spacing))/vel_x); 
+		t3 = 0.2f/Util.abs(vel_x);
+
+		for(int i = 0; i < num; i++){		
+			Entity enem = createBaseEnemy(new Vector2f(pos.x + i * spacing, pos.y), GameData.TEX_ENEMY_WAVE, new Color(5,36,130), GameData.HB_ENEMY_WAVE, null, .08f, prop.health , 10);
+			new ScaleOscComponent(enem, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.009f, 0.011f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(1f,1f));
+			new MovementOscComponent(enem, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.0013f, 0.016f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(0f,1f));
+			//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));		
+			CyclingModifierComponent cycle1 = new CyclingModifierComponent(enem);	
+			cycle1.addToCycle(t1, new SimpleMovementComponent(enem, new Vector2f(vel_x, 0f), 0f));
+			cycle1.addToCycle(-1f); //disable		
+			CyclingModifierComponent cycle2 = new CyclingModifierComponent(enem);	
+			SimpleMovementComponent d = new SimpleMovementComponent(enem, new Vector2f(0f, -Util.abs(vel_x)), 0f);
+			d.setEnabled(false); //must initially be disabled, until cycle 3 enables cycle2 which will enable this component
+			cycle2.addToCycle(t3, d); //down
+			cycle2.addToCycle(t2, new SimpleMovementComponent(enem, new Vector2f(-vel_x, 0f), 0f)); //opposite to direction
+			cycle2.addToCycle(t3, new SimpleMovementComponent(enem, new Vector2f(0f, -Util.abs(vel_x)), 0f)); //down
+			cycle2.addToCycle(t2, new SimpleMovementComponent(enem, new Vector2f(vel_x, 0f), 0f)); //initial direction direction		
+			CyclingModifierComponent cycle3 = new CyclingModifierComponent(enem);
+			cycle3.addToCycle(t1); //wait for cycle1 to complete
+			cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently
+		}
+	}
+
+	/**Spawn enemy 2. This enemy moves to a random point at the bottom of the screen, oscillating in a direction perpendicular to path to end point.
+	 * @param pos The spawn position
+	 */
+	public static void spawnEnemy2(Vector2f pos){
+		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[1].getProperties();
+		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_VIRUS, new Color(234,42,208), GameData.HB_ENEMY_VIRUS, null, .1f, prop.health, 30);
+		Vector2f target = new Vector2f(Util.randInRange(-.7f, .7f), Util.randInRange(-1f, -.8f));
+		Vector2f vel = Vector2f.sub(target, pos);
+		vel = Util.normalise(vel);
+		Vector2f normal = Util.getNormal(Vector2f.ZERO, vel);
+		float speed = .07f;
+		new SimpleMovementComponent(enem, Vector2f.mul(vel, speed), Util.randInRange(-360f, 360f));
+		new MovementOscComponent(enem, new Oscillator(Util.randInRange(0.5f, 0.8f), Util.randInRange(.07f, .12f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), normal);
+
+	}
+
+	/**Spawn enemy 3. This enemy is slow moving and moves downward in a straight line.
+	 * @param pos The spawn position
+	 * @return The enemy, which can be further augmented for more interesting motion.
+	 */
+	public static Entity spawnEnemy3(Vector2f pos){
+		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[2].getProperties();
+		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_BEAR, new Color(100,30,10), GameData.HB_ENEMY_BEAR, null, .14f, prop.health, 80);
+		float speed = .053f;
+		new SimpleMovementComponent(enem, new Vector2f(0f, -speed), 0f);
+		new ScaleOscComponent(enem, new Oscillator(.3f, .01f, 0f, 0f, OscType.SINE), Util.unitVectorWithRotation(40f));
 		return enem;
 	}
 
-	public static void spawnWaveEnemy(Vector2f pos){
-		Entity wave = createBaseEnemy(pos, GameData.TEX_ENEMY_WAVE, new Color(5,36,130), GameData.HB_ENEMY_WAVE, null, .1f, 10f);
-		new ScaleOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.009f, 0.011f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(1f,1f));
-		new MovementOscComponent(wave, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.0013f, 0.016f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(0f,1f));
-		new AutoFireComponent(wave, createDefaultEnemyWeapon(wave, 1f));
-		new SimpleMovementComponent(wave, new Vector2f(0, -0.2f), 0);
-		
+	/**Spawn enemy 4. This enemy moves diagonally, altering direction when it reaches the edge of the screen. It is similar to enemy 1.
+	 * @param posThe spawn position
+	 */
+	public static void spawnEnemy4(Vector2f pos){
+		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[3].getProperties();
+		float vel_x = 0.2f; //moving from the left
+		float vel_y = -.03f;
+		if(pos.x > 0) vel_x = -vel_x; //moving from the right
+		float t1,t2; //times for movement t1 is first line-up, t2 line-up of regular movement, t3 down time
+		if(vel_x > 0){ //moving right
+			t1 = calcTravelTime(pos.x, .85f, vel_x);						
+		} else {
+			t1 = calcTravelTime(pos.x, -.85f, vel_x);	
+		}
+		t2 =  Util.abs(2*.85f/vel_x);
+
+		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_SUNNY, new Color(200,220,10), GameData.HB_ENEMY_SUNNY, null, .08f, prop.health, 50);
+		//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));		
+		CyclingModifierComponent cycle1 = new CyclingModifierComponent(enem);	
+		cycle1.addToCycle(t1, new SimpleMovementComponent(enem, new Vector2f(vel_x, vel_y), 0f));
+		cycle1.addToCycle(-1f); //disable		
+		CyclingModifierComponent cycle2 = new CyclingModifierComponent(enem);	
+		SimpleMovementComponent opp = new SimpleMovementComponent(enem, new Vector2f(-vel_x, vel_y), 0f);
+		SimpleMovementComponent approach = new SimpleMovementComponent(enem, new Vector2f(vel_x, vel_y), 0f);
+		opp.setEnabled(false);
+		cycle2.addToCycle(t2, opp); //opposite to direction
+		cycle2.addToCycle(t2, approach); //initial direction direction		
+		CyclingModifierComponent cycle3 = new CyclingModifierComponent(enem);
+		cycle3.addToCycle(t1); //wait for cycle1 to complete
+		cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently
+
+	}
+
+
+	/**Spawn enemy 5. This enemy is like enemy 3, with added circular motion.
+	 * @param pos The spawn position
+	 */
+	public static void spawnEnemy5(Vector2f pos){
+		Entity enem = spawnEnemy3(pos);
+		float freq = Util.randInRange(.2f, .5f);
+		float amp = Util.randInRange(.05f, .2f);
+		new MovementOscComponent(enem, new Oscillator(freq, amp, 0f, 0f, OscType.SINE), new Vector2f(1f,0f));
+		new MovementOscComponent(enem, new Oscillator(freq, amp, 0f, Util.PI/2, OscType.SINE), new Vector2f(0f,1f));
+
+	}
+
+
+	/**Spawn enemy 6. This enemy moves in a straight line downwards. It is fast moving.
+	 * @param pos
+	 */
+	public static void spawnEnemy6(Vector2f pos){
+		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[5].getProperties();
+		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_BAT, new Color(20,20,20), GameData.HB_ENEMY_BAT, null, .065f, prop.health, 100);
+		float vel_y = -.2f;
+		new SimpleMovementComponent(enem, new Vector2f(0f, vel_y), 0f);
 	}
 
 
@@ -261,7 +414,7 @@ public class SpawnFactory {
 			public void notifyAction() {
 				SpawnFactory.spawnDamagingExplosion(entity);
 			}};			
-		
+
 	}
 
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
@@ -287,42 +440,6 @@ public class SpawnFactory {
 		spawnGunPowder(pos, vel, 3f, Color.BLACK);
 	}
 
-	/**Target practise and testing
-	 * @param pos The position in the world
-	 */
-	public static void spawnTestEnemy(Vector2f pos){
-		Entity enem = new Entity(pos);
-		enem.setScale(new Vector2f(.1f,.1f));
-		enem.setMaxHealth(4f);
-		enem.healFully();
-		CollisionComponent cc = new CollisionComponent(enem, GameData.HB_BENNY, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
-		new HealthBarComponent(enem);
-		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
-		new SimpleMovementComponent(enem, new Vector2f(0f, -.1f), 0f);
-		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
-		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
-		cycle.addToCycle(-1f);		
-		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, 360f));
-		cycle.addToCycle(.5f);
-		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, -360f));
-		cycle.addToCycle(.5f);
-		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
-		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_BENNY_THE_FEESH);	
-		sprc.setColor(Color.BLACK);
-
-		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
-		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
-		new DamageFlashComponent(enem, sprc);
-		new ScaleOscComponent(enem, new Oscillator(Util.randInRange(1f, 2f), .02f, 0f, 0f, OscType.TRIANGLE), new Vector2f(1f,1f));
-	}
-
-	/** Spawn a gunpowder effect used when shooting and projectile collisions
-	 * @param pos The position in the world
-	 * @param generalDir The general direction of the gunpowder
-	 * @param magnitude The magnitude of the explosion
-	 * @param color The main colour of the explosion
-	 */
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*5f);
 		for(int i = 0; i < amount; i++){
@@ -330,28 +447,97 @@ public class SpawnFactory {
 		}
 	}
 
-	public static void spawnBuckShot(Entity shooter, float vel, float degreespread, float damage, int amount){
-		Vector2f unitdir = Util.facing(shooter);
-		Vector2f pos = Vector2f.add(Util.approxParticleOffset(unitdir, shooter), shooter.position);
-		spawnGunPowder(pos, unitdir, 6f, Color.BLACK);
+	/**Spawn a number that consisists of number sprites
+	 * @param left_centre The leftmost digit's centre
+	 * @param scale The scale of the sprites
+	 * @param num The number to convert to sprites
+	 */
+	public static void spawnNumber(Vector2f left_centre, float scale, int num, Color c){
+		Vector<Integer> numbers = new Vector<>();
+		int mod = 1000000000; //try for max decimal digit for the max value of an int
+		boolean encountered_digit = false;
+		while( mod >= 1){
+			int dec_place = num/mod;
+			if(dec_place != 0){ //detect when the first digit is encountered
+				encountered_digit = true;
+			}
+			if(encountered_digit){
+				numbers.add(dec_place);
+			}
+			num = num - dec_place*mod;
+			mod /= 10;
+		}
 
-		for(int i = 0; i < amount; i++){		
-			Entity shot = new Entity(pos);
-			shot.setDamage(damage);
-			new SimpleMovementComponent(shot, Vector2f.mul(Util.varyVector(unitdir,  Util.toRad(degreespread)), vel), damage);
-			CollisionComponent cc = new CollisionComponent(shot, Util.REGULAR_POLYGONS[0], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
-			new OnCollisionComponent(shot){
-				@Override
-				public void notifyAction() {
-					entity.kill();			
-				}			
-			};
-			//cc.setHitboxDraw(true);
-			new SpriteComponent(shot, 64, 0f, GameData.TEX_BUCKSHOT);
-			new OffscreenKillComponent(shot);
-			shot.setScale(new Vector2f(.015f,.015f));
-		}		
+		for(int i = 0; i < numbers.size(); i++){
+			Entity n = new Entity(new Vector2f(left_centre.x + i*( scale*1.2f), left_centre.y));
+			n.setScale(new Vector2f(scale,scale));
+			new SpriteComponent(n, GameData.NUMBER_WIDTH, 0f, GameData.TEX_NUMBERS_TEXT[numbers.get(i)]).setColor(c);;
+
+		}
+
 	}
+
+	//OLD TEST CODE
+	//	/**Target practise and testing
+	//	 * @param pos The position in the world
+	//	 */
+	//	public static void spawnTestEnemy(Vector2f pos){
+	//		Entity enem = new Entity(pos);
+	//		enem.setScale(new Vector2f(.1f,.1f));
+	//		enem.setMaxHealth(4f);
+	//		enem.healFully();
+	//		CollisionComponent cc = new CollisionComponent(enem, GameData.HB_BENNY, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE);
+	//		new HealthBarComponent(enem);
+	//		CyclingModifierComponent cycle = new CyclingModifierComponent(enem);
+	//		new SimpleMovementComponent(enem, new Vector2f(0f, -.1f), 0f);
+	//		cycle.addToCycle( .5f/.3f,new MovementOscComponent(enem, new Oscillator(.3f, .4f, 0f, 0f, OscType.SINE), new Vector2f(.1f,.4f)));
+	//		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(.8f, -.5f), 0f));
+	//		cycle.addToCycle(.5f, new SimpleMovementComponent(enem, new Vector2f(-.8f, .5f), -720f));
+	//		cycle.addToCycle(-1f);		
+	//		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, 360f));
+	//		cycle.addToCycle(.5f);
+	//		cycle.addToCycle(1f, new SimpleMovementComponent(enem, Vector2f.ZERO, -360f));
+	//		cycle.addToCycle(.5f);
+	//		new MovementOscComponent(enem, new Oscillator(1f, .03f, 0f, Util.randInRange(0f, 2*Util.PI), OscType.SINE), new Vector2f(0f,1f));		
+	//		SpriteComponent sprc = new SpriteComponent(enem, 64, 13f, GameData.TEX_BENNY_THE_FEESH);	
+	//		sprc.setColor(Color.BLACK);
+	//
+	//		new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));
+	//		new CollisionSoundComponent(enem, GameData.SOUND_PEEG);
+	//		new DamageFlashComponent(enem, sprc);
+	//		new ScaleOscComponent(enem, new Oscillator(Util.randInRange(1f, 2f), .02f, 0f, 0f, OscType.TRIANGLE), new Vector2f(1f,1f));
+	//	}
+
+	//	/** Spawn a gunpowder effect used when shooting and projectile collisions
+	//	 * @param pos The position in the world
+	//	 * @param generalDir The general direction of the gunpowder
+	//	 * @param magnitude The magnitude of the explosion
+	//	 * @param color The main colour of the explosion
+	//	 */
+
+	//
+	//	public static void spawnBuckShot(Entity shooter, float vel, float degreespread, float damage, int amount){
+	//		Vector2f unitdir = Util.facing(shooter);
+	//		Vector2f pos = Vector2f.add(Util.approxParticleOffset(unitdir, shooter), shooter.position);
+	//		spawnGunPowder(pos, unitdir, 6f, Color.BLACK);
+	//
+	//		for(int i = 0; i < amount; i++){		
+	//			Entity shot = new Entity(pos);
+	//			shot.setDamage(damage);
+	//			new SimpleMovementComponent(shot, Vector2f.mul(Util.varyVector(unitdir,  Util.toRad(degreespread)), vel), damage);
+	//			CollisionComponent cc = new CollisionComponent(shot, Util.REGULAR_POLYGONS[0], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
+	//			new OnCollisionComponent(shot){
+	//				@Override
+	//				public void notifyAction() {
+	//					entity.kill();			
+	//				}			
+	//			};
+	//			//cc.setHitboxDraw(true);
+	//			new SpriteComponent(shot, 64, 0f, GameData.TEX_BUCKSHOT);
+	//			new OffscreenKillComponent(shot);
+	//			shot.setScale(new Vector2f(.015f,.015f));
+	//		}		
+	//	}
 
 
 }

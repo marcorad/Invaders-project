@@ -14,7 +14,7 @@ import org.jsfml.system.Vector2i;
 import engine.entity.Entity;
 
 public class Util {
-	public final static Random rand = new Random();
+	public final static Random RANDOM = new Random();
 
 	/**
 	 * A float representation of PI
@@ -43,7 +43,7 @@ public class Util {
 	 * @return The index of the randomly selected element based off p. Returns -1 if the the the method failed.
 	 */
 	public static int discreetProb(float p[]){
-		float s = rand.nextFloat();
+		float s = RANDOM.nextFloat();
 		float acc = 0;
 		for(int i = 0; i < p.length; i++){
 			acc += p[i];
@@ -80,7 +80,7 @@ public class Util {
 	 * @return The colour
 	 */
 	public static Color randomColor(){
-		return new Color(rand.nextInt(255),rand.nextInt(255),rand.nextInt(255),255);
+		return new Color(RANDOM.nextInt(255),RANDOM.nextInt(255),RANDOM.nextInt(255),255);
 	}
 
 	/**Linearly interpolate between a starting and ending colour
@@ -181,7 +181,7 @@ public class Util {
 	 * @return The float in the range
 	 */
 	public static float randInRange(float low, float high){
-		return (high - low)*rand.nextFloat() + low;
+		return (high - low)*RANDOM.nextFloat() + low;
 	}
 
 	/**Get a random integer in the range [low, high)
@@ -190,7 +190,7 @@ public class Util {
 	 * @return The integer in the range
 	 */
 	public static int randInRange(int low, int high){
-		return low + rand.nextInt(high - low);
+		return low + RANDOM.nextInt(high - low);
 	}
 
 	/**The absolute value of a number
@@ -357,8 +357,8 @@ public class Util {
 			x[i] = pts[i].x;
 			y[i] = pts[i].y;
 		}
-		MinMaxPair xs = getMinMax(x);
-		MinMaxPair ys = getMinMax(y);
+		MinMaxPair<Float> xs = getMinMax(x);
+		MinMaxPair<Float> ys = getMinMax(y);
 
 		return new FloatRect(xs.min, ys.max, xs.max - xs.min, ys.max - ys.min);
 	}
@@ -408,13 +408,13 @@ public class Util {
 	 * @param a The values to check
 	 * @return The minimum and maximum values
 	 */
-	public static MinMaxPair getMinMax(float[] a){
+	public static MinMaxPair<Float> getMinMax(float[] a){
 		float min = a[0], max = a[0];
 		for(int i = 1; i < a.length; i ++){
 			if(a[i] > max) max = a[i];
 			if(a[i] < min) min = a[i];
 		}
-		return new MinMaxPair(min,max);
+		return new MinMaxPair<Float>(min,max);
 	}
 
 	/**Check if a range of numbers overlap
@@ -422,7 +422,7 @@ public class Util {
 	 * @param q The second range
 	 * @return Whether the range overlaps
 	 */
-	public static boolean overlaps(MinMaxPair p, MinMaxPair q){
+	public static boolean overlaps(MinMaxPair<Float> p, MinMaxPair<Float> q){
 		return (p.min < q.max && q.min < p.max);		
 	}
 

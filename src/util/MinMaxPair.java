@@ -4,14 +4,14 @@ package util;
  * @author Marco
  *
  */
-public class MinMaxPair {
-	public float min, max;
+public class MinMaxPair<T> {
+	public T min, max;
 
 	/**
 	 * @param min The minimum
 	 * @param max The maximum
 	 */
-	public MinMaxPair(float min, float max) {
+	public MinMaxPair(T min, T max) {
 		this.min = min;
 		this.max = max;
 	}

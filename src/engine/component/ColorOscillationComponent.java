@@ -36,10 +36,10 @@ public class ColorOscillationComponent extends ModifierComponent {
 		float db = (float) (end.b - start.b)/2.0f;
 		float da = (float) (end.a - start.a)/2.0f;
 
-		MinMaxPair rm = Util.getMinMax(new float[] {start.r,end.r});
-		MinMaxPair gm = Util.getMinMax(new float[] {start.g,end.g});
-		MinMaxPair bm = Util.getMinMax(new float[] {start.b,end.b});
-		MinMaxPair am = Util.getMinMax(new float[] {start.a,end.a});
+		MinMaxPair<Float> rm = Util.getMinMax(new float[] {start.r,end.r});
+		MinMaxPair<Float> gm = Util.getMinMax(new float[] {start.g,end.g});
+		MinMaxPair<Float> bm = Util.getMinMax(new float[] {start.b,end.b});
+		MinMaxPair<Float> am = Util.getMinMax(new float[] {start.a,end.a});
 		
 		float phase = 0f;
 		switch(type){

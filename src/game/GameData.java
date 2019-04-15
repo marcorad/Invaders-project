@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.jsfml.audio.Music;
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
 import org.jsfml.audio.SoundSource;
@@ -27,32 +28,42 @@ import util.Util;
  *
  */
 public class GameData {
-	
+
+	private static String P_ENT = "entity//";
+	private static String P_INSTR = "instructions//";
+	private static String P_PU = "power up//";
+	private static String P_PROJ = "projectile//";
+	private static String P_TXT = "text//";
+	private static String P_WEAP = "weapon//";
+
 	public static final int TEXT_WIDTH = 472;
 	public static final int ENEMY_WIDTH = 64;
 	public static final int PLAYER_WIDTH = 128;
 	public static final int SHIELD_WIDTH = 128;
 	public static final int INSTRUCTION_PAGE_WIDTH = 2048;
 	public static final int MOVING_MOUSE_WIDTH = 128;
+	public static final int ENEMY_PROJECTILE_WIDTH = 256;
+	public static final int POWER_UP_WIDTH = 256;
+	public static final int PLAYER_PROJECTILE_WIDTH = 128;
+	public static final int NUMBER_WIDTH = 64;
+	public static final int WEAPON_ICON_WIDTH = 64;
 
 
 	//fonts
 	public static Font FONT_CALIBRI;
+	public static Font FONT_VIDEO;//Video by Lucas de Groot, Alexander Lange. Obtained from: https://www.1001freefonts.com/new-fonts-2.php
+
 
 	//sounds
-	public static Sound SOUND_LAZELIEN;
-	public static Sound SOUND_PEEG; 
-	public static Sound SOUND_BASS;
 
 
-	//images
-	public static Texture TEX_GAME_BACKGROUND;
-	
-	public static Texture TEX_BUCKSHOT;
-	public static Texture TEX_EXAMPLE_ENEMY;
-	public static Texture TEX_TEST_BUTTON;
-	public static Texture TEX_BENNY_THE_FEESH;
-	
+	//music
+	public static Music MUSIC_GAME;
+	public static Music MUSIC_INTRO;
+	public static Music MUSIC_GAME_OVER;
+
+
+	//textures and hitboxes	
 	public static Texture TEX_PLAYER;
 	public static Vector2f[] HB_PLAYER;
 
@@ -71,9 +82,6 @@ public class GameData {
 	public static Texture TEX_POISON;
 	public static Vector2f[] HB_POISON;
 
-	public static Vector2f[] HB_BENNY;
-	
-	public static Texture TEX_TEMP_POWERUP;
 	public static Vector2f[] HB_POWERUP;
 
 
@@ -96,30 +104,49 @@ public class GameData {
 	public static Texture TEX_MACHINEGUN_ICON;
 	public static Texture TEX_DARTGUN_ICON;
 	public static Texture TEX_ROCKET_ICON;
-	
-	
-	public static Texture TEX_PLAY_TEXT;
-	public static Texture TEX_INSTRUCTIONS_TEXT;
-	public static Texture TEX_HIGH_SCORE_TEXT;
-	public static Texture TEX_QUIT_TEXT;
+
+
+	public static Texture TEX_EXIT_TEXT;
 	public static Texture TEX_GAME_OVER_TEXT;
-	
+	public static Texture TEX_INSTRUCTIONS_TEXT;
+	public static Texture TEX_MAIN_MENU_TEXT;
+	public static Texture TEX_MUSIC_TEXT;
+	public static Texture TEX_ON_TEXT;
+	public static Texture TEX_OFF_TEXT;
+	public static Texture TEX_PLAY_GAME_TEXT;
+	public static Texture TEX_QUIT_TEXT;
+	public static Texture TEX_SOUND_TEXT;
+	public static Texture TEX_HIGH_SCORE_TEXT;
+
 	public static Texture TEX_INSTRUCTIONS_PAGE;
 	public static Texture TEX_MOVING_MOUSE;
+	public static Texture TEX_SCROLLING_MOUSE;
+
+	public static Texture TEX_DAMAGE_POWER_UP;
+	public static Texture TEX_HEAL_POWER_UP;
+	public static Texture TEX_SHIELD_POWER_UP;
+	public static Texture TEX_SHOT_POWER_UP;
+
+	public static Texture TEX_CHOOSE_GAME_TEXT;
+	public static Texture TEX_SHORT_TEXT;
+	public static Texture TEX_LONG_TEXT;
+	public static Texture TEX_ENDLESS_TEXT;
+
+	public static Texture[] TEX_NUMBERS_TEXT = new Texture[10];
 
 	/**
 	 * Loads all the data required for the game
 	 */
 	public static void load(){
-
 		FONT_CALIBRI = loadFont("Calibri");
+		FONT_VIDEO = loadFont("video");
 
-		TEX_ENEMY_BAT = loadTexture("Enemy Bat");     
-		TEX_ENEMY_BEAR = loadTexture("Enemy Bear");     
-		TEX_ENEMY_FROGGY = loadTexture("Enemy Froggy");   
-		TEX_ENEMY_WAVE = loadTexture("Enemy Wave");   
-		TEX_ENEMY_VIRUS = loadTexture("Enemy Virus");    
-		TEX_ENEMY_SUNNY = loadTexture("Enemy Sunny");    
+		TEX_ENEMY_BAT = loadTexture(P_ENT + "bat");     
+		TEX_ENEMY_BEAR = loadTexture(P_ENT + "bear");     
+		TEX_ENEMY_FROGGY = loadTexture(P_ENT + "froggy");   
+		TEX_ENEMY_WAVE = loadTexture(P_ENT + "wave");   
+		TEX_ENEMY_VIRUS = loadTexture(P_ENT + "virus");    
+		TEX_ENEMY_SUNNY = loadTexture(P_ENT + "sunny");    
 
 		HB_ENEMY_BAT = loadHitboxData("Enemy Bat");  
 		HB_ENEMY_BEAR = loadHitboxData("Enemy Bear");    
@@ -128,53 +155,73 @@ public class GameData {
 		HB_ENEMY_VIRUS = loadHitboxData("Enemy Virus");  
 		HB_ENEMY_SUNNY = loadHitboxData("Enemy Sunny");
 
+		MUSIC_GAME = loadMusic("Shady business");
+		MUSIC_GAME.setLoop(true);
+		MUSIC_INTRO = loadMusic("Intro");
+		MUSIC_INTRO.setLoop(true);
+		MUSIC_GAME_OVER = loadMusic("game over");
+		MUSIC_GAME_OVER.setLoop(true);
 
-		SOUND_LAZELIEN = loadSound("lazelien");
-		SOUND_PEEG = loadSound("peeg"); 
-		SOUND_BASS = loadSound("bass");
 
-		TEX_GAME_BACKGROUND = loadTexture("gamebg");
-		TEX_PLAYER = loadTexture("player");
+
+		TEX_PLAYER = loadTexture(P_ENT +"player");
 		HB_PLAYER = loadHitboxData("player");
-		
-		TEX_BUCKSHOT = loadTexture("buckshot");
-		TEX_EXAMPLE_ENEMY = loadTexture("example enemy"); //TEX_EXAMPLE_ENEMY.setSmooth(true);
-		TEX_TEST_BUTTON = loadTexture("testbutton");
-		TEX_BENNY_THE_FEESH = loadTexture("benny the feesh"); //TEX_BENNY_THE_FEESH.setSmooth(true);
 
-		TEX_INSTRUCTIONS_PAGE = loadTexture("Instructions Page");
-		TEX_MOVING_MOUSE = loadTexture("Moving Mouse");
-		
-		TEX_DART = loadTexture("Projectile Dart");
+
+		TEX_INSTRUCTIONS_PAGE = loadTexture(P_INSTR + "instructions page");
+		TEX_MOVING_MOUSE = loadTexture(P_INSTR + "mouse");
+		TEX_SCROLLING_MOUSE  = loadTexture(P_INSTR + "scroll");
+
+		TEX_DART = loadTexture(P_PROJ + "dart");
 		HB_DART = loadHitboxData("Projectile Dart");
 
-		TEX_ROCKET = loadTexture("Projectile Rocket");
+		TEX_ROCKET = loadTexture(P_PROJ + "rocket");
 		HB_ROCKET = loadHitboxData("Projectile Rocket");
 
-		TEX_BULLET = loadTexture("Projectile Bullet");
+		TEX_BULLET = loadTexture(P_PROJ + "bullet");
 		HB_BULLET = loadHitboxData("Projectile Bullet");
 
-		TEX_POISON= loadTexture("Projectile Poison");
+		TEX_POISON= loadTexture(P_PROJ + "poison");
 		HB_POISON = loadHitboxData("Projectile Poison");
 
-		TEX_SHIELD = loadTexture("Shield");
+		TEX_SHIELD = loadTexture(P_ENT +"shield");
 		HB_SHIELD = loadHitboxData("Shield");
 
-		TEX_POISON_ICON = loadTexture("Poison icon");
-		TEX_DARTGUN_ICON = loadTexture("Dart icon");
-		TEX_ROCKET_ICON = loadTexture("Rocket icon");
-		TEX_MACHINEGUN_ICON = loadTexture("Machinegun icon");
+		TEX_POISON_ICON = loadTexture(P_WEAP +"poison");
+		TEX_DARTGUN_ICON = loadTexture(P_WEAP +"dart");
+		TEX_ROCKET_ICON = loadTexture(P_WEAP +"rocket");
+		TEX_MACHINEGUN_ICON = loadTexture(P_WEAP +"machinegun");
 
-		TEX_PLAY_TEXT = loadTexture("Text play");         
-		TEX_INSTRUCTIONS_TEXT = loadTexture("Text instructions"); 
-		TEX_HIGH_SCORE_TEXT	= loadTexture("Text high score");   
-		TEX_QUIT_TEXT = loadTexture("Text quit");        
-		TEX_GAME_OVER_TEXT = loadTexture("Text game over"); 
-		
-		TEX_TEMP_POWERUP = loadTexture("Temp powerup");
 		HB_POWERUP = loadHitboxData("Temp powerup");
 
-		HB_BENNY = loadHitboxData("benny the feesh");
+		TEX_EXIT_TEXT            = loadTexture(P_TXT + "exit");
+		TEX_GAME_OVER_TEXT       = loadTexture(P_TXT + "game over");
+		TEX_INSTRUCTIONS_TEXT    = loadTexture(P_TXT + "instructions");
+		TEX_MAIN_MENU_TEXT       = loadTexture(P_TXT + "main menu");
+		TEX_MUSIC_TEXT           = loadTexture(P_TXT + "music");
+		TEX_ON_TEXT              = loadTexture(P_TXT + "on small");
+		TEX_OFF_TEXT             = loadTexture(P_TXT + "off small");
+		TEX_PLAY_GAME_TEXT       = loadTexture(P_TXT + "play game");
+		TEX_QUIT_TEXT            = loadTexture(P_TXT + "quit");
+		TEX_SOUND_TEXT           = loadTexture(P_TXT + "sound");
+		TEX_HIGH_SCORE_TEXT      = loadTexture(P_TXT + "high score");
+
+		TEX_CHOOSE_GAME_TEXT     = loadTexture(P_TXT + "choose game");
+		TEX_SHORT_TEXT           = loadTexture(P_TXT + "short");
+		TEX_LONG_TEXT            = loadTexture(P_TXT + "long");
+		TEX_ENDLESS_TEXT         = loadTexture(P_TXT + "endless");
+
+		TEX_DAMAGE_POWER_UP      = loadTexture(P_PU + "damage");
+		TEX_HEAL_POWER_UP        = loadTexture(P_PU + "heal");
+		TEX_SHIELD_POWER_UP      = loadTexture(P_PU + "shield");
+		TEX_SHOT_POWER_UP        = loadTexture(P_PU + "shot");
+
+
+
+		for(int i = 0; i < 10; i++){
+			TEX_NUMBERS_TEXT[i] = loadTexture(P_TXT + i);
+		}
+
 	}
 
 
@@ -301,6 +348,17 @@ public class GameData {
 		if(s.getStatus() != Status.PLAYING){
 			s.play();
 		}
+
+	}
+
+	public static Music loadMusic(String name){
+		Music m = new Music();
+		try {
+			m.openFromFile(Paths.get("sound//" + name + ".wav"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return m;
 
 	}
 

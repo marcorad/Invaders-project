@@ -15,7 +15,7 @@ public class Shield extends Entity {
 
 	public Shield(Player p) {
 		super(Vector2f.add(Util.approxParticleOffset(Util.facing(p), p, .13f), p.getPosition()), p.getTheta());		
-		super.setScale(new Vector2f(.1f, .15f));
+		super.setScale(new Vector2f(.12f, .15f));
 		sprite = new SpriteComponent(this, 128, 0f, GameData.TEX_SHIELD);
 		new CollisionComponent(this, GameData.HB_SHIELD, CollisionID.SHIELD, CollisionID.ENEMY_PROJECTILE);
 	}
