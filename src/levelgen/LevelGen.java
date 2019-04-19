@@ -3,11 +3,13 @@ package levelgen;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.SpawnFactory;
+import game.Game;
+import state.StateMachine.State;
 import util.MinMaxPair;
 
 public class LevelGen{	
-	
-	public static float HEALTH_INCREASE_RATE = .06f, DAMAGE_INCREASE_RATE = .2f, DIFFICULTY_INCREASE_RATE = 1f; //increase per second
+
+	public static float HEALTH_INCREASE_RATE = .04f, DAMAGE_INCREASE_RATE = .01f, DIFFICULTY_INCREASE_RATE = 1f; //increase per second
 
 	@SuppressWarnings("unchecked")
 	public static EnemySpecs[] ENEMY_SPAWN_SPECS = new EnemySpecs[]{			
@@ -15,7 +17,7 @@ public class LevelGen{
 			//min diff, chance rate, cps, max cps, start health, start damage
 
 			//Enemy 1
-			new EnemySpecs(difficultyAt(0f), 1/200f, 1/18f, 1/14f, 10f, 1f, new MinMaxPair<Vector2f>(new Vector2f(-1.2f, .8f), new Vector2f(-1.2f, .9f)), 
+			new EnemySpecs(difficultyAt(0f), 1/200f, 1/18f, 1/14f, 10f, 2f, new MinMaxPair<Vector2f>(new Vector2f(-1.2f, .8f), new Vector2f(-1.2f, .9f)), 
 					new MinMaxPair<Vector2f>(new Vector2f(1.2f, .8f), new Vector2f(1.2f, .9f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy1(pos);
@@ -23,21 +25,21 @@ public class LevelGen{
 			},
 
 			//Enemy 2
-			new EnemySpecs(difficultyAt(18f), 1/200f, 1/17f, 1/12f, 15f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
+			new EnemySpecs(difficultyAt(18f), 1/200f, 1/17f, 1/15f, 15f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy2(pos);
 				}				
 			},
 
 			//Enemy 3
-			new EnemySpecs(difficultyAt(40f), 1/200f, 1/35f, 1/25f, 30f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
+			new EnemySpecs(difficultyAt(40f), 1/200f, 1/70f, 1/65f, 30f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy3(pos);
 				}				
 			},
 
 			//Enemy 4
-			new EnemySpecs(difficultyAt(60f), 1/200f, 1/20f, 1/13f, 25f, 2f, new MinMaxPair<Vector2f>(new Vector2f(-1.2f, .8f), new Vector2f(-1.1f, 1f)), 
+			new EnemySpecs(difficultyAt(60f), 1/200f, 1/30f, 1/25f, 18f, 3f, new MinMaxPair<Vector2f>(new Vector2f(-1.2f, .8f), new Vector2f(-1.1f, 1f)), 
 					new MinMaxPair<Vector2f>(new Vector2f(1.1f, .8f), new Vector2f(1.2f, 1f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy4(pos);
@@ -45,14 +47,14 @@ public class LevelGen{
 			},
 
 			//Enemy 5
-			new EnemySpecs(difficultyAt(40f),  1/200f, 1/35f, 1/25f, 30f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
+			new EnemySpecs(difficultyAt(40f),  1/200f, 1/70f, 1/65f, 30f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy5(pos);
 				}				
 			},
 
 			//Enemy 6
-			new EnemySpecs(difficultyAt(75f), 1/200f, 1/25f, 1/15f, 10f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
+			new EnemySpecs(difficultyAt(75f), 1/200f, 1/80f, 1/40f, 10f, 0f, new MinMaxPair<Vector2f>(new Vector2f(-.9f, 1.15f), new Vector2f(.9f, 1.25f))){				
 				public void spawn(Vector2f pos) {
 					SpawnFactory.spawnEnemy6(pos);
 				}				
@@ -60,20 +62,26 @@ public class LevelGen{
 
 	}; //enemy 1 to 6 spawn specs
 
-	
+
 
 	private static float elapsed_time = 0f;
 	private static float update_time = 0f;
 
 	public static void update(float dt){
+		if(Game.getNumberOfEnemiesLeftToKill() == 0){
+			Game.stateMachine.setCurrentState(State.GAME_OVER);
+		}
 		elapsed_time += dt;
 		update_time += dt;
 		if(update_time >= 0.1f){ //only do spawn every 100ms (10 times per second)
 			update_time -= 0.1f;
-			float d = difficulty();
+			float d = difficulty();			
 			for(EnemySpecs es : ENEMY_SPAWN_SPECS){
-				if(d >= es.getMinDifficulty())
-					es.doSpawn(difficulty());
+				if(d >= es.getMinDifficulty()){
+					if( Game.getNumberOfEnemiesLeftToSpawn() > 0){
+						es.doSpawn(difficulty());
+					} 
+				}
 			}
 		}
 	}

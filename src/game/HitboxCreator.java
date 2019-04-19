@@ -154,12 +154,13 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 			//stop the previous sprite from being drawn, a lazy solution since entities are not meant to have components removed
 			if (spritecomp != null)spritecomp.toggleEnable();
 
-			Texture tex = GameData.loadTexture(name);		
+			Texture tex = GameData.loadTexture("projectile//" + name);		
 			if(tex == null) {
 				error = true;
 			} 
 			else{
 				spritecomp = new SpriteComponent(sprite, w, 10f, tex);
+				spritecomp.setColor(Color.WHITE);
 				error = false;
 			}
 

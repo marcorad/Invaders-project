@@ -9,7 +9,7 @@ public class MusicController extends Thread {
 
 	private Music nextMusic, currentMusic;
 	boolean started = false;
-	private static final float TRANSITION_TIME = .5f;
+	private static final float TRANSITION_TIME = 1f;
 	private boolean startTransition = false;
 	private boolean inTransition = false;
 	private Clock clk = new Clock();
@@ -52,12 +52,12 @@ public class MusicController extends Thread {
 
 			if(nextMusic != null){
 				synchronized(nextMusic){					
-						transitionToNext();						
-					}
+					transitionToNext();						
 				}
 			}
 		}
-	
+	}
+
 
 	private void transitionToNext(){	
 		if(startTransition) {
@@ -69,7 +69,7 @@ public class MusicController extends Thread {
 		} else {			
 			if(clk.getElapsedTime().asSeconds() < TRANSITION_TIME){
 				if(Game.isMusicEnabled()){
-					
+
 					//fade current music out
 					currentMusic.setVolume((100f - 100f/TRANSITION_TIME * clk.getElapsedTime().asSeconds()));
 					//fade next music in
@@ -88,7 +88,7 @@ public class MusicController extends Thread {
 
 	}
 
-	/**Queue the next music to played, once the current bar finished
+	/**Queue the next music to transitioned into
 	 * @param m The next music
 	 */
 	public void setNextMusic(Music m){		

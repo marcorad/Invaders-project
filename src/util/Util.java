@@ -453,7 +453,7 @@ public class Util {
 	 * @param e The entity it is offset from
 	 * @return The approximated offset
 	 */
-	public static Vector2f approxParticleOffset(Vector2f unitdir, Entity e){
+	public static Vector2f approxSpawnOffset(Vector2f unitdir, Entity e){
 		Vector2f scale = e.getScale();
 		scale = new Vector2f(Util.sgn(unitdir.x)*scale.x, Util.sgn(unitdir.y)*scale.y);
 		return Vector2f.mul(unitdir, dot(unitdir, scale));
@@ -467,7 +467,7 @@ public class Util {
 	 * @return The approximated offset
 	 */
 	public static Vector2f approxParticleOffset(Vector2f unitdir, Entity e, float compensate){
-		Vector2f off = approxParticleOffset(unitdir,e);
+		Vector2f off = approxSpawnOffset(unitdir,e);
 		Vector2f comp = Vector2f.mul(unitdir, compensate);
 		return Vector2f.add(off, comp);
 	}

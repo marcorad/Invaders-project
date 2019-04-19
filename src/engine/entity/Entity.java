@@ -1,5 +1,6 @@
 package engine.entity;
 
+import java.util.ArrayList;
 import java.util.Vector;
 
 import org.jsfml.graphics.Color;
@@ -60,11 +61,11 @@ public class Entity{
 	protected Vector2f previous_pos;
 
 	//lists of component methods 
-	protected Vector<UpdateableComponent> updatecomps= new Vector<>();
-	protected Vector<DrawableComponent> drawcomps= new Vector<>();;
-	protected Vector<MovementNotifier> movenotifiercomps= new Vector<>();
-	protected Vector<CollisionComponent> collisioncomps= new Vector<>();
-	protected Vector<NotifierComponent> notifiercomps = new Vector<>();
+	protected ArrayList<UpdateableComponent> updatecomps= new ArrayList<>();
+	protected ArrayList<DrawableComponent> drawcomps= new ArrayList<>();;
+	protected ArrayList<MovementNotifier> movenotifiercomps= new ArrayList<>();
+	protected ArrayList<CollisionComponent> collisioncomps= new ArrayList<>();
+	protected ArrayList<NotifierComponent> notifiercomps = new ArrayList<>();
 
 	protected float previous_dt = 1.f;
 
@@ -152,7 +153,7 @@ public class Entity{
 	 * @param e The other entity
 	 */
 	public void collide(Entity e){
-		Vector<CollisionComponent> other = e.getCollisionComponents();
+		ArrayList<CollisionComponent> other = e.getCollisionComponents();
 		for(CollisionComponent thiscc : collisioncomps){
 			for(CollisionComponent othercc : other){
 				boolean thiscollides = false, othercollides = false;
@@ -379,19 +380,19 @@ public class Entity{
 	 */
 	public void addComponent(Component c){
 		if(c instanceof UpdateableComponent){
-			updatecomps.addElement((UpdateableComponent)c);
+			updatecomps.add((UpdateableComponent)c);
 		}
 		if(c instanceof DrawableComponent){
-			drawcomps.addElement((DrawableComponent)c);
+			drawcomps.add((DrawableComponent)c);
 		}
 		if(c instanceof MovementNotifier){
-			movenotifiercomps.addElement((MovementNotifier)c);
+			movenotifiercomps.add((MovementNotifier)c);
 		}
 		if(c instanceof CollisionComponent){
-			collisioncomps.addElement((CollisionComponent)c);
+			collisioncomps.add((CollisionComponent)c);
 		}
 		if(c instanceof NotifierComponent){
-			notifiercomps.addElement((NotifierComponent)c);
+			notifiercomps.add((NotifierComponent)c);
 		}
 		if(c instanceof SpriteComponent){
 			sprite = (SpriteComponent)c;
@@ -401,7 +402,7 @@ public class Entity{
 	/**
 	 * @return The components in this entity that can be collided with
 	 */
-	public Vector<CollisionComponent> getCollisionComponents(){
+	public ArrayList<CollisionComponent> getCollisionComponents(){
 		return collisioncomps;
 	}	
 

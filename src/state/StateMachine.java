@@ -216,21 +216,10 @@ public class StateMachine {
 		Game.setCurrentPlayer(new Player(new Vector2f(0f, -.85f))); //reset player
 		LevelGen.reset();//reset level manager
 		Game.resetGameNumbers(); //reset enemy kill count
-
-//		SpawnFactory.spawnEnemy1(new Vector2f(1.5f, .8f));
-//		SpawnFactory.spawnEnemy2(new Vector2f(0f,1.3f));
-//		SpawnFactory.spawnEnemy5(new Vector2f(0.5f,1.3f));
-//		SpawnFactory.spawnEnemy4(new Vector2f(1.3f, .9f));
-//		SpawnFactory.spawnEnemy4(new Vector2f(-1.3f, .9f));
-//		SpawnFactory.spawnEnemy6(new Vector2f(-.6f, 1.2f));
 		
 		
 		LevelGen.ENEMY_SPAWN_SPECS[0].spawn(new Vector2f(1.2f, .85f));
-		LevelGen.ENEMY_SPAWN_SPECS[0].spawn(new Vector2f(-1.2f, .75f));
-		
-		new EnemyDrop(Vector2f.ZERO, DropType.POISON_WEAPON);
-		new EnemyDrop(new Vector2f(0f,.5f), DropType.POISON_WEAPON);
-		
+		LevelGen.ENEMY_SPAWN_SPECS[0].spawn(new Vector2f(-1.2f, .75f));		
 		
 		//create score and enemy tracking
 		Vector2f scale = new Vector2f(.08f,.1f);
@@ -253,7 +242,7 @@ public class StateMachine {
 
 				@Override
 				public void draw(GraphicsHandler graphics) {
-					this.setText( Game.getNumberOfEnemiesLeft() + " enemies left");
+					this.setText( Game.getNumberOfEnemiesLeftToKill() + " enemies left");
 					super.draw(graphics);
 				}};
 			}
@@ -373,6 +362,17 @@ public class StateMachine {
 		menubutton.setScale(buttscale);
 		menubutton.setSelectedColor(sel);
 		menubutton.setUnselectedColor(unsel);
+		
+		Button playbutton = new Button(new Vector2f(0f, -.5f), GameData.TEX_PLAY_GAME_TEXT, GameData.TEXT_WIDTH, buttfps, State.GAME_OVER){
+			@Override
+			public void buttonAction() {
+				setCurrentState(State.GAME); //keep same game length
+			}
+		};
+
+		playbutton.setScale(buttscale);
+		playbutton.setSelectedColor(sel);
+		playbutton.setUnselectedColor(unsel);
 		
 
 		Entity score = new Entity(new Vector2f(0f, 0f));

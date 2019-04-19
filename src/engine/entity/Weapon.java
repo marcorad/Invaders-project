@@ -4,6 +4,7 @@ import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundSource.Status;
 import org.jsfml.system.Vector2f;
 
+import game.GameData;
 import util.Util;
 
 /**A class that soecifies the behaviour of a weapon
@@ -34,6 +35,7 @@ public abstract class Weapon {
 	 * @param damage The damage per projectile
 	 * @param reload The time between shots while this weapon is firing
 	 * @param ID This weapon's ID
+	 * @param p The shooter
 	 */
 	public Weapon(float damage, float reload, WeaponID ID, Entity p){
 		this.damage = damage;
@@ -42,20 +44,27 @@ public abstract class Weapon {
 		this.ID = ID;
 		this.shooter = p;
 	}
+	
+	public Weapon(float damage, float reload, WeaponID ID, Entity p, Sound s){
+		this.damage = damage;
+		reloadtime = reload;
+		timeSinceReload = reload;
+		this.ID = ID;
+		this.shooter = p;
+		sound = s;
+	}
 
 	public void setSound(Sound s){
 		this.sound = s;
 	}
 
-
-
 	/**
 	 * Increase the number of shots the weapon fires by 1. Max of 5 shots.
-	 * This also reduces the damage done by 25%, since two shots are now fired.
+	 * This also reduces the damage done by 30%, since two shots are now fired.
 	 */
 	public void addShot(){
 		if (numShots <= 5){
-			damage *= .75f;
+			damage *= .7f;
 			numShots++;
 		}
 	}
@@ -101,9 +110,7 @@ public abstract class Weapon {
 
 
 				if(sound != null){
-					if(sound.getStatus() != Status.PLAYING){
-						sound.play();
-					}
+					GameData.playSound(sound);
 				}
 			}
 		} else{
@@ -128,13 +135,17 @@ public abstract class Weapon {
 	public boolean isReloading(){
 		return (timeSinceReload < reloadtime);
 	}
+	
+	public void randomiseTimeOffset(){
+		timeSinceReload = Util.randInRange(0f, reloadtime);
+	}
 
 
 
 
 	public static Vector2f[] getSpawnLocations(Entity p, int n, float degreeSeperate){
 		Vector2f[] locs = new Vector2f[n];
-		Vector2f maindir = Util.approxParticleOffset(Util.facing(p), p);
+		Vector2f maindir = Util.approxSpawnOffset(Util.facing(p), p);
 		float angle;
 
 		if(n%2 == 1) {

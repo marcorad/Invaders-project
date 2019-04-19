@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import javax.sound.sampled.AudioInputStream;
+
 import org.jsfml.audio.Music;
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
@@ -35,6 +37,11 @@ public class GameData {
 	private static String P_PROJ = "projectile//";
 	private static String P_TXT = "text//";
 	private static String P_WEAP = "weapon//";
+	private static String P_MUS = "music//";
+	private static String P_SND_PPROJ = "player projectile//";
+	private static String P_SND_EPROJ = "enemy projectile//";
+	private static String P_SND_EHIT = "enemy hit//";
+	private static String P_SND_PL = "player//";
 
 	public static final int TEXT_WIDTH = 472;
 	public static final int ENEMY_WIDTH = 64;
@@ -44,7 +51,7 @@ public class GameData {
 	public static final int MOVING_MOUSE_WIDTH = 128;
 	public static final int ENEMY_PROJECTILE_WIDTH = 256;
 	public static final int POWER_UP_WIDTH = 256;
-	public static final int PLAYER_PROJECTILE_WIDTH = 128;
+	public static final int PROJECTILE_WIDTH = 128;
 	public static final int NUMBER_WIDTH = 64;
 	public static final int WEAPON_ICON_WIDTH = 64;
 
@@ -55,6 +62,16 @@ public class GameData {
 
 
 	//sounds
+	public static Sound SOUND_MACHINE_GUN;
+	public static Sound SOUND_POISON_GUN;
+	public static Sound SOUND_ROCKET;
+	public static Sound SOUND_DART_GUN;
+	
+	public static Sound SOUND_ENEMY_PROJECTILES[] = new Sound[2];
+	public static Sound SOUND_ENEMY_HITS[] = new Sound[6];
+	
+	public static Sound SOUND_PLAYER_HIT;
+	public static Sound SOUND_SHIELD;
 
 
 	//music
@@ -81,6 +98,12 @@ public class GameData {
 
 	public static Texture TEX_POISON;
 	public static Vector2f[] HB_POISON;
+	
+	public static Texture TEX_CROSS_PROJECTILE;
+	public static Vector2f[] HB_CROSS_PROJECTILE;
+	
+	public static Texture TEX_STARRY_PROJECTILE;
+	public static Vector2f[] HB_STARRY_PROJECTILE;
 
 	public static Vector2f[] HB_POWERUP;
 
@@ -155,15 +178,18 @@ public class GameData {
 		HB_ENEMY_VIRUS = loadHitboxData("Enemy Virus");  
 		HB_ENEMY_SUNNY = loadHitboxData("Enemy Sunny");
 
-		MUSIC_GAME = loadMusic("Shady business");
+		MUSIC_GAME = loadMusic(P_MUS + "leave my space");
 		MUSIC_GAME.setLoop(true);
-		MUSIC_INTRO = loadMusic("Intro");
+		MUSIC_INTRO = loadMusic(P_MUS + "the beginning");
 		MUSIC_INTRO.setLoop(true);
-		MUSIC_GAME_OVER = loadMusic("game over");
+		MUSIC_GAME_OVER = loadMusic(P_MUS + "it's over");
 		MUSIC_GAME_OVER.setLoop(true);
-
-
-
+		
+		TEX_CROSS_PROJECTILE      = loadTexture(P_PROJ + "cross");     
+		HB_CROSS_PROJECTILE  	  =	loadHitboxData("cross");                                
+		TEX_STARRY_PROJECTILE     = loadTexture(P_PROJ + "starry");    
+		HB_STARRY_PROJECTILE      = loadHitboxData("starry");
+		
 		TEX_PLAYER = loadTexture(P_ENT +"player");
 		HB_PLAYER = loadHitboxData("player");
 
@@ -214,8 +240,21 @@ public class GameData {
 		TEX_DAMAGE_POWER_UP      = loadTexture(P_PU + "damage");
 		TEX_HEAL_POWER_UP        = loadTexture(P_PU + "heal");
 		TEX_SHIELD_POWER_UP      = loadTexture(P_PU + "shield");
-		TEX_SHOT_POWER_UP        = loadTexture(P_PU + "shot");
+		TEX_SHOT_POWER_UP        = loadTexture(P_PU + "shot");		
+		
+		SOUND_MACHINE_GUN = loadSound(P_SND_PPROJ + "machine", 50f);
+		SOUND_POISON_GUN = loadSound(P_SND_PPROJ + "poison", 30f);
+		SOUND_ROCKET = loadSound(P_SND_PPROJ + "rocket", 30f);
+		SOUND_DART_GUN = loadSound(P_SND_PPROJ + "dart", 80f);
+		SOUND_ENEMY_PROJECTILES[0] = loadSound(P_SND_EPROJ + "1", 40f);
+		SOUND_ENEMY_PROJECTILES[1] = loadSound(P_SND_EPROJ + "2", 40f);
+		
+		SOUND_PLAYER_HIT = loadSound(P_SND_PL + "hit", 50f);
+		SOUND_SHIELD = loadSound(P_SND_PL + "shield", 50f);
 
+		for(int i = 0; i < SOUND_ENEMY_HITS.length; i++){
+			SOUND_ENEMY_HITS[i] = loadSound(P_SND_EHIT + (i+1), 25f);
+		}
 
 
 		for(int i = 0; i < 10; i++){
@@ -261,19 +300,18 @@ public class GameData {
 		return tex;
 	}
 
-	/**Load a sound with a name from the sound folder
-	 * @param name The name without the extension. Expects a .wav file.
-	 * @return The object buffering the sound data
-	 */
-	public static Sound loadSound(String name){
+
+	public static Sound loadSound(String name, float baseVolume){
 		SoundBuffer buf = new SoundBuffer();
 		try {
-			buf.loadFromFile(Paths.get("sound\\" + name + ".wav"));		
+			buf.loadFromFile(Paths.get("sound\\" + name + ".wav"));				
 
 		} catch (IOException e) {					
 			e.printStackTrace();
 		}
-		return new Sound(buf);
+		Sound s =  new Sound(buf);
+		s.setVolume(baseVolume);
+		return s;
 	}
 
 	public static Texture loadBlurryAnimation(String name, int w, int num_between_frames){
@@ -345,7 +383,8 @@ public class GameData {
 	}
 
 	public static void playSound(Sound s){
-		if(s.getStatus() != Status.PLAYING){
+		if(s.getStatus() != Status.PLAYING && Game.isSoundEnabled()){
+			s.setPitch(Util.randInRange(.98f, 1.02f));
 			s.play();
 		}
 
@@ -354,7 +393,7 @@ public class GameData {
 	public static Music loadMusic(String name){
 		Music m = new Music();
 		try {
-			m.openFromFile(Paths.get("sound//" + name + ".wav"));
+			m.openFromFile(Paths.get("sound//" + name + ".flac"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

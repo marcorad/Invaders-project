@@ -223,7 +223,7 @@ public class GraphicsHandler {
 		bgshader.setParameter("t", Game.getTotalElapsedTime());
 		
 		if(damageTaken){			
-			if(timeSinceDamage < 0.06f){
+			if(timeSinceDamage < 0.1f){
 				bgshader.setParameter("damage_taken", 1f);
 			} else {
 				damageTaken = false;

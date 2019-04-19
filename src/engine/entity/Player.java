@@ -44,7 +44,7 @@ public class Player extends Entity {
 	private float shieldRechargeRate = 4f;
 
 
-	public final Weapon DARTGUN = new Weapon(.8f, .8f, WeaponID.DARTGUN, this){
+	public final Weapon DARTGUN = new Weapon(.8f, .8f, WeaponID.DARTGUN, this, GameData.SOUND_DART_GUN){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {
 			SpawnFactory.spawnDart(this.shooter, pos, this.damage);
@@ -52,7 +52,7 @@ public class Player extends Entity {
 
 	};
 
-	public final Weapon MACHINEGUN = new Weapon(1.2f, .2f, WeaponID.MACHINEGUN, this){
+	public final Weapon MACHINEGUN = new Weapon(1.2f, .2f, WeaponID.MACHINEGUN, this, GameData.SOUND_MACHINE_GUN){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {
 			SpawnFactory.spawnMachineGunBullet(shooter, pos, damage);
@@ -60,7 +60,7 @@ public class Player extends Entity {
 
 	};
 
-	public final Weapon ROCKET = new Weapon(10f, 1.2f, WeaponID.ROCKET, this){
+	public final Weapon ROCKET = new Weapon(3.5f, 1.2f, WeaponID.ROCKET, this, GameData.SOUND_ROCKET){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {			
 			SpawnFactory.spawnRocket(shooter, pos, damage);
@@ -68,7 +68,7 @@ public class Player extends Entity {
 	};
 
 
-	public final Weapon POISON = new Weapon(.13f, 1f, WeaponID.POISON, this){
+	public final Weapon POISON = new Weapon(.05f, 1f, WeaponID.POISON, this, GameData.SOUND_POISON_GUN){
 		@Override
 		public void spawnProjectiles(Vector2f pos) {			
 			SpawnFactory.spawnPoisonBlob(shooter, pos, damage);
@@ -165,7 +165,7 @@ public class Player extends Entity {
 	 * Adds an extra shot to the current weapon held. Max of 5 shots at once.
 	 */
 	public void UpgradeCurrentWeaponShot(){		
-			currentWeapon.addShot();
+		currentWeapon.addShot();
 	}
 
 	private void create(){
@@ -197,7 +197,7 @@ public class Player extends Entity {
 		reloadbar = new Bar(1f, .3f, new Color(255, 30, 100, 200), new Color(0, 30, 255, 200));
 		reloadbar.setFrameColor(new Color(0, 30, 200, 200));
 
-		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, Key.Q,Key.E,movement){
+		keys = new KeyboardMoveComponent(this,Key.W, Key.S, Key.A, Key.D, null,null,movement){
 			@Override
 			public void onDirection(Vector2f dir) {
 				ComplexMovementComponent c = (ComplexMovementComponent)movement;
@@ -212,7 +212,7 @@ public class Player extends Entity {
 
 			@Override
 			public void special1Pressed() {
-				switchWeapon(-1);
+				//switchWeapon(-1);
 			}
 
 			@Override
@@ -220,7 +220,7 @@ public class Player extends Entity {
 
 			@Override
 			public void special2Pressed() {
-				switchWeapon(1);
+				//switchWeapon(1);
 			}
 
 			@Override
@@ -240,6 +240,7 @@ public class Player extends Entity {
 				if(shieldrecharge == shieldRechargeMax){
 					SpawnFactory.spawnShield((Player)this.entity, 10f);
 					shieldrecharge = 0;
+					GameData.playSound(GameData.SOUND_SHIELD);
 				}
 			}
 
@@ -286,13 +287,16 @@ public class Player extends Entity {
 			@Override
 			public void notifyAction() {
 				Game.stateMachine.setCurrentState(State.GAME_OVER);				
-			}};
+			}
+		};
 
-			new OnCollisionComponent(this){
-				@Override
-				public void notifyAction() {					
-					Game.graphics.damageTakenEffect();
-				}};
+		new OnCollisionComponent(this){
+			@Override
+			public void notifyAction() {					
+				Game.graphics.damageTakenEffect();
+				GameData.playSound(GameData.SOUND_PLAYER_HIT);
+			}
+		};
 	}
 
 

@@ -12,7 +12,7 @@ import util.Util;
 
 public abstract class EnemySpecs {
 	
-	public static final int MAX_ENEMIES_ON_SCREEN = 25;
+	public static final int MAX_ENEMIES_ON_SCREEN = 18;
 
 
 	public class EnemyProperties{

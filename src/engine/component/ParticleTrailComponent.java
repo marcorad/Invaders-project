@@ -63,7 +63,7 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 				Vector2f pos = entity.getPosition();
 				//Vector2f scale = entity.getScale();
 				//scale = new Vector2f(Util.sgn(vel.x)*scale.x, Util.sgn(vel.y)*scale.y);
-				pos = Vector2f.add(pos, Util.approxParticleOffset(Util.normalise(vel), entity));
+				pos = Vector2f.add(pos, Util.approxSpawnOffset(Util.normalise(vel), entity));
 				
 				Color c = Util.colorWithVariation(mainColor, colorVary);
 				SpawnFactory.spawnParticle(pos, vel, Util.randInRange(-360, 360), Util.clamp(Util.randInRange(.9f*scaleDamp*Util.mag(vel), 1.1f*scaleDamp*Util.mag(vel)), 0f, scaleClamp), c, Util.randInRange(lifetime - .1f*lifetime, lifetime+.1f*lifetime), Util.randInRange(3, 5));

@@ -30,9 +30,56 @@ public class SpawnFactory {
 		Weapon w = new Weapon(2f, 1f, WeaponID.ENEMY_WEAPON, enem){
 			@Override
 			public void spawnProjectiles(Vector2f pos) {
+				
 				spawnBasicEnemyBullet(this.shooter, this.damage);
 			}};			
 			return w;
+	}
+
+	public static void attatchEnemyWeapon1(Entity enem, float damage){
+		Weapon w = new Weapon(damage, 6.2f, WeaponID.ENEMY_WEAPON, enem, GameData.SOUND_ENEMY_PROJECTILES[1]){
+			@Override
+			public void spawnProjectiles(Vector2f pos) {
+				pos = Vector2f.sub(pos, new Vector2f(0f, shooter.getScale().y));
+				spawnEnemyBullet1(pos, this.damage);
+			}
+		};	
+		w.randomiseTimeOffset();
+		new AutoFireComponent(enem, w);			
+	}
+
+	public static void attatchEnemyWeapon2(Entity enem, float damage){
+		Weapon w = new Weapon(damage, 8f, WeaponID.ENEMY_WEAPON, enem,GameData.SOUND_ENEMY_PROJECTILES[0]){
+			@Override
+			public void spawnProjectiles(Vector2f pos) {
+				pos = Vector2f.sub(pos, new Vector2f(0f, shooter.getScale().y));
+				spawnEnemyBullet2(pos, this.damage);
+			}
+		};		
+		w.randomiseTimeOffset();
+		new AutoFireComponent(enem, w);			
+	}
+
+	public static void spawnEnemyBullet1(Vector2f pos, float damage){
+		spawnEnemyProjectile(pos, GameData.TEX_STARRY_PROJECTILE, GameData.HB_STARRY_PROJECTILE, .048f, null, damage, Color.WHITE);
+	}
+
+	public static void spawnEnemyBullet2(Vector2f pos, float damage){
+		spawnEnemyProjectile(pos, GameData.TEX_CROSS_PROJECTILE, GameData.HB_CROSS_PROJECTILE, .048f, null, damage, Color.WHITE);
+	}
+	
+	private static void spawnEnemyProjectile(Vector2f pos, Texture tex, Vector2f[] hb, float scale, Sound firesound, float damage, Color color){
+		Entity proj = new Entity(pos);
+		proj.setScale(new Vector2f(scale, scale));
+		proj.setDamage(damage);
+		SpriteComponent sc = new SpriteComponent(proj, GameData.PROJECTILE_WIDTH, 13f, tex);
+		sc.setColor(color);
+		new OffscreenRemoveComponent(proj);
+		new CollisionComponent(proj, hb, CollisionID.ENEMY_PROJECTILE, CollisionID.PLAYER, CollisionID.SHIELD);
+		if (firesound != null)
+			GameData.playSound(firesound);
+		new SimpleMovementComponent(proj, new Vector2f(0f,-.35f), Util.randInRange(-360f, 360f));
+		new KillOnCollisionComponent(proj);
 	}
 
 
@@ -117,7 +164,7 @@ public class SpawnFactory {
 	}
 
 
-	private final static float POWER_UP_PROBS[] = new float[]{.05f, .03f, .06f, .06f, .02f, .02f, .02f, .02f}; //heal, shot, damage, shield, machine, rocket, poison, dart. Will return -1 if nothing is spawned.
+	private final static float POWER_UP_PROBS[] = new float[]{.019f, .017f, .016f, .016f, .022f, .022f, .022f, .022f}; //heal, shot, damage, shield, machine, rocket, poison, dart. Will return -1 if nothing is spawned.
 
 	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health, int score){
 		Entity enem = new Entity(pos);
@@ -177,14 +224,17 @@ public class SpawnFactory {
 			new OnCollisionComponent(enem){
 				@Override
 				public void notifyAction() {
-					if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) Game.stateMachine.setCurrentState(State.GAME_OVER);
+					if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) 
+						Game.stateMachine.setCurrentState(State.GAME_OVER);
+					else 
+						GameData.playSound(hitsound);
 				}
 			};
 
 			new NotifierComponent(enem){
 				@Override
 				public boolean notifyCondition() {
-					return entity.getPosition().y < -1.03f;
+					return entity.getPosition().y < -1.06f;
 				}
 				@Override
 				public void notifyAction() {
@@ -212,7 +262,10 @@ public class SpawnFactory {
 	 */
 	public static void spawnEnemy1(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[0].getProperties();
-		int num = Util.randInRange(2, 5);		
+		int num = Util.randInRange(2, 5);	
+		if(num > Game.getNumberOfEnemiesLeftToSpawn()){
+			num = Game.getNumberOfEnemiesLeftToSpawn();
+		}
 
 		float vel_x = 0.2f; //moving from the left
 		float spacing = -.25f; //centre to centre spacing of enemies, assumed spawned on the left
@@ -228,7 +281,7 @@ public class SpawnFactory {
 		t3 = 0.2f/Util.abs(vel_x);
 
 		for(int i = 0; i < num; i++){		
-			Entity enem = createBaseEnemy(new Vector2f(pos.x + i * spacing, pos.y), GameData.TEX_ENEMY_WAVE, new Color(5,36,130), GameData.HB_ENEMY_WAVE, null, .08f, prop.health , 10);
+			Entity enem = createBaseEnemy(new Vector2f(pos.x + i * spacing, pos.y), GameData.TEX_ENEMY_WAVE, new Color(5,36,130), GameData.HB_ENEMY_WAVE, GameData.SOUND_ENEMY_HITS[0], .08f, prop.health , 10);
 			new ScaleOscComponent(enem, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.009f, 0.011f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(1f,1f));
 			new MovementOscComponent(enem, new Oscillator(Util.randInRange(0.9f, 1.1f), Util.randInRange(0.0013f, 0.016f), 0f, Util.randInRange(-Util.PI, Util.PI), OscType.SINE), new Vector2f(0f,1f));
 			//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));		
@@ -244,7 +297,10 @@ public class SpawnFactory {
 			cycle2.addToCycle(t2, new SimpleMovementComponent(enem, new Vector2f(vel_x, 0f), 0f)); //initial direction direction		
 			CyclingModifierComponent cycle3 = new CyclingModifierComponent(enem);
 			cycle3.addToCycle(t1); //wait for cycle1 to complete
-			cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently
+			cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently			
+			
+			attatchEnemyWeapon1(enem, prop.damage);
+			
 		}
 	}
 
@@ -253,7 +309,7 @@ public class SpawnFactory {
 	 */
 	public static void spawnEnemy2(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[1].getProperties();
-		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_VIRUS, new Color(234,42,208), GameData.HB_ENEMY_VIRUS, null, .1f, prop.health, 30);
+		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_VIRUS, new Color(234,42,208), GameData.HB_ENEMY_VIRUS, GameData.SOUND_ENEMY_HITS[1], .1f, prop.health, 30);
 		Vector2f target = new Vector2f(Util.randInRange(-.7f, .7f), Util.randInRange(-1f, -.8f));
 		Vector2f vel = Vector2f.sub(target, pos);
 		vel = Util.normalise(vel);
@@ -270,7 +326,7 @@ public class SpawnFactory {
 	 */
 	public static Entity spawnEnemy3(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[2].getProperties();
-		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_BEAR, new Color(100,30,10), GameData.HB_ENEMY_BEAR, null, .14f, prop.health, 80);
+		Entity enem = createBaseEnemy(pos, GameData.TEX_ENEMY_BEAR, new Color(100,30,10), GameData.HB_ENEMY_BEAR, GameData.SOUND_ENEMY_HITS[2], .14f, prop.health, 80);
 		float speed = .053f;
 		new SimpleMovementComponent(enem, new Vector2f(0f, -speed), 0f);
 		new ScaleOscComponent(enem, new Oscillator(.3f, .01f, 0f, 0f, OscType.SINE), Util.unitVectorWithRotation(40f));
@@ -293,7 +349,7 @@ public class SpawnFactory {
 		}
 		t2 =  Util.abs(2*.85f/vel_x);
 
-		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_SUNNY, new Color(200,220,10), GameData.HB_ENEMY_SUNNY, null, .08f, prop.health, 50);
+		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_SUNNY, new Color(200,220,10), GameData.HB_ENEMY_SUNNY, GameData.SOUND_ENEMY_HITS[3], .08f, prop.health, 50);
 		//new AutoFireComponent(enem, createDefaultEnemyWeapon(enem, 1f));		
 		CyclingModifierComponent cycle1 = new CyclingModifierComponent(enem);	
 		cycle1.addToCycle(t1, new SimpleMovementComponent(enem, new Vector2f(vel_x, vel_y), 0f));
@@ -307,6 +363,7 @@ public class SpawnFactory {
 		CyclingModifierComponent cycle3 = new CyclingModifierComponent(enem);
 		cycle3.addToCycle(t1); //wait for cycle1 to complete
 		cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently
+		attatchEnemyWeapon2(enem,prop.damage);
 
 	}
 
@@ -329,9 +386,14 @@ public class SpawnFactory {
 	 */
 	public static void spawnEnemy6(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[5].getProperties();
-		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_BAT, new Color(20,20,20), GameData.HB_ENEMY_BAT, null, .065f, prop.health, 100);
+		Entity enem = createBaseEnemy(new Vector2f(pos.x, pos.y), GameData.TEX_ENEMY_BAT, new Color(20,20,20), GameData.HB_ENEMY_BAT, GameData.SOUND_ENEMY_HITS[4], .065f, prop.health, 100);
 		float vel_y = -.2f;
 		new SimpleMovementComponent(enem, new Vector2f(0f, vel_y), 0f);
+		ParticleTrailComponent trail = new ParticleTrailComponent(enem, 0f, .5f, 10f,  new Color(20,20,20), 2, 1f);
+		trail.setColorVary(80);
+		trail.setRandomVel(.1f);
+		trail.setScaleDamp(1f);
+		trail.setScaleClamp(.008f);
 	}
 
 
@@ -374,7 +436,7 @@ public class SpawnFactory {
 	}
 
 	public static void spawnExplosionParticles(Entity src,float spread, float speedDamp, Color color){		
-		int numparticles = Util.randInRange(30, 50);
+		int numparticles = Util.randInRange(20, 35);
 
 		for(int i = 0; i < numparticles; i++){
 			Vector2f pos = Vector2f.add(src.position, Vector2f.mul(Util.randomUnitVector(0, 360f), Util.randInRange(0f, spread)));
@@ -441,7 +503,7 @@ public class SpawnFactory {
 	}
 
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
-		int amount = (int)(magnitude*5f);
+		int amount = (int)(magnitude*3.5f);
 		for(int i = 0; i < amount; i++){
 			spawnParticle(pos, Vector2f.mul(Util.varyVector(generalDir, Util.PI/1.4f), Util.randInRange(.06f*magnitude, .08f*magnitude)), Util.randInRange(-400f, 400f), Util.randInRange(0.004f, 0.008f), color, Util.randInRange(.1f, .4f), 3);
 		}
