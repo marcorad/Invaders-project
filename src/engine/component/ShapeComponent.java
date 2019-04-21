@@ -2,22 +2,17 @@ package engine.component;
 
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.FloatRect;
-import org.jsfml.graphics.PrimitiveType;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.Shape;
 import org.jsfml.graphics.Vertex;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.entity.EntityManager;
 import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
-import util.Oscillator;
 import util.Util;
 
-/**A component that will display a shape
- * @author Marco
- *
+/**
+ * Will display a shape
  */
 public abstract class ShapeComponent extends ColorComponent {
 

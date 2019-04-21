@@ -1,13 +1,9 @@
 package engine.component;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
 /**
- * Specifies a component that will involve movement
- * @author Marco
- *
+ * Base component that will involve movement
  */
 public abstract class MovementComponent extends Component implements UpdateableComponent{
 

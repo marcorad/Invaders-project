@@ -12,7 +12,11 @@ import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
 import engine.entity.Entity;
+import game.Game;
 
+/**
+ * A MASSIVE UTILITY CLASS
+ */
 public class Util {
 	public final static Random RANDOM = new Random();
 
@@ -47,7 +51,9 @@ public class Util {
 		float acc = 0;
 		for(int i = 0; i < p.length; i++){
 			acc += p[i];
-			if (s < acc) return i;
+			if (s < acc) {
+				return i;
+			}
 		}
 		return -1;
 	}
@@ -122,8 +128,12 @@ public class Util {
 	 * @return the clamped value
 	 */
 	public static float clamp(float x, float min, float max){
-		if(x >= max) return max;
-		if(x <= min) return min;
+		if(x >= max) {
+			return max;
+		}
+		if(x <= min) {
+			return min;
+		}
 		return x;
 	}
 
@@ -132,7 +142,7 @@ public class Util {
 	 * @return The converted vector
 	 */
 	public static Vector2f fromIntToFloatVector(Vector2i v){
-		return new Vector2f((float)v.x, (float)v.y);
+		return new Vector2f(v.x, v.y);
 	}
 
 
@@ -211,8 +221,8 @@ public class Util {
 	}
 
 	/**Convert from radians to degrees
-	 * @param d Angle in radians
-	 * @return Andle in degrees
+	 * @param rad Radians
+	 * @return Angle in degrees
 	 */
 	public static float toDegrees(float rad){
 		return rad * (180f/PI);
@@ -239,7 +249,7 @@ public class Util {
 	 * @return The magnitude squared
 	 */
 	public static float magSquared(Vector2f v){
-		return (v.x * v.x + v.y * v.y);
+		return v.x * v.x + v.y * v.y;
 	}
 
 	/**Convert from polar coordinates to Cartesian coordinates
@@ -265,7 +275,7 @@ public class Util {
 	 * @return The normal of the edge consisting of pt1 and pt2
 	 */
 	public static Vector2f getNormal(Vector2f pt1, Vector2f pt2){
-		Vector2f v = new Vector2f((pt2.y - pt1.y), -(pt2.x - pt1.x));
+		Vector2f v = new Vector2f(pt2.y - pt1.y, -(pt2.x - pt1.x));
 		return normalise(v);
 	}
 
@@ -275,7 +285,7 @@ public class Util {
 	 * @return The normal of the edge consisting of pt1 and pt2, but not a unit vector
 	 */
 	public static Vector2f getLazyNormal(Vector2f pt1, Vector2f pt2){
-		return new Vector2f((pt2.y - pt1.y), -(pt2.x - pt1.x));		
+		return new Vector2f(pt2.y - pt1.y, -(pt2.x - pt1.x));		
 	}
 
 
@@ -339,7 +349,7 @@ public class Util {
 		Vector2f pts[] = new Vector2f[s.getPointCount()];
 		Transform t = s.getTransform();
 		for(int i = 0; i < pts.length; i++){
-			pts[i] = (t.transformPoint(s.getPoint(i)));
+			pts[i] = t.transformPoint(s.getPoint(i));
 		}
 		return pts;
 	}
@@ -411,8 +421,12 @@ public class Util {
 	public static MinMaxPair<Float> getMinMax(float[] a){
 		float min = a[0], max = a[0];
 		for(int i = 1; i < a.length; i ++){
-			if(a[i] > max) max = a[i];
-			if(a[i] < min) min = a[i];
+			if(a[i] > max) {
+				max = a[i];
+			}
+			if(a[i] < min) {
+				min = a[i];
+			}
 		}
 		return new MinMaxPair<Float>(min,max);
 	}
@@ -423,7 +437,7 @@ public class Util {
 	 * @return Whether the range overlaps
 	 */
 	public static boolean overlaps(MinMaxPair<Float> p, MinMaxPair<Float> q){
-		return (p.min < q.max && q.min < p.max);		
+		return p.min < q.max && q.min < p.max;		
 	}
 
 	/**Check if two rectangles overlap
@@ -432,8 +446,12 @@ public class Util {
 	 * @return Whether they overlap
 	 */
 	public static boolean intersects(FloatRect a, FloatRect b){
-		if(a.left > b.left + b.width || a.left + a.width < b.left) return false;
-		if(a.top < b.top - b.height || a.top - a.height > b.top) return false;
+		if(a.left > b.left + b.width || a.left + a.width < b.left) {
+			return false;
+		}
+		if(a.top < b.top - b.height || a.top - a.height > b.top) {
+			return false;
+		}
 		return true;
 	}
 
@@ -443,8 +461,9 @@ public class Util {
 	 */
 	public static  Vertex[] verticesFromPoints(Vector2f pts[]){
 		Vertex[] v = new Vertex[pts.length];
-		for(int i = 0; i < pts.length; i++)
+		for(int i = 0; i < pts.length; i++) {
 			v[i] = new Vertex(pts[i], Color.RED);
+		}
 		return v;
 	}
 
@@ -492,22 +511,23 @@ public class Util {
 	}
 
 	/**
-	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT).</br>
-	 * Bounding rectangles of the polygons are first checked</br></br>
+	 * Tests for collision between two convex polygons according to the separating axis theorem (SAT).<br>
+	 * Bounding rectangles of the polygons are first checked for slight performance improvements. Note that when you press "C" in-game, SAT is bypassed and only bounding 
+	 * rectangles checked, resulting in inaccurate, but faster collisions.<br><br>
 	 * 
 	 * 
-	 * <u><b>ALGORITHM</b></u></br>
-	 * For each edge of convex polygons a and b, which has a set of points p and q respectively</br>
-	 * Get the edge normal</br>
-	 * Project the vertices of a and b onto the normal (dot product)</br>
-	 * Find the max and min projection values for each shape</br>
-	 * If the projections do not overlap, then return false</br>
-	 * If algorithm completes, return true</br></br>
+	 * <u><b>ALGORITHM</b></u><br>
+	 * For each edge of convex polygons a and b, which has a set of points p and q respectively<br>
+	 * Get the edge normal<br>
+	 * Project the vertices of a and b onto the normal (dot product)<br>
+	 * Find the max and min projection values for each shape<br>
+	 * If the projections do not overlap, then return false<br>
+	 * If algorithm completes, return true<br><br>
 	 * 
-	 * This algorithm was discovered on the page with URL:</br>
-	 * <a href="http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT">http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT</a></br>
+	 * This algorithm was discovered on the page with URL:<br>
+	 * <a href="http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT">http://back2basic.phatcode.net/?Issue-%231/2D-Convex-Polygon-Collision-using-SAT</a><br>
 	 * 		 
-	 * Note that this Java implementation is original and specific for the JSFML library.</br>
+	 * Note that this Java implementation is original and specific for the JSFML library.<br>
 	 * 
 	 * @param a First convex polygon
 	 * @param b Second convex polygon
@@ -520,6 +540,8 @@ public class Util {
 		//the intersection method in JSFML FloatRect not used since the overlapping FloatRect is not required
 		if(!intersects(getBoundingRect(a),getBoundingRect(b))){
 			return false;
+		} else if(Game.inaccurateCollisionsEnabled()){
+			return true;
 		}
 
 		Vector2f[] p = getTransformedPoints(a);

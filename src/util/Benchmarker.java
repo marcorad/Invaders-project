@@ -2,6 +2,9 @@ package util;
 
 import org.jsfml.system.Clock;
 
+/**
+ * For time measurement in benchmarking phase.
+ */
 public class Benchmarker {
 
 	private static Benchmarker mainbm;
@@ -47,7 +50,7 @@ public class Benchmarker {
 	 * Stop measuring. If the number of measurements were met, the average time will be printed on screen along with the percentage of time it is of the main benchmarker, after which another measure cycle begins.
 	 */
 	public void stopMeasurement(){
-		float t = (float)clk.restart().asMicroseconds();
+		float t = clk.restart().asMicroseconds();
 		curr_average -= prev_measure[prev_measure.length-1]; //subtract oldest value
 		shiftInFront(t/number_of_readings, prev_measure); //the averaged value
 		curr_average += prev_measure[0]; //add newest value
@@ -56,8 +59,9 @@ public class Benchmarker {
 		if(num_taken_measurements == number_of_readings){
 			num_taken_measurements = 0;
 			if(mainbm != null){
-				if(this!=mainbm)				
+				if(this!=mainbm) {
 					System.out.printf("%s : %.2f us (%.2f%%)%n", name, curr_average,curr_average/mainbm.curr_average * 100f);
+				}
 			} else {
 				System.out.printf("%s : %.2f us %n", name, curr_average);
 			}

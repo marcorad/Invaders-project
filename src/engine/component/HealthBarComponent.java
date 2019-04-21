@@ -7,12 +7,9 @@ import org.jsfml.system.Vector2f;
 import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
 import engine.gui.Bar;
-import util.Util;
 
 /**A health bar that appears above the entity, indicating the amount of health it has.
- * @author Marco
- *
- */
+  */
 public class HealthBarComponent extends DisplayComponent {
 
 	private static float width = 1.9f, height = 0.2f;

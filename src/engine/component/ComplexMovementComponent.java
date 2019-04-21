@@ -3,13 +3,9 @@ package engine.component;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 import util.Util;
 
-/**Specifies movement that includes acceleration
- * @author Marco
- *
+/**Movement that includes acceleration and angular acceleration.
  */
 public class ComplexMovementComponent extends SimpleMovementComponent {
 
@@ -37,7 +33,7 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	}
 
 
-	/**
+	/**Get the acceleration
 	 * @return The acceleration
 	 */
 	public Vector2f getAccel() {
@@ -45,7 +41,7 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	}
 
 
-	/**
+	/**Get the angular acceleration
 	 * @return The angular acceleration
 	 */
 	public float getAngularAccel() {
@@ -53,7 +49,7 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	}
 
 
-	/**
+	/**Set the acceleration
 	 * @param accel The acceleration
 	 */
 	public void setAccel(Vector2f accel) {
@@ -87,13 +83,16 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	}
 
 
-	/**
+	/**Set the angular acceleration
 	 * @param alpha The angular acceleration
 	 */
 	public void setAngularAccel(float alpha) {
 		this.angularAccel = alpha;
 	}
-	
+
+	/**Add to the acceleration
+	 * @param a Vector to add
+	 */
 	public void addToAccel(Vector2f a){
 		accel = Vector2f.add(accel, a);
 	}
@@ -102,7 +101,6 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 	@Override
 	public void update(float dt, float t) {
 		addToVelocity(Vector2f.mul(accel, dt));
-
 		if(decelx){
 			if(Util.sgn(velocity.x) != Util.sgn(velxbefore)){ //the moment the sign of a component changes, the deceleration has been successful
 				velocity = new Vector2f(0f, velocity.y);
@@ -110,7 +108,6 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 				decelx = false;
 			}
 		}
-
 		if(decely){
 			if(Util.sgn(velocity.y) != Util.sgn(velybefore)){ //the moment the sign of a component changes, the deceleration has been successful
 				velocity = new Vector2f(velocity.x, 0f);
@@ -118,13 +115,8 @@ public class ComplexMovementComponent extends SimpleMovementComponent {
 				decely = false;
 			}
 		}
-
-
 		omega += angularAccel*dt;
 		super.update(dt, t);
 	}
-
-
-
 
 }

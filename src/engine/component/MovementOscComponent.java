@@ -3,15 +3,10 @@ package engine.component;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 import util.Oscillator;
-import util.Util;
 
 /**
- * A component that will provide oscillatory motion in a direction based off an oscillator object.
- * @author Marco
- *
+ * Will provide oscillatory motion in a direction based off an oscillator object.
  */
 public class MovementOscComponent extends MovementComponent {
 

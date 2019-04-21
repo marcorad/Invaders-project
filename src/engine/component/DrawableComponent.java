@@ -3,10 +3,8 @@ package engine.component;
 import engine.graphics.GraphicsHandler;
 
 /**
- * Specifies a component that can be drawn
- * @author Marco
- *
- */
+ * A component that can be drawn
+  */
 public interface DrawableComponent {
 	/**Draws the component
 	 * @param graphics The graphics which to draw to

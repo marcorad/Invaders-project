@@ -1,22 +1,32 @@
 package engine.entity;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import org.jsfml.graphics.Color;
-import org.jsfml.graphics.ConvexShape;
 import org.jsfml.graphics.Transform;
 import org.jsfml.system.Vector2f;
 
-import engine.component.*;
+import engine.component.CollisionComponent;
+import engine.component.CollisionID;
+import engine.component.Component;
+import engine.component.DrawableComponent;
+import engine.component.EntityMovementListener;
+import engine.component.NotifierComponent;
+import engine.component.SpriteComponent;
+import engine.component.UpdateableComponent;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
 import game.Game;
 import util.Util;
 
-/**A class that specifies all the requirements of an entity. 
- * @author Marco
- *
+/**
+ * The base entity. It has components that specifies behaviour. 
+ * It also has a position, a scale, a rotation, health and damage done to other entities.
+ * It adds itself to the entity manager.
+ * Rotation is specified from the positive Y-axis in normalised world coordination. This is due to how
+ * JSFML deals with rotation.
+ * The entity may have multiples of some components, such as sprites or collision component, however, only one is ever used
+ * at most. The lists are still there, allowing for possible future expansion. 
  */
 public class Entity{
 
@@ -63,13 +73,13 @@ public class Entity{
 	//lists of component methods 
 	protected ArrayList<UpdateableComponent> updatecomps= new ArrayList<>();
 	protected ArrayList<DrawableComponent> drawcomps= new ArrayList<>();;
-	protected ArrayList<MovementNotifier> movenotifiercomps= new ArrayList<>();
+	protected ArrayList<EntityMovementListener> movenotifiercomps= new ArrayList<>();
 	protected ArrayList<CollisionComponent> collisioncomps= new ArrayList<>();
 	protected ArrayList<NotifierComponent> notifiercomps = new ArrayList<>();
 
 	protected float previous_dt = 1.f;
 
-	protected Vector<Entity> collidingentities = new Vector<>();
+	protected ArrayList<Entity> collidingentities = new ArrayList<>();
 
 	private Vector2f minpositionclamp = new Vector2f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY); //the position will be clamped to these minimum coords
 	private Vector2f maxpositionclamp = new Vector2f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY); // the posistion will be clamped to these maximum coords
@@ -160,12 +170,16 @@ public class Entity{
 
 				//check if the other component can collide with this component
 				for(CollisionID otherid : othercc.getCollidingIDs()){
-					if(thiscc.getID() == otherid) othercollides = true;
+					if(thiscc.getID() == otherid) {
+						othercollides = true;
+					}
 				}
 
 				//check if this component can collide with the other component
 				for(CollisionID thisid : thiscc.getCollidingIDs()){
-					if(othercc.getID() == thisid) thiscollides = true;
+					if(othercc.getID() == thisid) {
+						thiscollides = true;
+					}
 				}
 
 				if(thiscollides || othercollides){
@@ -185,17 +199,17 @@ public class Entity{
 		}
 	}
 
-	/**Convenience method for add to this entity's list of colliding entities
+	/**Convenience method for add to this entity's list of colliding entities. Synchronized for possible multithreaded collisions.
 	 * @param e The entity to add
 	 */
-	public void addCollidingEntity(Entity e){
-		collidingentities.addElement(e);
+	public synchronized void addCollidingEntity(Entity e){
+		collidingentities.add(e);
 	}
 
 	/**Get the list containing the entities this entity is currently colliding with
 	 * @return The list
 	 */
-	public Vector<Entity> getCollidingEntities(){
+	public ArrayList<Entity> getCollidingEntities(){
 		return this.collidingentities;
 	}
 
@@ -217,9 +231,10 @@ public class Entity{
 	 * Update all components that require a rotation update
 	 */
 	private void updateRotation(){
-		for(MovementNotifier mn : movenotifiercomps){
-			if(((Component)mn).isEnabled())
+		for(EntityMovementListener mn : movenotifiercomps){
+			if(((Component)mn).isEnabled()) {
 				mn.onRotationUpdate();
+			}
 		}
 	}
 
@@ -227,9 +242,10 @@ public class Entity{
 	 * Update all components that require a position update
 	 */
 	private void updatePosition(){
-		for(MovementNotifier mn : movenotifiercomps){
-			if(((Component)mn).isEnabled())
+		for(EntityMovementListener mn : movenotifiercomps){
+			if(((Component)mn).isEnabled()) {
 				mn.onPositionUpdate();
+			}
 		}		
 	}
 
@@ -237,9 +253,10 @@ public class Entity{
 	 * Update all components that require a position update
 	 */
 	private void updateScale(){
-		for(MovementNotifier mn : movenotifiercomps){
-			if(((Component)mn).isEnabled())
+		for(EntityMovementListener mn : movenotifiercomps){
+			if(((Component)mn).isEnabled()) {
 				mn.onScaleUpdate();
+			}
 		}
 	}
 
@@ -321,8 +338,9 @@ public class Entity{
 	 */
 	public void draw(){
 		for(DrawableComponent dc : drawcomps){
-			if(((Component)dc).isEnabled())
+			if(((Component)dc).isEnabled()) {
 				dc.draw(graphics);
+			}
 		}
 	}
 
@@ -331,8 +349,9 @@ public class Entity{
 	 */
 	protected void updateNotifierComponents(){
 		for(NotifierComponent nc : notifiercomps){
-			if(nc.isEnabled())
+			if(nc.isEnabled()) {
 				nc.notifyWhenConditionMet();
+			}
 		}
 	}
 	
@@ -368,7 +387,9 @@ public class Entity{
 		}	
 
 		collidedThisFrame = false;
-		if(this.health <= 0f) remove = true;
+		if(this.health <= 0f) {
+			remove = true;
+		}
 	}
 
 	public boolean collidedThisFrame(){
@@ -385,8 +406,8 @@ public class Entity{
 		if(c instanceof DrawableComponent){
 			drawcomps.add((DrawableComponent)c);
 		}
-		if(c instanceof MovementNotifier){
-			movenotifiercomps.add((MovementNotifier)c);
+		if(c instanceof EntityMovementListener){
+			movenotifiercomps.add((EntityMovementListener)c);
 		}
 		if(c instanceof CollisionComponent){
 			collisioncomps.add((CollisionComponent)c);
@@ -441,15 +462,18 @@ public class Entity{
 		return Vector2f.div(Vector2f.sub(position, previous_pos), previous_dt); //v = dp/dt ~= (p1-p0)/dt
 	}
 
+	/**
+	 * @return The max health
+	 */
 	public float getMaxHealth() {
 		return maxHealth;
 	}
 
+	/**
+	 * @param maxHealth The max health
+	 */
 	public void setMaxHealth(float maxHealth) {
 		this.maxHealth = maxHealth;
 	}
-
-
-
 
 }

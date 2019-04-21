@@ -7,13 +7,10 @@ import org.jsfml.window.event.MouseEvent;
 import org.jsfml.window.event.MouseWheelEvent;
 
 import engine.entity.Entity;
-import engine.input.EventHandler;
 import engine.input.MouseListener;
 
 /**
- * Specifies a component that will listen to mouse input.
- * @author Marco
- *
+ * A component that will listen to game-focused mouse input.
  */
 public abstract class MouseMoveControlComponent extends Component implements MouseListener {
 	
@@ -26,10 +23,31 @@ public abstract class MouseMoveControlComponent extends Component implements Mou
 	}
 	
 		
+	
+	
+	/**Called when the right mouse is pressed.
+	 * @param worldpos The world coordinates the event occurred at
+	 */
 	public abstract void onRightMousePress(Vector2f worldpos);
+	
+	/**Called when the left mouse is pressed.
+	 * @param worldpos The world coordinates the event occurred at
+	 */
 	public abstract void onLeftMousePress(Vector2f worldpos);
+	
+	/**Called when the right mouse is released.
+	 * @param worldpos The world coordinates the event occurred at
+	 */
 	public abstract void onRightMouseRelease(Vector2f worldpos);
+	
+	/**Called when the left mouse is released.
+	 * @param worldpos The world coordinates the event occurred at
+	 */
 	public abstract void onLeftMouseRelease(Vector2f worldpos);
+	
+	/**Called when the right mouse has moved.
+	 * @param worldpos The world coordinates the event occurred at
+	 */
 	public abstract void onMouseMove(Vector2f worldpos);
 	
 	
@@ -65,6 +83,7 @@ public abstract class MouseMoveControlComponent extends Component implements Mou
 		return entity.shouldBeRemoved();
 	} 
 	
+	@Override
 	public void onMouseWheelMoved(MouseWheelEvent mwe) {		
 	}
 }

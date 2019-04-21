@@ -7,27 +7,22 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.sound.sampled.AudioInputStream;
-
 import org.jsfml.audio.Music;
 import org.jsfml.audio.Sound;
 import org.jsfml.audio.SoundBuffer;
-import org.jsfml.audio.SoundSource;
 import org.jsfml.audio.SoundSource.Status;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.Image;
 import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
-import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.system.Vector2i;
 
 import util.Util;
 
-/**A class that contains the game data, including hitbox data, fonts, sound, music and textures. 
- * @author Marco
- *
+/**
+ * A class that contains the game data, including hitbox data, fonts, sound, music and textures. 
  */
 public class GameData {
 
@@ -57,7 +52,6 @@ public class GameData {
 
 
 	//fonts
-	public static Font FONT_CALIBRI;
 	public static Font FONT_VIDEO;//Video by Lucas de Groot, Alexander Lange. Obtained from: https://www.1001freefonts.com/new-fonts-2.php
 
 
@@ -140,6 +134,8 @@ public class GameData {
 	public static Texture TEX_QUIT_TEXT;
 	public static Texture TEX_SOUND_TEXT;
 	public static Texture TEX_HIGH_SCORE_TEXT;
+	public static Texture TEX_NEXT_PAGE_TEXT;
+	public static Texture TEX_PREV_PAGE_TEXT;
 
 	public static Texture TEX_INSTRUCTIONS_PAGE;
 	public static Texture TEX_MOVING_MOUSE;
@@ -158,10 +154,10 @@ public class GameData {
 	public static Texture[] TEX_NUMBERS_TEXT = new Texture[10];
 
 	/**
-	 * Loads all the data required for the game
+	 * Loads all the data required for the game.</br> 
+	 * THIS WAS VERY TEDIOUS TO CODE XD
 	 */
 	public static void load(){
-		FONT_CALIBRI = loadFont("Calibri");
 		FONT_VIDEO = loadFont("video");
 
 		TEX_ENEMY_BAT = loadTexture(P_ENT + "bat");     
@@ -231,6 +227,9 @@ public class GameData {
 		TEX_QUIT_TEXT            = loadTexture(P_TXT + "quit");
 		TEX_SOUND_TEXT           = loadTexture(P_TXT + "sound");
 		TEX_HIGH_SCORE_TEXT      = loadTexture(P_TXT + "high score");
+		
+		TEX_NEXT_PAGE_TEXT  = loadTexture(P_TXT + "next page");
+		TEX_PREV_PAGE_TEXT  = loadTexture(P_TXT + "previous page");
 
 		TEX_CHOOSE_GAME_TEXT     = loadTexture(P_TXT + "choose game");
 		TEX_SHORT_TEXT           = loadTexture(P_TXT + "short");
@@ -301,6 +300,11 @@ public class GameData {
 	}
 
 
+	/**Load a sound from the sound folder.
+	 * @param name The name without the extension. Expects a .wav file.
+	 * @param baseVolume
+	 * @return
+	 */
 	public static Sound loadSound(String name, float baseVolume){
 		SoundBuffer buf = new SoundBuffer();
 		try {
@@ -314,6 +318,12 @@ public class GameData {
 		return s;
 	}
 
+	/**JUST AN EXPERIMENT. NOT USED.
+	 * @param name
+	 * @param w
+	 * @param num_between_frames
+	 * @return
+	 */
 	public static Texture loadBlurryAnimation(String name, int w, int num_between_frames){
 		Path path = Paths.get("sprites\\" + name + ".png");
 		Image original = new Image();		
@@ -324,8 +334,6 @@ public class GameData {
 			Vector2i origsize = original.getSize();
 			int numframes  = origsize.x/w;
 			smoothimage.create(origsize.x*(num_between_frames + 1), origsize.y);
-			Vector2i newsize = smoothimage.getSize();
-
 			for(int currframe = 0; currframe < numframes; currframe++){
 				for(int x = 0; x < w; x++){
 					for(int y = 0; y < origsize.y; y++){					
@@ -334,8 +342,10 @@ public class GameData {
 						Color pixnext = original.getPixel(((currframe+1)*w + x)%origsize.x, y);
 
 						int smoothbeginx = x+w*currframe*(num_between_frames+1);
-						int smoothendx = x+(w*(currframe+1))*(num_between_frames+1);
-						if(currframe == 1) System.out.println(smoothbeginx + " " + smoothendx);
+						int smoothendx = x+w*(currframe+1)*(num_between_frames+1);
+						if(currframe == 1) {
+							System.out.println(smoothbeginx + " " + smoothendx);
+						}
 						float lerpfactor = 0f;	
 						for(int smoothx = smoothbeginx; smoothx < smoothendx; smoothx += w ){
 							smoothimage.setPixel(smoothx, y, Util.lerpColor(lerpfactor, pixcurr, pixnext));
@@ -359,8 +369,8 @@ public class GameData {
 	}
 
 	/**Load hitbox data from the hitboxdata folder.
-	 * @param name The name without extension
-	 * @return An array containing points of multiple hitboxes ([points][hitbox number])
+	 * @param name The name without the extension. Expects a .hbd file.
+	 * @return An array containing points of a hitbox
 	 */
 	public static Vector2f[] loadHitboxData(String name){
 		DataInputStream dis;
@@ -382,6 +392,9 @@ public class GameData {
 		return null;
 	}
 
+	/**Play a sound. Slightly randomises pitch. Only plays if the sound is not playing and if the sound is enabled.
+	 * @param s The sound to play.
+	 */
 	public static void playSound(Sound s){
 		if(s.getStatus() != Status.PLAYING && Game.isSoundEnabled()){
 			s.setPitch(Util.randInRange(.98f, 1.02f));
@@ -390,6 +403,10 @@ public class GameData {
 
 	}
 
+	/**Load music from the sound folder.
+	 * @param name The name without the extension. Expects a .flac file.
+	 * @return The music
+	 */
 	public static Music loadMusic(String name){
 		Music m = new Music();
 		try {

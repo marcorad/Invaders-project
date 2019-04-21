@@ -1,14 +1,8 @@
 package game;
 
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -18,11 +12,9 @@ import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Font;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.graphics.Texture;
-import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Vector2f;
 import org.jsfml.window.ContextActivationException;
-import org.jsfml.window.Keyboard;
 import org.jsfml.window.VideoMode;
 import org.jsfml.window.Window;
 import org.jsfml.window.event.KeyEvent;
@@ -42,6 +34,9 @@ import engine.input.KeyListener;
 import engine.input.MouseListener;
 import util.Util;
 
+/**
+ * A useful tool that doesn't work very well anymore :D
+ */
 public class HitboxCreator  implements MouseListener, KeyListener{
 
 
@@ -120,7 +115,7 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 			dt = elapsed_time.restart().asSeconds(); //change in time
 			t += dt; //keep track of total time
 
-			float frate = (1.0f / dt);
+			float frate = 1.0f / dt;
 
 			window.setTitle("Hitbox creator" + " - " + String.valueOf(frate));	
 
@@ -142,7 +137,9 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 	 */
 	public void loadSprite(){	
 		//lazy solution to stop previous hitbox from being drawn
-		if (hitbox != null)hitbox.toggleEnable();
+		if (hitbox != null) {
+			hitbox.toggleEnable();
+		}
 		hitbox = new ConvexPolygonComponent(sprite, null , new Color(255,0,0,100), DisplayType.FILL);		
 		boolean error;
 		int w = 0;
@@ -152,7 +149,9 @@ public class HitboxCreator  implements MouseListener, KeyListener{
 			w = Integer.parseInt(JOptionPane.showInputDialog("Please enter the width of a frame"));
 
 			//stop the previous sprite from being drawn, a lazy solution since entities are not meant to have components removed
-			if (spritecomp != null)spritecomp.toggleEnable();
+			if (spritecomp != null) {
+				spritecomp.toggleEnable();
+			}
 
 			Texture tex = GameData.loadTexture("projectile//" + name);		
 			if(tex == null) {

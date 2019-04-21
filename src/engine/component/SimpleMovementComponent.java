@@ -3,13 +3,10 @@ package engine.component;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 import util.Util;
 
-/**Describes simple movement that include a velocity and angular velocity
- * @author Marco
- *
+/**
+ * Describes simple movement that include a velocity and angular velocity 
  */
 public class SimpleMovementComponent extends MovementComponent {
   
@@ -59,7 +56,6 @@ public class SimpleMovementComponent extends MovementComponent {
 		knockback_active = true;
 	}
 	
-	
 
 	/**
 	 * @return Angular velocity
@@ -97,6 +93,9 @@ public class SimpleMovementComponent extends MovementComponent {
 		speedclamp = clamp;
 	}
 	
+	/**
+	 * Clamp the velocity.
+	 */
 	private void clampVel(){
 		if(Util.magSquared(velocity) > speedclamp*speedclamp){
 			velocity = Util.getVectorFromPolar(speedclamp, Util.vectorAngle(velocity));

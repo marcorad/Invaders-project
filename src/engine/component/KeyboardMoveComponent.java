@@ -5,14 +5,11 @@ import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.event.KeyEvent;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 import engine.input.KeyListener;
 
 /**
- * Specifies a game-focused type of keyboard listener.
- * @author Marco
- *
+ * A game-focused type of keyboard listener. This assumes certain keys to have specific actions. This component
+ * will act on a MovementComponent when keys are pressed, which is up to user specification.
  */
 public abstract class KeyboardMoveComponent  extends Component implements KeyListener {
 	protected Key upKey, downKey, leftKey, rightKey, specialKey1, specialKey2;	
@@ -116,8 +113,9 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 			special2Pressed();
 		}
 
-		if(pressed)
+		if(pressed) {
 			sendDir();
+		}
 	}
 
 	@Override
@@ -142,10 +140,15 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 			special2Released();
 		}
 		
-		if(pressed)
+		if(pressed) {
 			sendDir();
+		}
 	}
 
+	/**
+	 * Helper method to determine the direction the keys are pressed. Pressing keys with opposing motion
+	 * simultaneously will result in them canceling out.
+	 */
 	private void sendDir(){
 		float x = .0f, y = .0f;
 		y += dirs[0]?  1f : .0f;
@@ -156,26 +159,44 @@ public abstract class KeyboardMoveComponent  extends Component implements KeyLis
 		onDirection(dir);
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setDownKey(Key downKey) {
 		this.downKey = downKey;
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setLeftKey(Key leftKey) {
 		this.leftKey = leftKey;
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setRightKey(Key rightKey) {
 		this.rightKey = rightKey;
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setSpecialKey1(Key specialKey) {
 		this.specialKey1 = specialKey;
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setSpecialKey2(Key specialKey2) {
 		this.specialKey2 = specialKey2;
 	}
 
+	/**
+	 * @param downKey The key
+	 */
 	public void setUpKey(Key upKey) {
 		this.upKey = upKey;
 	}

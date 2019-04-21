@@ -2,9 +2,8 @@ package engine.component;
 
 import engine.entity.Entity;
 
-/**Specifies a component that does an action upon entity death
- * @author Marco
- *
+/**
+ * Does an action once the entity's health reaches 0.
  */
 public abstract class OnDeathComponent extends NotifierComponent{
 

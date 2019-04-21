@@ -9,6 +9,10 @@ import engine.component.SpriteComponent;
 import game.GameData;
 import util.Util;
 
+/**
+ * Player spawnable shield that blocks enemy projectiles. The shield loses health over time.
+ * The transparency of the shield is dependent on its current health.
+ */
 public class Shield extends Entity {
 	
 	private SpriteComponent sprite;

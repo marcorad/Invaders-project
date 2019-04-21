@@ -5,13 +5,9 @@ import org.jsfml.graphics.RectangleShape;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
 /**
- * A component that will draw a rectangle on screen. A class used for initial testing.
- * @author Marco
- *
+ * Will draw a rectangle on screen. A class used for initial testing. This is a rudimentary class so there is no need for proper documentation.
  */
 public class RectangleComponent extends ShapeComponent {
 

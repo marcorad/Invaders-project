@@ -2,9 +2,8 @@ package engine.component;
 
 import engine.entity.Entity;
 
-/**Specifies a component that does an action on a collision.
- * @author Marco
- *
+/**
+ * Does an action once a collision has occurred.
  */
 public abstract class OnCollisionComponent extends NotifierComponent {
 

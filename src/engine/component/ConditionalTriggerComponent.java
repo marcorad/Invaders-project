@@ -2,12 +2,17 @@ package engine.component;
 
 import engine.entity.Entity;
 
-/**Enabled a component for a specified time once a specifies condition is met. Otherwise the linked component is always disabled.
- * @author Marco
- *
+/**Enable(trigger) a linked component for a specified time once a specifies condition is met. 
+ * Otherwise the linked component is always disabled.
+ * 
  */
 public abstract class  ConditionalTriggerComponent extends NotifierComponent implements UpdateableComponent{
 	
+	/**
+	 * @param entity The active entity
+	 * @param c The component to trigger
+	 * @param t The time for which it is enabled
+	 */
 	protected ConditionalTriggerComponent(Entity entity, Component c, float t) {
 		super(entity);
 		comp = c;
@@ -15,6 +20,9 @@ public abstract class  ConditionalTriggerComponent extends NotifierComponent imp
 		this.t = t;
 	}
 	
+	/**
+	 * Called once the trigger completes. Can be used for any purpose by child classes.
+	 */
 	public abstract void reset();
 
 	private boolean triggered = false;

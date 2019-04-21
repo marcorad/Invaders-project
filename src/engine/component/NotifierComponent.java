@@ -2,9 +2,8 @@ package engine.component;
 
 import engine.entity.Entity;
 
-/**Specifies a component that gets notified when a condition is met
- * @author Marco
- *
+/**
+ * The base component that gets notified when a condition is met, and then performs an action.
  */
 public abstract class NotifierComponent extends Component {
 
@@ -13,14 +12,15 @@ public abstract class NotifierComponent extends Component {
 	 */
 	protected NotifierComponent(Entity entity) {
 		super(entity);
-	}
-	
+	}	
 	
 	/**
 	 * Check the condition and do the appropriate action when condition is met
 	 */
-	public void notifyWhenConditionMet(){ //spelled with capital N since the base object class cannot have its notify() method interfered with
-		if(notifyCondition()) notifyAction();
+	public void notifyWhenConditionMet(){ 
+		if(notifyCondition()) {
+			notifyAction();
+		}
 	}
 
 	/**The condition on which the component must be notified on

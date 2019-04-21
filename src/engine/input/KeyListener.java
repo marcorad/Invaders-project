@@ -1,10 +1,9 @@
 package engine.input;
 
-import org.jsfml.window.event.*;
+import org.jsfml.window.event.KeyEvent;
 
-/**Specifies methods that are called when keys are pressed
- * @author Marco
- *
+/**
+ * Specifies methods that are called when keys are pressed 
  */
 public interface KeyListener {
 	/**Called when a key i spressed

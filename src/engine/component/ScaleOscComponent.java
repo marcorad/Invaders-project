@@ -5,8 +5,10 @@ import org.jsfml.system.Vector2f;
 import engine.entity.Entity;
 import util.Oscillator;
 
+/**
+ * Will add to the scale of the entity in a specified direction based off an Oscillator object.
+ */
 public class ScaleOscComponent extends Component implements UpdateableComponent {
-
 
 	private float elapsed_time = .0f;
 	

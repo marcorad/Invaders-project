@@ -11,17 +11,12 @@ import org.jsfml.window.event.MouseWheelEvent;
 import engine.component.CollisionComponent;
 import engine.component.CollisionID;
 import engine.component.ComplexMovementComponent;
-import engine.component.Component;
-import engine.component.ConvexPolygonComponent;
-import engine.component.HealthBarComponent;
 import engine.component.KeyboardMoveComponent;
 import engine.component.MouseMoveControlComponent;
-import engine.component.MovementComponent;
 import engine.component.OnCollisionComponent;
 import engine.component.OnDeathComponent;
 import engine.component.ParticleTrailComponent;
 import engine.component.SpriteComponent;
-import engine.component.UpdateableComponent;
 import engine.entity.Weapon.WeaponID;
 import engine.gui.Bar;
 import game.Game;
@@ -255,7 +250,7 @@ public class Player extends Entity {
 
 			@Override
 			public void onLeftMouseRelease(Vector2f worldpos) {
-				System.out.println("RELEASED");
+				//System.out.println("RELEASED");
 				mousePressed = false;
 
 			}
@@ -337,13 +332,17 @@ public class Player extends Entity {
 	@Override
 	public void setScale(Vector2f scale) {
 		super.setScale(scale);
-		if(reloadbar != null)reloadbar.setScale(Vector2f.mul(scale, 1.05f));
+		if(reloadbar != null) {
+			reloadbar.setScale(Vector2f.mul(scale, 1.05f));
+		}
 	}
 
 	@Override
 	public void setPosition(Vector2f position) {
 		super.setPosition(position);
-		if(reloadbar != null)reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y + 0.02f)));
+		if(reloadbar != null) {
+			reloadbar.setPosition(Vector2f.add(this.position, new Vector2f(0f, this.getScale().y + 0.02f)));
+		}
 	}
 
 	public void applyKnockBack(float speed, float time){

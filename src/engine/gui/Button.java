@@ -4,20 +4,24 @@ import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 
-
 import engine.component.MouseMoveControlComponent;
 import engine.component.SpriteComponent;
 import engine.entity.Entity;
 import engine.input.EventHandler;
 import game.Game;
+import game.GameData;
 import state.StateMachine.State;
 
+/**
+ * A GUI button element.
+ */
 public abstract class Button extends Entity {
 	
 	private SpriteComponent sprite;
-	private boolean mouse_inside = false;
+	private boolean mouse_inside;
 	private Color selectedColor = new Color(0,0,0,255), unselectedColor= new Color(0,0,0,150);
 	private State activeState;
+	private MouseMoveControlComponent mmc ;
 
 	/**Creates a button that has a specified sprite
 	 * @param position Centre of the button
@@ -30,7 +34,7 @@ public abstract class Button extends Entity {
 		super(position);
 		this.activeState  = activeState;
 		sprite = new SpriteComponent(this, width, fps, tex);
-		new MouseMoveControlComponent(this){
+		mmc = new MouseMoveControlComponent(this){
 			@Override
 			public boolean isUseless() {
 				return Game.stateMachine.getCurrentState() != activeState;
@@ -42,6 +46,7 @@ public abstract class Button extends Entity {
 				Button b = (Button)entity;
 				if(b.isMouseInside()){
 					b.buttonAction();
+					GameData.playSound(GameData.SOUND_ENEMY_HITS[1]);
 				}
 			}
 			@Override
@@ -50,9 +55,10 @@ public abstract class Button extends Entity {
 			public void onLeftMouseRelease(Vector2f worldpos) {}
 			@Override
 			public void onMouseMove(Vector2f worldpos) {
-				mouse_inside = sprite.pointInside(EventHandler.getCurrentMouseWorldPosition());						
+				mouse_inside = sprite.pointInside(worldpos);					
 			}			
-		};
+		};		
+		//mmc.onMouseMove(EventHandler.getCurrentMouseWorldPosition()); //update immediately
 	}
 	
 	public abstract void buttonAction();
@@ -67,6 +73,7 @@ public abstract class Button extends Entity {
 
 	@Override
 	public void draw() {
+		mmc.onMouseMove(EventHandler.getCurrentMouseWorldPosition());
 		sprite.setColor(mouse_inside? selectedColor : unselectedColor);
 		super.draw();
 	}

@@ -3,12 +3,17 @@ package engine.component;
 import engine.entity.Entity;
 import engine.entity.Weapon;
 
-/**A component that always fires projectiles, specified by a weapon.
- * @author Marco
+
+/**
+ * Always firing projectiles, specified by a weapon.
  *
  */
 public class AutoFireComponent extends Component implements UpdateableComponent{
 
+	/**
+	 * @param entity The active entity
+	 * @param w The weapon specifying the projectiles
+	 */
 	public AutoFireComponent(Entity entity, Weapon w) {
 		super(entity);
 		weapon = w;

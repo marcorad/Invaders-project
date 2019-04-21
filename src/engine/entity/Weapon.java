@@ -1,14 +1,13 @@
 package engine.entity;
 
 import org.jsfml.audio.Sound;
-import org.jsfml.audio.SoundSource.Status;
 import org.jsfml.system.Vector2f;
 
 import game.GameData;
 import util.Util;
 
-/**A class that soecifies the behaviour of a weapon
- * @author Marco
+/**
+ * Specifies the behaviour of a weapon. It has a damage, and a reload time. It has a fire enable, which allows for auto fire.
  *
  */
 public abstract class Weapon {
@@ -54,6 +53,9 @@ public abstract class Weapon {
 		sound = s;
 	}
 
+	/**Set the fire sound
+	 * @param s The sound
+	 */
 	public void setSound(Sound s){
 		this.sound = s;
 	}
@@ -86,16 +88,23 @@ public abstract class Weapon {
 		}
 	}	
 
+	/**
+	 * @return The weapon damage
+	 */
 	public float getDamage() {
 		return damage;
 	}
 
+	/**
+	 * @return Time it takes to reload
+	 */
 	public float getReloadtime() {
 		return reloadtime;
 	}
 
-
-
+	/**Update this weapon
+	 * @param dt Change in time
+	 */
 	public void update(float dt){
 		timeSinceReload += dt;
 		if(firing){			
@@ -118,31 +127,53 @@ public abstract class Weapon {
 		}
 	}
 
+	/** Spawn the a projectile at the given position, determined by the number of shots
+	 * @param pos The position
+	 */
 	public abstract void spawnProjectiles(Vector2f pos);
 
+	/**Allow this weapon to start firing
+	 * @param fire Whether it fires
+	 */
 	public void setFiring(boolean fire){
 		firing = fire;
 	}
 
+	/**
+	 * @return The that has passed since last reload
+	 */
 	public float getTimeSinceLastReload(){
 		return timeSinceReload;
 	}
 
+	/**
+	 * @return The time it takes to reload
+	 */
 	public float getReloadTime(){
 		return reloadtime;
 	}
 
+	/**
+	 * @return Whether this weapon is currently reloading
+	 */
 	public boolean isReloading(){
-		return (timeSinceReload < reloadtime);
+		return timeSinceReload < reloadtime;
 	}
 	
+	/**
+	 * Randomise this time since this weapon has last reloaded. This allows for more chaotic enemy fire patterns.
+	 */
 	public void randomiseTimeOffset(){
 		timeSinceReload = Util.randInRange(0f, reloadtime);
 	}
 
 
-
-
+	/** Get the spawn locations for the fired projetiles based of the number of shots for a weapon
+	 * @param p The firing entity
+	 * @param n The number of shots
+	 * @param degreeSeperate The seperation of the shots in degrees
+	 * @return The loactions
+	 */
 	public static Vector2f[] getSpawnLocations(Entity p, int n, float degreeSeperate){
 		Vector2f[] locs = new Vector2f[n];
 		Vector2f maindir = Util.approxSpawnOffset(Util.facing(p), p);
@@ -152,7 +183,7 @@ public abstract class Weapon {
 			int k = (n-1)/2;
 			angle = -k*degreeSeperate;
 		} else {
-			int k = (n)/2;
+			int k = n/2;
 			angle = -k*degreeSeperate+degreeSeperate/2f;
 		}
 

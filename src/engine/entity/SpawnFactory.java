@@ -7,35 +7,63 @@ import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Texture;
 import org.jsfml.system.Vector2f;
 
-import engine.component.*;
+import engine.component.AutoFireComponent;
+import engine.component.CollisionComponent;
+import engine.component.CollisionID;
+import engine.component.ColorOscillationComponent;
+import engine.component.ComplexMovementComponent;
+import engine.component.ConvexPolygonComponent;
+import engine.component.CyclingModifierComponent;
+import engine.component.DamageFlashComponent;
+import engine.component.DisplayType;
+import engine.component.HealthBarComponent;
+import engine.component.KillOnCollisionComponent;
+import engine.component.MovementOscComponent;
+import engine.component.NotifierComponent;
+import engine.component.OffscreenRemoveComponent;
+import engine.component.OnCollisionComponent;
+import engine.component.OnDeathComponent;
+import engine.component.ParticleTrailComponent;
+import engine.component.ScaleOscComponent;
+import engine.component.SelfDestructComponent;
+import engine.component.SimpleMovementComponent;
+import engine.component.SpriteComponent;
 import engine.entity.EnemyDrop.DropType;
 import engine.entity.Weapon.WeaponID;
-import engine.graphics.GraphicsHandler;
 import game.Game;
 import game.GameData;
-import levelgen.EnemySpecs.EnemyProperties;
 import levelgen.LevelGen;
+import levelgen.SpawnSpecs.EnemyProperties;
 import state.StateMachine.State;
 import util.Oscillator;
 import util.Oscillator.OscType;
 import util.Util;
 
-/**A class that contains all the code necessary to spawn specific entities with specific behavioural components.
- * @author Marco
- *
+/**
+ * A class that contains all the code necessary to spawn specific entities with specific behavioural components.
+ * This class contains MANY outdated and debug methods, which are kept for reference and testing (and for LOLs).
  */
 public class SpawnFactory {
 
+	/**OLD TEST METHOD
+	 * @param enem
+	 * @param damage
+	 * @return
+	 */
 	public static Weapon createDefaultEnemyWeapon(Entity enem, float damage){
 		Weapon w = new Weapon(2f, 1f, WeaponID.ENEMY_WEAPON, enem){
 			@Override
 			public void spawnProjectiles(Vector2f pos) {
-				
+
 				spawnBasicEnemyBullet(this.shooter, this.damage);
 			}};			
 			return w;
 	}
 
+	/**Attach weapon 1
+	 * @param enem The enemy to attach to
+	 * @param damage Projectile damage
+	 */
 	public static void attatchEnemyWeapon1(Entity enem, float damage){
 		Weapon w = new Weapon(damage, 6.2f, WeaponID.ENEMY_WEAPON, enem, GameData.SOUND_ENEMY_PROJECTILES[1]){
 			@Override
@@ -48,6 +76,10 @@ public class SpawnFactory {
 		new AutoFireComponent(enem, w);			
 	}
 
+	/**Attach weapon 2
+	 * @param enem The enemy to attach to
+	 * @param damage Projectile damage
+	 */
 	public static void attatchEnemyWeapon2(Entity enem, float damage){
 		Weapon w = new Weapon(damage, 8f, WeaponID.ENEMY_WEAPON, enem,GameData.SOUND_ENEMY_PROJECTILES[0]){
 			@Override
@@ -60,14 +92,37 @@ public class SpawnFactory {
 		new AutoFireComponent(enem, w);			
 	}
 
+	/**Spawn bullet 1
+	 * @param pos The position
+	 * @param damage Its damage
+	 */
 	public static void spawnEnemyBullet1(Vector2f pos, float damage){
 		spawnEnemyProjectile(pos, GameData.TEX_STARRY_PROJECTILE, GameData.HB_STARRY_PROJECTILE, .048f, null, damage, Color.WHITE);
 	}
 
+	/**Spawn bullet 2
+	 * @param pos The position
+	 * @param damage Its damage
+	 */
 	public static void spawnEnemyBullet2(Vector2f pos, float damage){
 		spawnEnemyProjectile(pos, GameData.TEX_CROSS_PROJECTILE, GameData.HB_CROSS_PROJECTILE, .048f, null, damage, Color.WHITE);
 	}
-	
+
+	/**Spawn the base enemy projectile. </br>
+	 * Base properties include: </br>
+	 * A sprite</br>
+	 * Offscreen removal</br>
+	 * Collision</br>
+	 * Simple movement</br>
+	 * Death on collision </br>
+	 * @param pos Position
+	 * @param tex Sprite texture
+	 * @param hb Hitbox data
+	 * @param scale Scale
+	 * @param firesound Sound when fired
+	 * @param damage Damage
+	 * @param color Colour
+	 */
 	private static void spawnEnemyProjectile(Vector2f pos, Texture tex, Vector2f[] hb, float scale, Sound firesound, float damage, Color color){
 		Entity proj = new Entity(pos);
 		proj.setScale(new Vector2f(scale, scale));
@@ -76,13 +131,18 @@ public class SpawnFactory {
 		sc.setColor(color);
 		new OffscreenRemoveComponent(proj);
 		new CollisionComponent(proj, hb, CollisionID.ENEMY_PROJECTILE, CollisionID.PLAYER, CollisionID.SHIELD);
-		if (firesound != null)
+		if (firesound != null) {
 			GameData.playSound(firesound);
-		new SimpleMovementComponent(proj, new Vector2f(0f,-.35f), Util.randInRange(-360f, 360f));
+		}
+		new SimpleMovementComponent(proj, new Vector2f(0f,-.38f), Util.randInRange(-360f, 360f));
 		new KillOnCollisionComponent(proj);
 	}
 
 
+	/**OLD TEST METHOD
+	 * @param enem
+	 * @param damage
+	 */
 	public static void spawnBasicEnemyBullet(Entity enem, float damage){
 		Entity bullet = new Entity(enem.getPosition());
 		bullet.setScale(new Vector2f(.02f, .02f));
@@ -92,6 +152,12 @@ public class SpawnFactory {
 		attachMandatoryProjectileComponents(bullet, Util.REGULAR_POLYGONS[0], CollisionID.ENEMY_PROJECTILE, CollisionID.PLAYER, CollisionID.SHIELD);
 	}
 
+	/**OLD TEST METHOD
+	 * @param projectile
+	 * @param hitbox
+	 * @param thisid
+	 * @param ids
+	 */
 	public static void attachMandatoryProjectileComponents(Entity projectile,  Vector2f[] hitbox, CollisionID thisid, CollisionID... ids){
 		new OffscreenRemoveComponent(projectile);
 		CollisionComponent cc = new CollisionComponent(projectile, hitbox, thisid, ids);
@@ -99,7 +165,7 @@ public class SpawnFactory {
 	}
 
 
-	/**Spawn a particle that is a regular n-gon
+	/**Spawn a particle that is a regular n-gon, if particles are enabled. You can press "I" in-game to disable, which can help performance.
 	 * @param pos The position in the world
 	 * @param vel The velocity
 	 * @param angularvel The rotation rate
@@ -109,24 +175,23 @@ public class SpawnFactory {
 	 * @param n The number of points in the particle
 	 */
 	public static void spawnParticle(Vector2f pos, Vector2f vel, float angularvel, float scale, Color color, float lifetime, int n){
-		Entity p = new Entity(pos);
-		p.setScale(new Vector2f(scale, scale));		
-		new SimpleMovementComponent(p, vel, angularvel);
-		new SelfDestructComponent(p, lifetime);
-		Vector2f[] pts;
-		if(n<10 && n>2){
-			pts = Util.REGULAR_POLYGONS[n-3];
+		if(Game.particlesEnabled()){
+			Entity p = new Entity(pos);
+			p.setScale(new Vector2f(scale, scale));		
+			new SimpleMovementComponent(p, vel, angularvel);
+			new SelfDestructComponent(p, lifetime);
+			Vector2f[] pts;
+			if(n<10 && n>2){
+				pts = Util.REGULAR_POLYGONS[n-3];
+			} else {
+				pts = Util.getRegularPoly(n);
+			}
+			ConvexPolygonComponent shape = new ConvexPolygonComponent(p, pts, color, DisplayType.FILL);
+			ColorOscillationComponent  c = new ColorOscillationComponent(p, color, Color.TRANSPARENT, .5f/lifetime, OscType.TRIANGLE);
+			c.addComponent(shape);		
 		}
-		else pts = Util.getRegularPoly(n);
-		ConvexPolygonComponent shape = new ConvexPolygonComponent(p, pts, color, DisplayType.FILL);
-		ColorOscillationComponent  c = new ColorOscillationComponent(p, color, Color.TRANSPARENT, .5f/lifetime, OscType.TRIANGLE);
-		c.addComponent(shape);			
 	}
 
-	/**Spawn a projectile used for testing
-	 * @param pos The world position
-	 * @param vel The velocity
-	 */
 
 
 	/**Spawns a projectile in the direction the player is facing with all required base properties.</br>
@@ -158,14 +223,40 @@ public class SpawnFactory {
 		sc.setColor(color);
 		new OffscreenRemoveComponent(proj);
 		new CollisionComponent(proj, hb, CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
-		if (firesound != null)
+		if (firesound != null) {
 			GameData.playSound(firesound);
+		}
 		return proj;
 	}
 
 
-	private final static float POWER_UP_PROBS[] = new float[]{.019f, .017f, .016f, .016f, .022f, .022f, .022f, .022f}; //heal, shot, damage, shield, machine, rocket, poison, dart. Will return -1 if nothing is spawned.
+	/**
+	 * Discreet probabilities of each power up drop
+	 */
+	private final static float POWER_UP_PROBS[] = new float[]{.015f, .0135f, .014f, .0138f, .024f, .024f, .024f, .024f}; //heal, shot, damage, shield, machine, rocket, poison, dart. Will return -1 if nothing is spawned.
 
+	/**Spawns a base enemy</br>
+	 * Base properties include:</br>
+	 * Explosion on death</br>
+	 * A chance to spawn an EnemyDrop on death</br>
+	 * Addition to the player score on death</br>
+	 * Collision</br>
+	 * A sprite</br>
+	 * Game over once it reaches the bottom</br>
+	 * Damage flash</br>
+	 * Health bar</br>
+	 * Hit sound</br> 
+	 * 
+	 * @param pos Position
+	 * @param tex Sprite texture
+	 * @param col Sprite colour
+	 * @param hb Hitbox data
+	 * @param hitsound Hit sound
+	 * @param scale Scale
+	 * @param health Health
+	 * @param score Score to add on death
+	 * @return A base enemy
+	 */
 	public static Entity createBaseEnemy(Vector2f pos, Texture tex, Color col, Vector2f[] hb, Sound hitsound, float scale, float health, int score){
 		Entity enem = new Entity(pos);
 		enem.setScale(new Vector2f(scale,scale));
@@ -173,23 +264,13 @@ public class SpawnFactory {
 		enem.healFully();
 
 		new OnDeathComponent(enem){
-			@Override
-			public void notifyAction() {
-				spawnExplosionParticles(entity, .1f, .5f, entity.getSpriteColour());				
-			}			
-		};
-		SpriteComponent sprite = new SpriteComponent(enem, GameData.ENEMY_WIDTH, 12.5f, tex);
-		sprite.setColor(col);
-		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE, CollisionID.PLAYER);		
-		new DamageFlashComponent(enem, sprite);		
-		new HealthBarComponent(enem);
-
-		new OnDeathComponent(enem){ //spawn powerups based off chance
 
 			private int deathScore = score;
 
 			@Override
 			public void notifyAction() {
+				spawnExplosionParticles(entity, .1f, .5f, entity.getSpriteColour());
+
 				int i = Util.discreetProb(POWER_UP_PROBS);
 				switch(i){
 				case 0: 
@@ -219,32 +300,40 @@ public class SpawnFactory {
 				}
 				Game.incNumberOfEnemiesKilled();
 				Game.addToCurrentPlayerScore(deathScore);
-			}};
+			}			
+		};
 
-			new OnCollisionComponent(enem){
-				@Override
-				public void notifyAction() {
-					if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) 
-						Game.stateMachine.setCurrentState(State.GAME_OVER);
-					else 
-						GameData.playSound(hitsound);
-				}
-			};
+		SpriteComponent sprite = new SpriteComponent(enem, GameData.ENEMY_WIDTH, 12.5f, tex);
+		sprite.setColor(col);
+		new CollisionComponent(enem, hb, CollisionID.ENEMY, CollisionID.PLAYER_PROJECTILE, CollisionID.PLAYER);		
+		new DamageFlashComponent(enem, sprite);		
+		new HealthBarComponent(enem);
 
-			new NotifierComponent(enem){
-				@Override
-				public boolean notifyCondition() {
-					return entity.getPosition().y < -1.06f;
-				}
-				@Override
-				public void notifyAction() {
+		new OnCollisionComponent(enem){
+			@Override
+			public void notifyAction() {
+				if(entity.getCollidingEntities().contains(Game.getCurrentPlayer())) {
 					Game.stateMachine.setCurrentState(State.GAME_OVER);
-				}				
-			};
+				} else {
+					GameData.playSound(hitsound);
+				}
+			}
+		};
 
-			Game.incNumberOfEnemiesOnScreen();
+		new NotifierComponent(enem){
+			@Override
+			public boolean notifyCondition() {
+				return entity.getPosition().y < -1.06f;
+			}
+			@Override
+			public void notifyAction() {
+				Game.stateMachine.setCurrentState(State.GAME_OVER);
+			}				
+		};
 
-			return enem;
+		Game.incNumberOfEnemiesOnScreen();
+
+		return enem;
 	}
 
 	/** Calculate time required to reach a point with constant speed. Speed assumes right as positive.
@@ -257,7 +346,11 @@ public class SpawnFactory {
 		return (end - start) / vel;
 	}
 
-	/**Spawn enemy 1. This enemy moves in a square pattern and spawns in groups of 2 to 4.
+	/**Spawn enemy 1. </br>
+	 * This enemy moves in a square pattern and spawns in groups of 2 to 4.</br>
+	 * It has low health, medium speed</br>
+	 * Utilises the cycle components extensively</br>
+	 * Has enemy weapon 1</br>
 	 * @param pos The spawn position of the enemy closest to the screen
 	 */
 	public static void spawnEnemy1(Vector2f pos){
@@ -298,13 +391,15 @@ public class SpawnFactory {
 			CyclingModifierComponent cycle3 = new CyclingModifierComponent(enem);
 			cycle3.addToCycle(t1); //wait for cycle1 to complete
 			cycle3.addToCycle(-1f, cycle2); //continue with cycle2 permanently			
-			
+
 			attatchEnemyWeapon1(enem, prop.damage);
-			
+
 		}
 	}
 
-	/**Spawn enemy 2. This enemy moves to a random point at the bottom of the screen, oscillating in a direction perpendicular to path to end point.
+	/**Spawn enemy 2. </br>
+	 * This enemy moves to a random point at the bottom of the screen, oscillating in a direction perpendicular to path to end point.</br>
+	 * Medium health with slow speed.
 	 * @param pos The spawn position
 	 */
 	public static void spawnEnemy2(Vector2f pos){
@@ -320,7 +415,10 @@ public class SpawnFactory {
 
 	}
 
-	/**Spawn enemy 3. This enemy is slow moving and moves downward in a straight line.
+	/**Spawn enemy 3.</br>
+	 * This enemy is very slow and moves downward in a straight line.</br>
+	 * It has high health, considered to be the "tank"
+	 *  
 	 * @param pos The spawn position
 	 * @return The enemy, which can be further augmented for more interesting motion.
 	 */
@@ -333,14 +431,20 @@ public class SpawnFactory {
 		return enem;
 	}
 
-	/**Spawn enemy 4. This enemy moves diagonally, altering direction when it reaches the edge of the screen. It is similar to enemy 1.
-	 * @param posThe spawn position
+	/**Spawn enemy 4. </br>
+	 * This enemy moves diagonally, altering direction when it reaches the edge of the screen. It is similar to enemy 1.</br>
+	 * It has enemy weapon 2</br>
+	 * Medium health, medium speed
+	 * @param pos The spawn position
 	 */
 	public static void spawnEnemy4(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[3].getProperties();
 		float vel_x = 0.2f; //moving from the left
 		float vel_y = -.03f;
-		if(pos.x > 0) vel_x = -vel_x; //moving from the right
+		if(pos.x > 0)
+		 {
+			vel_x = -vel_x; //moving from the right
+		}
 		float t1,t2; //times for movement t1 is first line-up, t2 line-up of regular movement, t3 down time
 		if(vel_x > 0){ //moving right
 			t1 = calcTravelTime(pos.x, .85f, vel_x);						
@@ -368,7 +472,8 @@ public class SpawnFactory {
 	}
 
 
-	/**Spawn enemy 5. This enemy is like enemy 3, with added circular motion.
+	/**Spawn enemy 5.</br>
+	 *  This enemy is exactly like enemy 3, with added circular motion.
 	 * @param pos The spawn position
 	 */
 	public static void spawnEnemy5(Vector2f pos){
@@ -381,8 +486,12 @@ public class SpawnFactory {
 	}
 
 
-	/**Spawn enemy 6. This enemy moves in a straight line downwards. It is fast moving.
-	 * @param pos
+	/**Spawn enemy 6.</br>
+	 *  This enemy moves in a straight line downwards.</br>
+	 *  It is fast moving with medium health.</br>
+	 *  Considered a very high threat (saying this with experience).</br>
+	 *  Has a particle trail.
+	 * @param pos Position
 	 */
 	public static void spawnEnemy6(Vector2f pos){
 		EnemyProperties prop = LevelGen.ENEMY_SPAWN_SPECS[5].getProperties();
@@ -397,6 +506,13 @@ public class SpawnFactory {
 	}
 
 
+	/**Spawn the machine gun's bullet. </br>
+	 * Dies on collision</br>
+	 * Fast moving, for rapid fire	 * 
+	 * @param player The firing player
+	 * @param pos The position
+	 * @param damage The damage
+	 */
 	public static void spawnMachineGunBullet(Entity player, Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity bullet = createBasePlayerProjectile(player, pos, GameData.TEX_BULLET, GameData.HB_BULLET, .03f, null, damage, Color.BLACK);
@@ -407,6 +523,14 @@ public class SpawnFactory {
 
 	}
 
+	/**Spawn the poison gun's blob (probably the coolest and most developed object in the game, for whatever reason)</br>
+	 * Dies on collision</br>
+	 * Spawns a poison cloud on death</br>
+	 * Slow moving</br>
+	 * @param player The firing player
+	 * @param pos The position
+	 * @param damage The damage
+	 */
 	public static void spawnPoisonBlob(Entity player, Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity blob = createBasePlayerProjectile(player, pos, GameData.TEX_POISON, GameData.HB_POISON, .04f, null, damage, new Color(30,150,70,180));
@@ -414,7 +538,7 @@ public class SpawnFactory {
 		new OnCollisionComponent(blob){
 			@Override
 			public void notifyAction() {
-				System.out.println(entity.getPosition());
+				//System.out.println(entity.getPosition());
 				new PoisonCloud(entity.getPosition(), .2f, entity.getDamage());
 			}};
 			new SimpleMovementComponent(blob, Vector2f.mul(facing, 1.1f), Util.randInRange(-300f, 300f));
@@ -423,6 +547,9 @@ public class SpawnFactory {
 			((Player)player).applyKnockBack(.15f, .1f);
 	}
 
+	/**Spawn an explosion that also spawns an entity with a hitbox that exisits and does damage for a single frame.
+	 * @param src The entity this explosion is sourced from
+	 */
 	public static void spawnDamagingExplosion(Entity src){
 		Entity expl = new Entity(src.getPosition());
 		float r = .3f;
@@ -435,6 +562,12 @@ public class SpawnFactory {
 		spawnExplosionParticles(src, r/4f, 1f, new Color(200,200,70, 200));
 	}
 
+	/**Spawn explosion particles
+	 * @param src The entity the explosions is sourced from
+ 	 * @param spread The spread
+	 * @param speedDamp The particle damping speed
+	 * @param color The main colour
+	 */
 	public static void spawnExplosionParticles(Entity src,float spread, float speedDamp, Color color){		
 		int numparticles = Util.randInRange(20, 35);
 
@@ -446,14 +579,22 @@ public class SpawnFactory {
 		}
 	}
 
-
-
+	/**Spawn a shield
+	 * @param p The player spawning
+	 * @param health The shield's health
+	 */
 	public static void spawnShield(Player p, float health){
 		Shield s = new Shield(p);
 		s.setMaxHealth(health);
 		s.healFully();
 	}
 
+	/**Spawn a dart for the dart gun weapon</br>
+	 * Does piercing damage each frame
+	 * @param player The firing player
+	 * @param pos The position
+	 * @param damage The damage
+	 */
 	public static void spawnDart(Entity player,Vector2f pos, float damage){
 		Vector2f facing = Util.facing(player);
 		Entity slug = createBasePlayerProjectile(player, pos, GameData.TEX_DART, GameData.HB_DART, .04f, null, damage, Color.BLACK);
@@ -462,6 +603,14 @@ public class SpawnFactory {
 		((Player)player).applyKnockBack(.3f, .1f);
 	}
 
+	/**Spawn a rocket for the rocket launcher weapon</br>
+	 * Has an acceleration instead of velocity</br>
+	 * Spawns an explosion on death that damages nearby enemies</br>
+	 * Also damages the colliding enemy</br>
+	 * @param player The firing player
+	 * @param pos The position
+	 * @param damage The damage
+	 */
 	public static void spawnRocket(Entity player,Vector2f pos, float damage){
 		Entity rocket = createBasePlayerProjectile(player, pos, GameData.TEX_ROCKET, GameData.HB_ROCKET, .03f, null, damage, new Color(200, 100, 30, 255));
 		ComplexMovementComponent cmc = new ComplexMovementComponent(rocket, Vector2f.mul(Util.facing(player), 0f), Vector2f.mul(Util.facing(player), 1.2f), 0f, 0f);
@@ -479,6 +628,10 @@ public class SpawnFactory {
 
 	}
 
+	/**OLD TEST METHOD
+	 * @param pos
+	 * @param vel
+	 */
 	public static void spawnTestProjectile(Vector2f pos, Vector2f vel){
 		Entity p = new Entity(pos);
 		p.setDamage(.5f);
@@ -502,6 +655,12 @@ public class SpawnFactory {
 		spawnGunPowder(pos, vel, 3f, Color.BLACK);
 	}
 
+	/**Spawns gunpowder effect when a weapon is fired.
+	 * @param pos Position
+	 * @param generalDir General firing direction
+	 * @param magnitude Magnitude of the effect
+	 * @param color Main colour of the effect
+	 */
 	public static void spawnGunPowder(Vector2f pos, Vector2f generalDir, float magnitude, Color color ){
 		int amount = (int)(magnitude*3.5f);
 		for(int i = 0; i < amount; i++){
@@ -509,25 +668,29 @@ public class SpawnFactory {
 		}
 	}
 
-	/**Spawn a number that consisists of number sprites
+	/**Spawn a number that consists of number sprites
 	 * @param left_centre The leftmost digit's centre
 	 * @param scale The scale of the sprites
 	 * @param num The number to convert to sprites
 	 */
 	public static void spawnNumber(Vector2f left_centre, float scale, int num, Color c){
 		Vector<Integer> numbers = new Vector<>();
-		int mod = 1000000000; //try for max decimal digit for the max value of an int
-		boolean encountered_digit = false;
-		while( mod >= 1){
-			int dec_place = num/mod;
-			if(dec_place != 0){ //detect when the first digit is encountered
-				encountered_digit = true;
+		if(num == 0){
+			numbers.add(0);
+		} else{
+			int mod = 1000000000; //try for max decimal digit for the max value of an int
+			boolean encountered_digit = false;
+			while( mod >= 1){
+				int dec_place = num/mod;
+				if(dec_place != 0){ //detect when the first digit is encountered
+					encountered_digit = true;
+				}
+				if(encountered_digit){
+					numbers.add(dec_place);
+				}
+				num = num - dec_place*mod;
+				mod /= 10;
 			}
-			if(encountered_digit){
-				numbers.add(dec_place);
-			}
-			num = num - dec_place*mod;
-			mod /= 10;
 		}
 
 		for(int i = 0; i < numbers.size(); i++){

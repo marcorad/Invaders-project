@@ -6,11 +6,10 @@ import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
 import engine.entity.EntityManager;
-import engine.graphics.GraphicsHandler;
 import util.Util;
 
-/**Specifies a component that collides
- * @author Marco
+/**A component that collides with other components of its type.
+ *
  *
  */
 public class CollisionComponent extends Component{
@@ -20,7 +19,8 @@ public class CollisionComponent extends Component{
 	private CollisionID[] collidingIDs;
 
 
-	/**Creates a collision component with a convex poly hitbox, having a specific id and colliding with other collision components.
+	/**Creates a collision component with a convex polygon hitbox, having a specific id and 
+	 * colliding with other collision components of specified IDs.
 	 * @param entity The active entity
 	 * @param pts Points in the hitbox
 	 * @param id The ID associated with this collision component
@@ -32,13 +32,14 @@ public class CollisionComponent extends Component{
 		ID = id;
 		if(collidingids == null){ //protects against Marco being clumsy
 			collidingIDs = new CollisionID[]{};
-		} else
+		} else {
 			collidingIDs = collidingids;
+		}
 		setHitboxDraw(EntityManager.DRAW_HITBOXES);
 	}	
 
 
-	/**Tests for a collision
+	/**Tests for a collision with another component, regardless of ID.
 	 * @param other The component to be collided with
 	 * @return Whether they collide
 	 */
@@ -47,11 +48,14 @@ public class CollisionComponent extends Component{
 	}
 
 
+	/**Get the hitbox of this component.
+	 * @return The hitbox
+	 */
 	public ConvexShape getHitbox(){
 		return (ConvexShape)hitbox.getShape();
 	}
 
-	/**
+	/**Draw the hitbox.
 	 * @param b Whether hitbox should be drawn
 	 */
 	public void setHitboxDraw(boolean b){
@@ -59,18 +63,30 @@ public class CollisionComponent extends Component{
 	}
 	
 	
+	/**Get this component's ID
+	 * @return The ID
+	 */
 	public CollisionID getID() {
 		return ID;
 	}
 
+	/**Set this component's ID
+	 * @param iD The ID
+	 */
 	public void setID(CollisionID iD) {
 		ID = iD;
 	}
 
+	/**Get the IDs this component should collide with
+	 * @return The colliding IDs
+	 */
 	public CollisionID[] getCollidingIDs() {
 		return collidingIDs;
 	}
 
+	/**Set the IDs this component should collide with
+	 * @param collidingIDs The colliding IDss
+	 */
 	public void setCollidingIDs(CollisionID[] collidingIDs) {
 		this.collidingIDs = collidingIDs;
 	}

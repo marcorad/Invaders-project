@@ -7,6 +7,9 @@ import org.jsfml.system.Vector2f;
 import engine.entity.Entity;
 import util.Util;
 
+/**
+ * A GUI bar element
+ */
 public class Bar {
 	private Vector2f dimensions;
 	private RectangleShape frame;
@@ -57,7 +60,7 @@ public class Bar {
 	}
 	
 	public void draw(float value, float maxvalue){
-		float factor = (value/maxvalue);
+		float factor = value/maxvalue;
 		Vector2f size = new Vector2f(dimensions.x *  factor, dimensions.y);		
 		bar.setSize(size);
 		bar.setFillColor(Util.lerpColor(factor, empty, full));

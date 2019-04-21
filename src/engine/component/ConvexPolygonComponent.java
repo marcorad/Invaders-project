@@ -5,17 +5,13 @@ import org.jsfml.graphics.ConvexShape;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
-/**Specifies a convex poly graphical component 
- * @author Marco
- *
+/**A convex polygon that can be drawn to the screen.
  */
 public class ConvexPolygonComponent extends ShapeComponent {
 	
 
-	/**Convenience constructor that defaults to a red wireframe
+	/**Convenience constructor that defaults to a red wireframe. Used mostly for debugging.
 	 * @param entity The active entity
 	 * @param pts Points in the poly
 	 */
@@ -34,8 +30,9 @@ public class ConvexPolygonComponent extends ShapeComponent {
 	 */
 	public ConvexPolygonComponent(Entity entity, Vector2f pts[], Color color, DisplayType type) {		
 		super(entity, color, type);
-		if(pts != null)
-		((ConvexShape)shape).setPoints(pts);
+		if(pts != null) {
+			((ConvexShape)shape).setPoints(pts);
+		}
 	}
 	
 	@Override
@@ -44,12 +41,13 @@ public class ConvexPolygonComponent extends ShapeComponent {
 		shape.setPosition(entity.getPosition());
 	}
 	
-	/**
+	/**Set the points of the polygon
 	 * @param pts The points of the poly
 	 */
 	public void setPoints(Vector2f pts[]){
-		if (pts[0] != null)
-		((ConvexShape)shape).setPoints(pts);
+		if (pts[0] != null) {
+			((ConvexShape)shape).setPoints(pts);
+		}
 	}
 
 }

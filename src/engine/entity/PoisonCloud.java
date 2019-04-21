@@ -1,6 +1,5 @@
 package engine.entity;
 
-import org.jsfml.graphics.Color;
 import org.jsfml.system.Vector2f;
 
 import engine.component.CollisionComponent;
@@ -9,11 +8,19 @@ import engine.component.SelfDestructComponent;
 import game.Game;
 import util.Util;
 
+/**
+ * A poison cloud that deals damage every frame. Drawn by the graphics card using GLSL shaders.
+ */
 public class PoisonCloud extends Entity {
 
 	private float r;
 	float elapsedTime = 0f;
 
+	/**
+	 * @param position The centre of the cloud
+	 * @param r The radius
+	 * @param damage The damage per frame
+	 */
 	public PoisonCloud(Vector2f position, float r, float damage) {
 		super(position);
 		this.r = r;
@@ -21,16 +28,18 @@ public class PoisonCloud extends Entity {
 		create();
 	}
 
+	/**
+	 * Helper method that creates the cloud
+	 */
 	private void create(){
 		this.setDamage(damage);
 		this.setScale(new Vector2f(r,r));
-		if(damage >= 0f)
+		if(damage >= 0f) {
 			new CollisionComponent(this, Util.REGULAR_POLYGONS[7], CollisionID.PLAYER_PROJECTILE, CollisionID.ENEMY);
+		}
 		new SelfDestructComponent(this, 2f); //only lasts 2 seconds
 		Game.graphics.addPoisonCloud(this);
 	}
-
-	private static float spawnChance = .16f;
 
 	@Override
 	public void update(float dt, float t) {

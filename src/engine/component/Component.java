@@ -1,13 +1,10 @@
 package engine.component;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
 /**
- * Specifies the base type of component. This component is associated with a single entity and cannot be removed from that entity.
- * @author Marco
- *
+ * The base type of component. This component is associated with a single entity and cannot be removed from that entity.
+ * A component adds itself to the entity's internal lists.
  */
 public abstract class Component {	
 	
@@ -24,7 +21,7 @@ public abstract class Component {
 		entity.addComponent(this);
 	}
 	
-	/**
+	/**Get the associated entity
 	 * @return The active entity
 	 */
 	public Entity getEntity() {

@@ -1,10 +1,11 @@
 package engine.input;
 
-import org.jsfml.window.event.*;
+import org.jsfml.window.event.MouseButtonEvent;
+import org.jsfml.window.event.MouseEvent;
+import org.jsfml.window.event.MouseWheelEvent;
 
-/**Specifies methods that get called when there is mouse input
- * @author Marco
- *
+/**
+ * Specifies methods that get called when there is mouse input 
  */
 public interface MouseListener {
 	

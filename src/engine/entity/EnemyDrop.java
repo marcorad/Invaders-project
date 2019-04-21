@@ -17,8 +17,14 @@ import game.GameData;
 import util.Oscillator;
 import util.Oscillator.OscType;
 
+/**
+ * An entity dropped by an enemy on death. May be a power-up or a weapon.
+ */
 public class EnemyDrop extends Entity {
 
+	/**
+	 * The type of drop.
+	 */
 	public enum DropType{
 		HEAL_UPGRADE, SHOT_UPGRADE, DAMAGE_UPGRADE, SHIELD_UPGRADE,
 		DART_WEAPON, POISON_WEAPON, ROCKET_WEAPON, MACHINEGUN_WEAPON;
@@ -26,6 +32,10 @@ public class EnemyDrop extends Entity {
 
 	private DropType type;
 
+	/**
+	 * @param position The position of the drop
+	 * @param type The type of drop
+	 */
 	public EnemyDrop(Vector2f position, DropType type) {
 		super(position);
 		this.type = type;
@@ -106,14 +116,11 @@ public class EnemyDrop extends Entity {
 			sc.setColor(Color.WHITE);
 	}
 
+	/**
+	 * @return The type of drop
+	 */
 	public DropType getType() {
 		return type;
-	}
-
-	public void setType(DropType type) {
-		this.type = type;
-	}
-
-
+	}	
 
 }

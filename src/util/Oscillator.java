@@ -2,8 +2,7 @@ package util;
 
 /**An object that has specific waveforms associated with it that can be called to receive a value based on time.
  * The oscillator is centred around zero and can be phase shited in radians and offset in the output, as well symmetrically clipped before offset.
- * @author Marco
- *
+
  */
 public class Oscillator {
 	private float freq, amp, offset, phase;
@@ -50,10 +49,10 @@ public class Oscillator {
 			y = (float) (amp*2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5f) + offset);
 			break;
 		case SINE: 
-			y = (float) (amp*Util.sinf(elapsed_time*Util.PI*2.0f*freq - phase) + offset); 
+			y = amp*Util.sinf(elapsed_time*Util.PI*2.0f*freq - phase) + offset; 
 			break;
 		case SQUARE: 
-			y = (((elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5)) > 0.0 ? amp + offset : -amp + offset;
+			y = (elapsed_time-phase/(2.f*Math.PI*freq))*freq - Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq) - 0.5 > 0.0 ? amp + offset : -amp + offset;
 			break;
 		case TRIANGLE: 
 			y = (float) (2*amp*Math.abs(2*((elapsed_time-phase/(2.f*Math.PI*freq))*freq-Math.floor((elapsed_time-phase/(2.f*Math.PI*freq))*freq+0.5)))-1.0*amp + offset);

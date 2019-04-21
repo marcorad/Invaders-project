@@ -1,17 +1,19 @@
 package levelgen;
 
-import java.util.Random;
-
 import org.jsfml.system.Vector2f;
 
-import engine.entity.SpawnFactory;
 import game.Game;
 import util.MinMaxPair;
-import util.Pair;
 import util.Util;
 
-public abstract class EnemySpecs {
+/**
+ * Enemy spawn specifications.
+ */
+public abstract class SpawnSpecs {
 	
+	/**
+	 * Limits the number of enemies on screen, so that player is not overwhelmed.
+	 */
 	public static final int MAX_ENEMIES_ON_SCREEN = 18;
 
 
@@ -42,17 +44,19 @@ public abstract class EnemySpecs {
 	 * @param startDamage The starting health at difficulty 0
 	 * @param regions The different spawn regions, as a pair lower left corner and upper right corner
 	 */
-	public EnemySpecs(float minDiff, float chanceRate, float chancePerSecond, float maxChancePerSecond, float startHealth,
+	@SafeVarargs
+	public SpawnSpecs(float minDiff, float chanceRate, float chancePerSecond, float maxChancePerSecond, float startHealth,
 			float startDamage, MinMaxPair<Vector2f> ... regions) {
 		this.minDiff = minDiff;
 		this.chanceRate = chanceRate;
 		this.regions = regions;
 
-
 		/* The probability that an event with probability p will happen k times out of n trials is given by
 		 * P(k, n, p) = (n choose k) * p^k * (1-p)^(n-k)
-		 * When the pevent happens at least once out of 10 trials then
-		 * P(k>=1, 10, p) = (sum from k=1 to 10)[(10 choose k) * (p)^k * (1-p)^(10-k)] = 1 - P(0, 10, p) 
+		 * When the event happens at least once out of 10 trials then
+		 * P(k>=1, 10, p) = (sum from k=1 to 10)[(10 choose k) * (p)^k * (1-p)^(10-k)]
+		 * which is equivalent to:
+		 * P(k>=0, 10, p) - P(0, 10, p) = 1 - P(0, 10, p)
 		 * since P(k>=0, 10, p) = 1
 		 * 
 		 * To find the probability X s.t. chancePerSecond = Y occurs on average Y times per second
@@ -71,15 +75,16 @@ public abstract class EnemySpecs {
 	public abstract void spawn(Vector2f pos);
 
 	public float spawnChance(float difficulty){		
-		return Util.clamp((chanceRate*(difficulty-minDiff)+initialChance), 0f, maxChance); //offset difficulty by minDiff since an enemy that starts soawning after		
+		return Util.clamp(chanceRate*(difficulty-minDiff)+initialChance, 0f, maxChance); //offset difficulty by minDiff since an enemy that starts soawning after		
 	}
 
 	public void doSpawn(float difficulty){
 		if(Game.getNumberOfEnemiesOnScreen() <= MAX_ENEMIES_ON_SCREEN){
 			float random = Util.RANDOM.nextFloat();
 			float spw = spawnChance(difficulty);
-			if (spw > random)
-				spawn(getSpawnPosition());	
+			if (spw > random) {
+				spawn(getSpawnPosition());
+			}	
 		}
 	}
 

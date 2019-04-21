@@ -1,19 +1,14 @@
 package engine.graphics;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
-
 import org.jsfml.graphics.BlendMode;
-import org.jsfml.graphics.Color;
 import org.jsfml.graphics.Drawable;
 import org.jsfml.graphics.PrimitiveType;
-import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTexture;
 import org.jsfml.graphics.RenderWindow;
@@ -31,48 +26,63 @@ import engine.entity.PoisonCloud;
 import game.Game;
 import util.Util;
 
+/**
+ * Handles all the graphics. This includes render textures and shaders. There are 3 layers of drawing:</br>
+ * A main texture, on which the background is drawn to using a GLSL shader</br>
+ * An upper texture, which may contain effects such as the poison blobs</br>
+ * Rendering directly to the window, which is the topmost layer. All objects on the layer are drawn over the previous layers.
+ * Some GUI elements are on this layer.
+ */
 public class GraphicsHandler {
 
 	private RenderWindow window;
-	private RenderStates texturerenderstate, windowrenderstate, bgrenderstate, upperrenderstate;
-	private Shader bgshader, upperbgshader;
-	private RenderTexture mainRT, upperRT;
+	private RenderStates texturerenderstate, windowrenderstate, bgrenderstate, effectrenderstate;
+	private Shader bgshader, effectshader;
+	private RenderTexture mainRT, effectRT;
 	private Sprite mainSprite, poisonSprite; //adding a sprite to draw to before the screen allows for the use of shaders on the sprite
 	public Transform camera, normalisedspace, blobspace;
 	private Vector<Drawable> windowdraws; //stored objects that need to be drawn on the window which is the topmost layer without a camera transform
 	private Vector2f worldscale;
-	private Vector<PoisonCloud> clouds = new Vector<>();
+	private ArrayList<PoisonCloud> clouds = new ArrayList<>();
 	private float timeSinceDamage = 0f;
 	private boolean damageTaken = false;
 
+	/**Update the background and effects
+	 * @param dt Change in time
+	 * @param t Total time passed
+	 */
 	public void update(float dt, float t){		
-		upperbgshader.setParameter("t", t);
+		effectshader.setParameter("t", t);
 
 		Iterator<PoisonCloud> it = clouds.iterator();
 		while(it.hasNext()){
 			if(it.next().shouldBeRemoved()){
 				it.remove();
 			}
-		}
-		
+		}		
 		timeSinceDamage += dt;	
-		
-
 	}
 
+	/**Add a poison cloud to the upper layer. Note the effect supports a maximum of 64 clouds.
+	 * @param pc The cloud
+	 */
 	public void addPoisonCloud(PoisonCloud pc){
 		clouds.add(pc);
 	}
-	
-	
-	
+
+	/**
+	 * Start the damage taken effect (red screen flash)
+	 */
 	public void damageTakenEffect(){
 		damageTaken = true;
 		timeSinceDamage = 0f;
 	}
 
 
-	private void drawUpperBGLayer(){		
+	/**
+	 * Draw the upper effects layer
+	 */
+	private void drawEffectsLayer(){		
 
 		Vertex v[] = new Vertex[]{  
 				new Vertex(new Vector2f(-1,1)),
@@ -88,35 +98,41 @@ public class GraphicsHandler {
 				float t = clouds.get(i).getElapsedTime();
 				alpha = t > 1 ? 2-t : t; // quadratic with max at 2		
 				alpha *= 0.6f;				
-				upperbgshader.setParameter("blob_pos[" + i + "]", blobspace.transformPoint(clouds.get(i).getPosition()));
+				effectshader.setParameter("blob_pos[" + i + "]", blobspace.transformPoint(clouds.get(i).getPosition()));
 			} 
-			upperbgshader.setParameter("alpha_mult[" + i + "]", alpha );
+			effectshader.setParameter("alpha_mult[" + i + "]", alpha );
 		}
-		upperRT.draw(v, PrimitiveType.QUADS, upperrenderstate);	
+		effectRT.draw(v, PrimitiveType.QUADS, effectrenderstate);	
 
 	}
 
+	/**
+	 * @return The world scale
+	 */
 	public Vector2f getWorldScale(){
 		return worldscale;
 	}
 
+	/**
+	 * @param window The window the graphics operates on
+	 */
 	public GraphicsHandler(RenderWindow window){
 		this.window = window;		
 		windowdraws = new Vector<>();		
 		mainRT = new RenderTexture();
 		Vector2i wsize = window.getSize();
-		upperRT = new RenderTexture();
+		effectRT = new RenderTexture();
 		try {
 			mainRT.create(wsize.x, wsize.y);
-			upperRT.create(wsize.x, wsize.y);
+			effectRT.create(wsize.x, wsize.y);
 		} catch (TextureCreationException e) {
 			e.printStackTrace();			
 		}
 		mainSprite = new Sprite(mainRT.getTexture());
-		poisonSprite = new Sprite(upperRT.getTexture());
+		poisonSprite = new Sprite(effectRT.getTexture());
 
 		//create the scaling 
-		worldscale = new Vector2f(.5f*(float)wsize.x,-.5f*(float)wsize.y); //invert the y coord so that y increases going up the screen
+		worldscale = new Vector2f(.5f*wsize.x,-.5f*wsize.y); //invert the y coord so that y increases going up the screen
 
 
 		normalisedspace = Transform.scale(Transform.translate(Transform.IDENTITY, wsize.x/2.0f, wsize.y/2.0f), worldscale);
@@ -126,11 +142,11 @@ public class GraphicsHandler {
 		camera = new Transform(normalisedspace);
 
 		bgshader = new Shader();
-		upperbgshader = new Shader();
+		effectshader = new Shader();
 		try {
 			bgshader.loadFromFile(Paths.get("shader//background_shader.glsl"), Shader.Type.FRAGMENT);
 			//upperbgshader.loadFromStream(new FileInputStream( new File("shader//upper_bg_vert.glsl")), new FileInputStream( new File("shader//upper_bg_frag.glsl")));
-			upperbgshader.loadFromFile(Paths.get("shader//upper_bg_frag.glsl"), Shader.Type.FRAGMENT);
+			effectshader.loadFromFile(Paths.get("shader//upper_bg_frag.glsl"), Shader.Type.FRAGMENT);
 		} catch (IOException | ShaderSourceException e) {
 			e.printStackTrace();
 
@@ -141,7 +157,7 @@ public class GraphicsHandler {
 		texturerenderstate = new RenderStates(BlendMode.ALPHA, camera, null, null);	
 		windowrenderstate = new RenderStates(BlendMode.ALPHA,normalisedspace, null, null);	
 		bgrenderstate = new RenderStates(BlendMode.NONE,Transform.IDENTITY, null, bgshader);
-		upperrenderstate = new RenderStates(BlendMode.NONE,normalisedspace, null, upperbgshader);
+		effectrenderstate = new RenderStates(BlendMode.NONE,normalisedspace, null, effectshader);
 	}
 
 	/**draws to the render texture which is drawn to the window
@@ -154,12 +170,16 @@ public class GraphicsHandler {
 		mainRT.draw(d, texturerenderstate);
 	}
 
+	/**NOT USED OUTSIDE DEBUGGING
+	 * @param vertices
+	 * @param type
+	 */
 	public void drawToRenderTexture(Vertex[] vertices, PrimitiveType type){	
 		mainRT.draw(vertices, type, texturerenderstate);
 	}
 
 
-	/**Draws to the window which is drawn on top of the render texture.
+	/**Draws to the window which is drawn on top of the render textures.
 	 * This does NOT use the camera transformation when drawing.
 	 * Space is normalised: (0,0) in the centre of the screen and +- 1 at edges
 	 * The positive y axis upwards and positive x is right.
@@ -169,7 +189,6 @@ public class GraphicsHandler {
 	public void drawToWindow(Drawable d){
 		windowdraws.addElement(d);
 	}
-
 
 
 	/**Converts a point from screen space to world space
@@ -198,20 +217,15 @@ public class GraphicsHandler {
 
 
 	/**
-	 * Clears the screen
+	 * Clears the screen by drawing the background
 	 */
 	public void clear(){
-		//not necessary to clear the window since a whole sprite is drawn over it first
-		//clear rt		
-		//rt.clear() does not seem to work, so manually draw a rect
-		//		Vector2f s =new Vector2f(2.0f, 2.0f);
-		//		RectangleShape  rect = new RectangleShape(s);
-		//		rect.setOrigin(Vector2f.mul(s, 0.5f));
-		//		rect.setFillColor(Color.WHITE);
-		//		drawToRenderTexture(rect);
 		drawBackground();
 	}
 
+	/**
+	 * Draw the BG on main layer
+	 */
 	private void drawBackground(){
 		Vertex v[] = new Vertex[]{  
 				new Vertex(new Vector2f(0f,0f)),
@@ -219,9 +233,9 @@ public class GraphicsHandler {
 				new Vertex(new Vector2f(Game.WIDTH,Game.HEIGHT)),
 				new Vertex(new Vector2f(0f,Game.HEIGHT))
 		};	
-		
+
 		bgshader.setParameter("t", Game.getTotalElapsedTime());
-		
+
 		if(damageTaken){			
 			if(timeSinceDamage < 0.1f){
 				bgshader.setParameter("damage_taken", 1f);
@@ -231,18 +245,18 @@ public class GraphicsHandler {
 		} else {
 			bgshader.setParameter("damage_taken", 0f);
 		}
-		
+
 		mainRT.draw(v, PrimitiveType.QUADS, bgrenderstate);
 	}
 
 
 	/**
-	 * Displays the screen contents
+	 * Displays the screen contents by drawing render textures in the correct order onto the window.
 	 */
 	public void display(){
 		mainRT.display();
-		drawUpperBGLayer();
-		upperRT.display();
+		drawEffectsLayer();
+		effectRT.display();
 		window.draw(mainSprite);	
 		window.draw(poisonSprite);
 		//draw all objects that called drawToWindow

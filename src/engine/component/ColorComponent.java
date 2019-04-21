@@ -5,13 +5,9 @@ package engine.component;
 import org.jsfml.graphics.Color;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
-/**Specifies a component that has a colour associated with it.
- * @author Marco
- *
- */
+/**A component that has a colour associated with it.
+  */
 public abstract class ColorComponent extends DisplayComponent {
 
 	protected Color color;
@@ -27,18 +23,18 @@ public abstract class ColorComponent extends DisplayComponent {
 	}
 
 	/**
-	 * What happens when the colour changes
+	 * Called when the colour changes/updates, to implemented by child classes
 	 */
 	protected abstract void colorUpdate();
 
-	/**
+	/**Get the colour
 	 * @return The colour
 	 */
 	public Color getColor() {
 		return color;
 	}
 
-	/**
+	/**Set the colour
 	 * @param color The colour
 	 */
 	public void setColor(Color color) {

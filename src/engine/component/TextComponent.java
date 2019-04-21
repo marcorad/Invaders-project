@@ -9,12 +9,10 @@ import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 import game.Game;
 
-/**A graphical component that contains text
- * @author Marco
- *
+/**
+ * A graphical component that contains text of a certain font. The position of the entity specifies the centre of the text.
  */
 public class TextComponent extends ColorComponent {
 
@@ -33,7 +31,7 @@ public class TextComponent extends ColorComponent {
 		text.setColor(color);
 		text.setPosition(entity.getPosition());
 		//normalise the scale occording to height and invert
-		normalisedscale = new Vector2f(1.f/(float)Game.HEIGHT,-1.f/(float)Game.HEIGHT);
+		normalisedscale = new Vector2f(1.f/Game.HEIGHT,-1.f/Game.HEIGHT);
 		onScaleUpdate();
 	}
 
@@ -63,7 +61,7 @@ public class TextComponent extends ColorComponent {
 	}
 
 	/**
-	 * Realligns the centre of the text
+	 * Realigns the centre of the text
 	 */
 	private void reallignOrigin(){
 		FloatRect r = text.getLocalBounds();

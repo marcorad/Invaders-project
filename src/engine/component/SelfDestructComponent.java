@@ -1,12 +1,9 @@
 package engine.component;
 
 import engine.entity.Entity;
-import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
 
-/**A component that will set the entity to be removed after a certain time
- * @author Marco
- *
+/**
+ * Will kill the entity after a certain time has passed
  */
 public class SelfDestructComponent extends Component implements UpdateableComponent {
 	protected final float timealive; //the time the entity is alive

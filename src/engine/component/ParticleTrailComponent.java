@@ -5,12 +5,10 @@ import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
 import engine.entity.SpawnFactory;
-import util.Oscillator;
 import util.Util;
 
-/**Specifies a component that will allow an entity to have a particle trail behind it based off certain parameters.
- * @author Marco
- *
+/**
+ * Allow an entity to have a particle trail behind it based off certain parameters.
  */
 public class ParticleTrailComponent extends Component implements UpdateableComponent {
 
@@ -28,7 +26,7 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 	/**
 	 * @param entity The active entity
 	 * @param minSpeed The minimum speed an entity must have before the particle trail can take effect
-	 * @param speeddamp The damping factor applied to the speed of the particles
+	 * @param speeddamp The damping factor applied to the speed of the particles. When set to 1, it will travel at the same speed, opposite the motion of the entity.
 	 * @param freq The rate at which particles are spawned
 	 * @param mainColor The main colour of the particles
 	 * @param numparticles The number of particles spawned at a time
@@ -74,17 +72,12 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 
 	}	
 
-	
-
 	/**Get how the factor that determines how the speed of the particle affects the scale of the particle
 	 * @return The scale damping factor
 	 */
 	public float getScaleDamp() {
 		return scaleDamp;
 	}
-	
-	
-
 
 	/**Get the current scale clamp
 	 * @return The scale clamp
@@ -93,8 +86,6 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 		return scaleClamp;
 	}
 
-
-
 	/**Set the absolute maximum scale of a spawned particle
 	 * @param scaleClamp The scale clamp
 	 */
@@ -102,10 +93,9 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 		this.scaleClamp = scaleClamp;
 	}
 
-
-
 	/**
-	 *Set the factor that determines how the speed of the particle affects the scale of the particle
+	 *Set the factor that determines how the speed of the particle affects the scale of the particle.
+	 *@param scaleDamp The scale damp
 	 */
 	public void setScaleDamp(float scaleDamp) {
 		this.scaleDamp = scaleDamp;
@@ -214,7 +204,6 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 		return colorVary;
 	}
 
-
 	/**Set the factor that determines how the colour of a particle may vary
 	 * @param colorVary The colour vary factor
 	 */
@@ -222,6 +211,4 @@ public class ParticleTrailComponent extends Component implements UpdateableCompo
 		this.colorVary = colorVary;
 	}
 	
-	
-
 }

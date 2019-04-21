@@ -8,33 +8,32 @@ import org.jsfml.graphics.Color;
 import engine.entity.Entity;
 import util.MinMaxPair;
 import util.Oscillator;
-import util.Util;
 import util.Oscillator.OscType;
+import util.Util;
 
-/**Specifies a component that allows for a colour to oscillate from one colour to the next
- * @author Marco
- *
- */
+/**A component that modifies attached colour components' colour based off RGBA oscillation.
+  */
 public class ColorOscillationComponent extends ModifierComponent {
 	private Vector<ColorComponent> comps;
 	private Oscillator r,g,b,a;
 	private Color start;
 
 	/**
-	 * @param start The color to start on
-	 * @param end The color to end on
-	 * @param freq The frequency of oscillation
-	 * @param type The type of oscillation
+	 * @param entity The active entity
+	 * @param start The starting colour
+	 * @param end The end colour
+	 * @param freq Frequency of oscillation
+	 * @param type Type of oscillation
 	 */
 	public ColorOscillationComponent(Entity entity, Color start, Color end, float freq, OscType type){
 		super(entity);
 		comps = new Vector<>();		
 		this.start = start;
 		
-		float dr = (float) (end.r - start.r)/2.0f;
-		float dg = (float) (end.g - start.g)/2.0f;
-		float db = (float) (end.b - start.b)/2.0f;
-		float da = (float) (end.a - start.a)/2.0f;
+		float dr = (end.r - start.r)/2.0f;
+		float dg = (end.g - start.g)/2.0f;
+		float db = (end.b - start.b)/2.0f;
+		float da = (end.a - start.a)/2.0f;
 
 		MinMaxPair<Float> rm = Util.getMinMax(new float[] {start.r,end.r});
 		MinMaxPair<Float> gm = Util.getMinMax(new float[] {start.g,end.g});
@@ -64,7 +63,7 @@ public class ColorOscillationComponent extends ModifierComponent {
 
 
 
-	/**
+	/**Add a colour component that will be modified by this object
 	 * @param cc The component to be modified
 	 */
 	public void addComponent(ColorComponent cc){
@@ -73,7 +72,7 @@ public class ColorOscillationComponent extends ModifierComponent {
 	
 	@Override
 	protected void modify() {
-		Color c = new Color((int)(r.get(elapsedtime)), (int)(g.get(elapsedtime)), (int)(b.get(elapsedtime)), (int)(a.get(elapsedtime)));
+		Color c = new Color((int)r.get(elapsedtime), (int)g.get(elapsedtime), (int)b.get(elapsedtime), (int)a.get(elapsedtime));
 		
 		//ensure the entities of the comps are still useful
 		Iterator<ColorComponent> it = comps.iterator();
@@ -88,6 +87,9 @@ public class ColorOscillationComponent extends ModifierComponent {
 	
 	}
 	
+	/**
+	 * Set the colour to the starting colour.
+	 */
 	public void setToStartColor(){
 		for(ColorComponent c : comps){
 			c.setColor(start);

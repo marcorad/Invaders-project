@@ -1,33 +1,28 @@
 package engine.component;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.jsfml.graphics.Color;
-import org.jsfml.graphics.Image;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Texture;
-import org.jsfml.graphics.TextureCreationException;
-import org.jsfml.graphics.Transform;
 import org.jsfml.system.Vector2f;
 
 import engine.entity.Entity;
 import engine.graphics.GraphicsHandler;
-import engine.input.EventHandler;
-import util.Util;
 
 //NOTE THAT a sprite component always has it's coordinates normalised to +-1
 //which means a square of size 2 will always fit around it
 //the setScale must be used to change the size
 
+/**
+ * Specifies the sprite to display on screen. The sprite will be have normalised texture coordinates, as per most graphic standards.
+ * It operates on a texture that is a strip of frames showing the animation. Each frame is shown for a specified time period after
+ * switching to the next frame. The width of a single frame must be know to make this happen.
+ */
 public class SpriteComponent extends ColorComponent implements UpdateableComponent {
 
 	
 	private Sprite sprite;
 	private Texture tex;
-	private Path path;
 	private int width, height;
 
 	private Vector2f normalisedscale;
@@ -67,12 +62,15 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 	}
 
 
+	/**
+	 * Helper method to create the sprite.
+	 */
 	private void create(){
 		frames = tex.getSize().x/width;
 		height = tex.getSize().y;
 		sprite = new Sprite(tex,new IntRect(0,0,width,height));
-		sprite.setOrigin(new Vector2f((float)width/2.f,(float)height/2.f));
-		normalisedscale = new Vector2f(2.f/(float)width,-2.f/(float)height);
+		sprite.setOrigin(new Vector2f(width/2.f,height/2.f));
+		normalisedscale = new Vector2f(2.f/width,-2.f/height);
 		onScaleUpdate();
 		onRotationUpdate();
 		onPositionUpdate();
@@ -125,6 +123,10 @@ public class SpriteComponent extends ColorComponent implements UpdateableCompone
 		this.sprite.setColor(color);
 	}
 	
+	/**Check if a point is inside the sprite's global bounds.
+	 * @param pt The point
+	 * @return Whether it is inside
+	 */
 	public boolean pointInside(Vector2f pt){
 		return sprite.getGlobalBounds().contains(pt);
 	}

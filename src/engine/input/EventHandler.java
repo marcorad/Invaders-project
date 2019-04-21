@@ -3,17 +3,18 @@ package engine.input;
 import java.util.Iterator;
 import java.util.Vector;
 
-
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.system.Vector2f;
-import org.jsfml.window.event.*;
+import org.jsfml.window.event.Event;
+import org.jsfml.window.event.KeyEvent;
+import org.jsfml.window.event.MouseButtonEvent;
+import org.jsfml.window.event.MouseEvent;
+import org.jsfml.window.event.MouseWheelEvent;
 
 import engine.entity.Entity;
 
 /**A class that handles key and mouse events at a lower level.
- * @author Marco
- *
- */
+  */
 public class EventHandler {
 	private final RenderWindow window;
 	private Vector<KeyListener> kl;
@@ -31,8 +32,7 @@ public class EventHandler {
 		window = w;
 		kl = new Vector<>(); 
 		ml = new Vector<>();
-	}
-	
+	}	
 	
 
 	/**
@@ -63,19 +63,21 @@ public class EventHandler {
 			Iterator<MouseListener> mit = ml.iterator();
 			
 			while(kit.hasNext()){
-				if(kit.next().isUseless())
+				if(kit.next().isUseless()) {
 					kit.remove();
+				}
 			}
 			
 			while(mit.hasNext()){
-				if(mit.next().isUseless())
+				if(mit.next().isUseless()) {
 					mit.remove();
+				}
 			}
 					
 			//convert to different type of events
 			MouseButtonEvent mb = e.asMouseButtonEvent(); //mouse buttons
 			MouseWheelEvent mw = e.asMouseWheelEvent(); //mouse wheel
-			MouseEvent me = (e.type == Event.Type.MOUSE_MOVED) ? e.asMouseEvent() : null;//mouse move must be checked since MouseEvent is generic for all mouse events
+			MouseEvent me = e.type == Event.Type.MOUSE_MOVED ? e.asMouseEvent() : null;//mouse move must be checked since MouseEvent is generic for all mouse events
 			KeyEvent ke =  e.asKeyEvent();
 
 			//with likelihood of event as priority, do check to see if it is an applicable event. events are mutually exclusive
@@ -88,18 +90,22 @@ public class EventHandler {
 			} else if(ke != null){			 
 				
 				 for(KeyListener k : kl){
-					if (ke.type == Event.Type.KEY_PRESSED)
-					k.onKeyPress(ke);
-					if (ke.type == Event.Type.KEY_RELEASED)
-					k.onKeyRelease(ke);
+					if (ke.type == Event.Type.KEY_PRESSED) {
+						k.onKeyPress(ke);
+					}
+					if (ke.type == Event.Type.KEY_RELEASED) {
+						k.onKeyRelease(ke);
+					}
 				}
 
 			} else if(mb != null){
 				for(MouseListener m : ml){
-					if(mb.type == Event.Type.MOUSE_BUTTON_PRESSED)
+					if(mb.type == Event.Type.MOUSE_BUTTON_PRESSED) {
 						m.onMousePress(mb);
-					if(mb.type == Event.Type.MOUSE_BUTTON_RELEASED)
+					}
+					if(mb.type == Event.Type.MOUSE_BUTTON_RELEASED) {
 						m.onMouseRelease(mb);
+					}
 				}
 			} else if(mw != null){
 				for(MouseListener m : ml){
@@ -124,6 +130,9 @@ public class EventHandler {
 		kl_add.addElement(k);
 	}
 	
+	/**
+	 * @return The current world position of the mouse
+	 */
 	public static Vector2f getCurrentMouseWorldPosition(){
 		return CURRENT_MOUSE_WORLD_POS;
 	}

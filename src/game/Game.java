@@ -1,10 +1,7 @@
 package game;
 
-import org.jsfml.audio.Sound;
-import org.jsfml.audio.SoundBuffer;
 import org.jsfml.graphics.RenderWindow;
 import org.jsfml.system.Clock;
-import org.jsfml.system.Vector2f;
 import org.jsfml.window.ContextActivationException;
 import org.jsfml.window.Keyboard.Key;
 import org.jsfml.window.VideoMode;
@@ -17,7 +14,6 @@ import org.jsfml.window.event.MouseWheelEvent;
 import engine.entity.Entity;
 import engine.entity.EntityManager;
 import engine.entity.Player;
-import engine.entity.SpawnFactory;
 import engine.graphics.GraphicsHandler;
 import engine.input.EventHandler;
 import engine.input.KeyListener;
@@ -28,6 +24,9 @@ import state.StateMachine;
 import state.StateMachine.State;
 import util.Benchmarker;
 
+/**
+ * The main class, managing the game on a high level.
+ */
 public class Game implements MouseListener, KeyListener {
 
 	public static int WIDTH = 700, HEIGHT = 700;
@@ -39,12 +38,38 @@ public class Game implements MouseListener, KeyListener {
 	private boolean paused = false;
 	private static boolean soundEnabled=false;
 	private static boolean musicEnabled=false;	
+	private static boolean inaccurateCollisions = false, particleEffects = true;
+	private static boolean concurrentUpdates = false;
 
 	private static int gameLength = 0;
 	private static int numEnemiesKilled = 0;
 	private static int currentPlayerScore = 0;
 	private static int numEnemies = 0;
 	private static int totalEnemiesSpawned = 0;
+	
+	private static void toggleInaccurateCollisions(){
+		inaccurateCollisions = !inaccurateCollisions;
+	}
+	
+	private static void toggleConcurrentUpdates(){
+		concurrentUpdates = !concurrentUpdates;
+	}
+	
+	public static boolean concurrentUpdatesEnabled(){
+		return concurrentUpdates;
+	}
+	
+	private static void toggleParticleEffects(){
+		particleEffects = !particleEffects;
+	}
+	
+	public static boolean particlesEnabled(){
+		return particleEffects;
+	}
+	
+	public static boolean inaccurateCollisionsEnabled(){
+		return inaccurateCollisions;
+	}
 
 	public static int getNumberOfEnemiesOnScreen(){
 		return numEnemies;
@@ -173,17 +198,8 @@ public class Game implements MouseListener, KeyListener {
 		eventhandler.attachMouseListener(this);
 		eventhandler.attachKeyListener(this);
 
-
-
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .8f));
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(0f, .6f));
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .8f));
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(.2f, .6f));
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .8f));
-		//			SpawnFactory.spawnTestEnemy(new Vector2f(-.2f, .6f));
-
-		Benchmarker bm = new Benchmarker("Total update time", 60);
-		Benchmarker bmg = new Benchmarker("Draw time", 60);
+		//Benchmarker bm = new Benchmarker("Total update time", 60);
+		//Benchmarker bmg = new Benchmarker("Draw time", 60);
 		//bm.setAsMainBenchmarker();
 
 
@@ -197,20 +213,21 @@ public class Game implements MouseListener, KeyListener {
 			t += dt; //keep track of total time
 
 			if(t >= wait_time){
-				bm.startMeasurement();
+				//bm.startMeasurement();
 				updateGame(dt, t);	
-				bm.stopMeasurement();
+				//bm.stopMeasurement();
 				
-				bmg.startMeasurement();
+				//bmg.startMeasurement();
 				entitymanager.drawEntities();
 				eventhandler.handleEvents();
 				graphics.update(dt, t);
-				bmg.stopMeasurement();
+				//bmg.stopMeasurement();
 
 			}			
 			graphics.display();	
-
 		}
+		
+		entitymanager.killThreads();
 	}
 
 	public static float getTotalElapsedTime(){
@@ -222,8 +239,9 @@ public class Game implements MouseListener, KeyListener {
 	public void updateGame(float dt, float t){
 		if(!paused){
 			entitymanager.update(dt, t);
-			if(stateMachine.getCurrentState() == State.GAME) 
+			if(stateMachine.getCurrentState() == State.GAME) {
 				LevelGen.update(dt);
+			}
 		}
 	}
 
@@ -277,10 +295,20 @@ public class Game implements MouseListener, KeyListener {
 
 	@Override
 	public void onKeyPress(KeyEvent ke) {
-		//ESC and q will close the game
-		if(ke.key == Key.Q) window.close();
-		else if(ke.key == Key.P) paused = !paused;
-		else if(ke.key == Key.H) entitymanager.toggleHitboxDraw();
+		//Q will close the game
+		if(ke.key == Key.Q) {
+			window.close();
+		} else if(ke.key == Key.P) {
+			paused = !paused;
+		} else if(ke.key == Key.H) {
+			entitymanager.toggleHitboxDraw();
+		} else if(ke.key == Key.C) {
+			toggleInaccurateCollisions();
+		} else if(ke.key == Key.I) {
+			toggleParticleEffects();
+		} else if(ke.key == Key.T) {
+			toggleConcurrentUpdates();
+		}
 	}
 
 

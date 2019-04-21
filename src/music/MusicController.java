@@ -5,11 +5,14 @@ import org.jsfml.system.Clock;
 
 import game.Game;
 
+/**
+ * A class running in a separate thread that controls the music fades and transitions 
+ */
 public class MusicController extends Thread {
 
 	private Music nextMusic, currentMusic;
 	boolean started = false;
-	private static final float TRANSITION_TIME = 1f;
+	private static final float TRANSITION_TIME = .6f;
 	private boolean startTransition = false;
 	private boolean inTransition = false;
 	private Clock clk = new Clock();
@@ -59,6 +62,9 @@ public class MusicController extends Thread {
 	}
 
 
+	/**
+	 * Helper method to start a volume transition
+	 */
 	private void transitionToNext(){	
 		if(startTransition) {
 			clk.restart();
@@ -71,7 +77,7 @@ public class MusicController extends Thread {
 				if(Game.isMusicEnabled()){
 
 					//fade current music out
-					currentMusic.setVolume((100f - 100f/TRANSITION_TIME * clk.getElapsedTime().asSeconds()));
+					currentMusic.setVolume(100f - 100f/TRANSITION_TIME * clk.getElapsedTime().asSeconds());
 					//fade next music in
 					nextMusic.setVolume(100f/TRANSITION_TIME * clk.getElapsedTime().asSeconds());	
 				} else {
@@ -100,8 +106,9 @@ public class MusicController extends Thread {
 				inTransition = false;
 			}
 		} else{
-			if(m != currentMusic)
+			if(m != currentMusic) {
 				nextMusic = m;
+			}
 			startTransition = true;
 			inTransition = false;
 		}
